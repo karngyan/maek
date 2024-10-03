@@ -21,7 +21,6 @@ const DefaultMaxRead = 1024 * 1024 // 1MB
 
 var (
   SQLConn            string
-  RedisAddr          string
   CorsAllowedOrigins []string
 )
 
@@ -38,10 +37,6 @@ func Init() error {
   var err error
 
   if SQLConn, err = web.AppConfig.String("SQLConn"); err != nil {
-    return errors.WithStack(err)
-  }
-
-  if RedisAddr, err = web.AppConfig.String("RedisAddr"); err != nil {
     return errors.WithStack(err)
   }
 
