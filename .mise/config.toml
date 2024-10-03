@@ -2,6 +2,11 @@
 experimental = true
 
 [env]
+RUN_MODE = 'dev'
+CGO_ENABLED = '0'
+
+# Basically the domains on which the app is hosted separated by semicolons
+CORS_ALLOWED_ORIGINS = ''
 
 [tools]
 go = '1.23.1'
@@ -12,3 +17,7 @@ node = '20.17.0'
 
 [plugins]
 skeema = 'https://github.com/jatinn/asdf-skeema'
+
+[tasks.dev]
+run = 'bee run -main=cmds/api_server/main.go'
+
