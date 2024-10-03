@@ -2,7 +2,6 @@ package conf
 
 import (
   "fmt"
-  "runtime"
   "time"
 
   "github.com/beego/beego/v2/server/web"
@@ -81,10 +80,4 @@ func Init() error {
   CorsAllowedOrigins = web.AppConfig.DefaultStrings("CorsAllowedOrigins", []string{"*"})
 
   return err
-}
-
-// MakeUserAgent creates a standard webhook User-Agent string
-// to help us better identify bad actors
-func MakeUserAgent(id string) string {
-  return fmt.Sprintf("%v/%v (%v; +https://%v/actions)", Domain, runtime.Version(), id, Domain)
 }
