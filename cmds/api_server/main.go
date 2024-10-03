@@ -20,13 +20,8 @@ func main() {
     // models.Init,
   )
 
-  allowedOrigins := conf.CorsAllowedOrigins
-  if conf.IsDevEnv() {
-    allowedOrigins = []string{"localhost"}
-  }
-
   web.InsertFilter("*", web.BeforeRouter, cors.Allow(&cors.Options{
-    AllowOrigins:     allowedOrigins,
+    AllowOrigins:     conf.CorsAllowedOrigins,
     AllowCredentials: true,
     MaxAge:           24 * time.Hour,
     AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions, http.MethodPatch},
