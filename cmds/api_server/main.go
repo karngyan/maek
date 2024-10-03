@@ -4,11 +4,13 @@ import (
   "net/http"
   "time"
 
-  "github.com/karngyan/maek/conf"
-  "github.com/karngyan/maek/routers"
-
   "github.com/beego/beego/v2/server/web"
   "github.com/beego/beego/v2/server/web/filter/cors"
+
+  "github.com/karngyan/maek/conf"
+  "github.com/karngyan/maek/db"
+  "github.com/karngyan/maek/models"
+  "github.com/karngyan/maek/routers"
 )
 
 func main() {
@@ -16,8 +18,9 @@ func main() {
   web.AddAPPStartHook(
     routers.Init,
     conf.Init,
-    // db.Init,
-    // models.Init,
+    db.Init,
+    models.Init,
+    db.InitOrmer,
   )
 
   web.InsertFilter("*", web.BeforeRouter, cors.Allow(&cors.Options{
