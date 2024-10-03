@@ -10,9 +10,6 @@ MYSQL_SCHEMA = 'maek_dev'
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = 'rootpassword'
 
-# Domain on which the app will be hosted
-DOMAIN = 'maek.ai'
-
 # Basically the domains on which the app is hosted separated by semicolons
 CORS_ALLOWED_ORIGINS = 'http://localhost:3000'
 

@@ -24,7 +24,6 @@ var (
   MysqlUser          string
   MysqlPassword      string
   SQLConn            string
-  Domain             string
   CorsAllowedOrigins []string
 )
 
@@ -72,10 +71,6 @@ func Init() error {
   }
 
   SQLConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8", MysqlUser, MysqlPassword, MysqlHost, MysqlPort, MysqlSchema)
-
-  if Domain, err = web.AppConfig.String("Domain"); err != nil {
-    return err
-  }
 
   CorsAllowedOrigins = web.AppConfig.DefaultStrings("CorsAllowedOrigins", []string{"*"})
 
