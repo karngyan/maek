@@ -4,8 +4,6 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/karngyan/maek/domains/auth"
-
-	"github.com/karngyan/maek/conf"
 )
 
 func Init() error {
@@ -16,11 +14,11 @@ func Init() error {
 	}
 
 	// local dev hack
-	if conf.IsDevEnv() {
-		if err := orm.RunSyncdb("default", true, true); err != nil {
-			return err
-		}
-	}
+	// if conf.IsDevEnv() {
+	// 	if err := orm.RunSyncdb("default", false, true); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
