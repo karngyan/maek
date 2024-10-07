@@ -3,11 +3,21 @@ services:
     image: mysql:8.4.2
     ports:
       - "3306:3306"
+      - "33060:33060"
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword
       - MYSQL_DATABASE=maek_dev
     volumes:
       - mysql_data:/var/lib/mysql
+
+  mysql-test:
+    image: mysql:8.4.2
+    ports:
+      - "3307:3306"
+      - "33070:33060"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=maek_test
 
 volumes:
   mysql_data:
