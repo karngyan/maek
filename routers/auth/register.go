@@ -9,6 +9,12 @@ import (
 	"github.com/karngyan/maek/routers/base"
 )
 
+const (
+	minPasswordLength = 6
+	maxPasswordLength = 64
+	maxNameLength     = 200
+)
+
 func Register(ctx *base.WebContext) {
 	var req struct {
 		Email    string `json:"email"`
@@ -31,17 +37,17 @@ func Register(ctx *base.WebContext) {
 		return
 	}
 
-	if len(req.Password) < 6 {
+	if len(req.Password) < minPasswordLength {
 		base.BadRequestStr(ctx, "Invalid password", "Password must be at least 6 characters long")
 		return
 	}
 
-	if len(req.Password) > 64 {
+	if len(req.Password) > maxPasswordLength {
 		base.BadRequestStr(ctx, "Invalid password", "Password must be at most 64 characters long")
 		return
 	}
 
-	if len(req.Name) > 200 {
+	if len(req.Name) > maxNameLength {
 		base.BadRequestStr(ctx, "Invalid name", "Name must be at most 200 characters long")
 		return
 	}

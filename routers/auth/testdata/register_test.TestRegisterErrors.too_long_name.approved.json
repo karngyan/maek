@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": {
+    "detail": "Name must be at most 200 characters long",
+    "title": "Invalid name",
+    "type": "warning"
+  },
+  "meta": null
+}

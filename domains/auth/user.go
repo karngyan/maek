@@ -1,11 +1,19 @@
 package auth
 
+import (
+	"context"
+	"errors"
+	"fmt"
+)
+
 type UserRole string
 
 const (
 	RoleAdmin UserRole = "admin"
 	RoleUser  UserRole = "user"
 )
+
+var ErrUserNotFound = errors.New("user not found")
 
 type User struct {
 	Id       uint64     `json:"id"`
@@ -21,4 +29,14 @@ type User struct {
 
 func (u *User) TableEngine() string {
 	return "InnoDB"
+}
+
+func FetchUserById(ctx context.Context, id uint64) (User, error) {
+	key := fmt.Sprintf("%d", id)
+	if user, err := userCache.Get(ctx, key); err == nil {
+		return user.(User), nil
+	}
+
+	// cache is read through so if Get failed user doesn't exist in db
+	return User{}, ErrUserNotFound
 }

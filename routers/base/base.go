@@ -8,6 +8,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 	beectx "github.com/beego/beego/v2/server/web/context"
+	"github.com/bluele/go-timecop"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
@@ -150,7 +151,26 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFun
 			requestId: rid,
 		}
 
-		// TODO: Fetch user here if withUser is true
+		now := timecop.Now().Unix()
+
+		token := c.GetCookie("session_token")
+		rctx := c.Request.Context()
+		session, err := auth.FetchSessionByToken(rctx, token)
+
+		if err != nil || session.Expires < now {
+			Unauth(c)
+			return
+		}
+
+		if withUser {
+			user, err := auth.FetchUserById(rctx, session.User.Id)
+			if err != nil {
+				UnauthWithError(c, err)
+				return
+			}
+
+			c.User = &user
+		}
 
 		h(c)
 	}

@@ -56,6 +56,10 @@ func WithOrmer(fn func(orm.Ormer) error) error {
 	return fn(o)
 }
 
+func WithOrmerCtx(ctx context.Context, fn func(ctx context.Context, ormer orm.Ormer) error) error {
+	return fn(ctx, o)
+}
+
 func WithTxOrmer(fn func(ctx context.Context, txOrmer orm.TxOrmer) error) error {
 	return o.DoTx(fn)
 }

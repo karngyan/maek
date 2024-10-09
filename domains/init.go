@@ -20,6 +20,10 @@ func Init() error {
 	// 	}
 	// }
 
+	if err = initCaches(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -37,6 +41,15 @@ func registerModels() error {
 	return nil
 }
 
+func initCaches() error {
+	if err := auth.CacheInit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// InitTest initializes the test database
 func InitTest() error {
 	var err error
 
@@ -52,6 +65,7 @@ func InitTest() error {
 	return nil
 }
 
+// CleanupTest cleans up the test database
 func CleanupTest() {
 	// force would drop the tables and recreate them
 	err := orm.RunSyncdb("default", true, false)
