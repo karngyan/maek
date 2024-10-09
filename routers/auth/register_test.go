@@ -3,10 +3,8 @@ package auth_test
 import (
 	"testing"
 
-	"github.com/karngyan/maek/libs/randstr"
-
 	approvals "github.com/customerio/go-approval-tests"
-
+	"github.com/karngyan/maek/libs/randstr"
 	"github.com/karngyan/maek/zarf/tests"
 	"github.com/stretchr/testify/assert"
 )

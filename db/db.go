@@ -11,8 +11,6 @@ import (
 	"github.com/karngyan/maek/conf"
 )
 
-var o orm.Ormer
-
 func Init() error {
 	if err := orm.RegisterDriver("mysql", orm.DRMySQL); err != nil {
 		return err
@@ -26,6 +24,10 @@ func Init() error {
 	}
 
 	orm.DefaultTimeLoc = time.UTC
+
+	if conf.IsDevEnv() {
+		orm.Debug = true
+	}
 
 	return nil
 }
@@ -47,31 +49,32 @@ func InitTest() error {
 	return nil
 }
 
-func InitOrmer() error {
-	o = orm.NewOrm()
-	return nil
-}
-
 func WithOrmer(fn func(orm.Ormer) error) error {
+	o := orm.NewOrm()
 	return fn(o)
 }
 
 func WithOrmerCtx(ctx context.Context, fn func(ctx context.Context, ormer orm.Ormer) error) error {
+	o := orm.NewOrm()
 	return fn(ctx, o)
 }
 
 func WithTxOrmer(fn func(ctx context.Context, txOrmer orm.TxOrmer) error) error {
+	o := orm.NewOrm()
 	return o.DoTx(fn)
 }
 
 func WithTxOrmerCtx(ctx context.Context, fn func(ctx context.Context, txOrmer orm.TxOrmer) error) error {
+	o := orm.NewOrm()
 	return o.DoTxWithCtx(ctx, fn)
 }
 
 func WithTxOrmerOpts(opts *sql.TxOptions, fn func(ctx context.Context, txOrmer orm.TxOrmer) error) error {
+	o := orm.NewOrm()
 	return o.DoTxWithOpts(opts, fn)
 }
 
 func WithTxOrmerCtxAndOpts(ctx context.Context, opts *sql.TxOptions, fn func(ctx context.Context, txOrmer orm.TxOrmer) error) error {
+	o := orm.NewOrm()
 	return o.DoTxWithCtxAndOpts(ctx, opts, fn)
 }

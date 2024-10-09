@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"context"
 	"errors"
-	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRole string
@@ -31,12 +31,17 @@ func (u *User) TableEngine() string {
 	return "InnoDB"
 }
 
-func FetchUserById(ctx context.Context, id uint64) (User, error) {
-	key := fmt.Sprintf("%d", id)
-	if user, err := userCache.Get(ctx, key); err == nil {
-		return user.(User), nil
+func (u *User) verifyPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
+}
+
+func (u *User) hashPassword() error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
 	}
 
-	// cache is read through so if Get failed user doesn't exist in db
-	return User{}, ErrUserNotFound
+	u.Password = string(bytes)
+	return nil
 }

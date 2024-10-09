@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"errors"
 	"time"
 
@@ -31,13 +30,4 @@ func (s *Session) ExpiresTime() time.Time {
 
 func (s *Session) Age() time.Duration {
 	return time.Unix(s.Expires, 0).Sub(timecop.Now())
-}
-
-func FetchSessionByToken(ctx context.Context, token string) (Session, error) {
-	if session, err := sessionCache.Get(ctx, token); err == nil {
-		return session.(Session), nil
-	}
-
-	// cache is read through so if Get failed session doesn't exist in db
-	return Session{}, ErrSessionNotFound
 }

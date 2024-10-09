@@ -43,10 +43,6 @@ func main() {
 		panic(err)
 	}
 
-	if err := db.InitOrmer(); err != nil {
-		panic(err)
-	}
-
 	web.InsertFilter("*", web.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     conf.CorsAllowedOrigins,
 		AllowCredentials: true,

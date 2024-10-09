@@ -169,7 +169,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFun
 				return
 			}
 
-			c.User = &user
+			c.User = user
 		}
 
 		h(c)

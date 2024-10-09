@@ -2,14 +2,13 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/bluele/go-timecop"
-
-	"github.com/beego/beego/v2/client/orm"
-	"github.com/karngyan/maek/db"
-
 	"github.com/beego/beego/v2/client/cache"
+	"github.com/beego/beego/v2/client/orm"
+	"github.com/bluele/go-timecop"
+	"github.com/karngyan/maek/db"
 )
 
 var (
@@ -17,7 +16,7 @@ var (
 	sessionCache = cache.NewMemoryCache()
 )
 
-func CacheInit() error {
+func InitCache() error {
 	var err error
 
 	// read through cache for session
@@ -35,7 +34,7 @@ func CacheInit() error {
 			return nil, err
 		}
 
-		return session, nil
+		return &session, nil
 	}); err != nil {
 		return err
 	}
@@ -54,10 +53,50 @@ func CacheInit() error {
 			return nil, err
 		}
 
-		return user, nil
+		return &user, nil
 	}); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
+	if session, err := sessionCache.Get(ctx, token); err == nil {
+		return session.(*Session), nil
+	}
+
+	// cache is read through so if Get failed session doesn't exist in db
+	return nil, ErrSessionNotFound
+}
+
+func FetchUserById(ctx context.Context, id uint64) (*User, error) {
+	key := fmt.Sprintf("%d", id)
+	if user, err := userCache.Get(ctx, key); err == nil {
+		return user.(*User), nil
+	}
+
+	// cache is read through so if Get failed user doesn't exist in db
+	return nil, ErrUserNotFound
+}
+
+func FetchUserByEmail(ctx context.Context, email string) (*User, error) {
+	var user User
+	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
+		err := ormer.QueryTable("user").Filter("email", email).One(&user)
+		if err != nil {
+			return err
+		}
+
+		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "Accounts")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

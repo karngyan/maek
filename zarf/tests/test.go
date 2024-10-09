@@ -53,10 +53,6 @@ func InitApp() error {
 		return err
 	}
 
-	if err := db.InitOrmer(); err != nil {
-		return err
-	}
-
 	return nil
 }
 

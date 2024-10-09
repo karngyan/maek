@@ -42,7 +42,7 @@ func registerModels() error {
 }
 
 func initCaches() error {
-	if err := auth.CacheInit(); err != nil {
+	if err := auth.InitCache(); err != nil {
 		return err
 	}
 
