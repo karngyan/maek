@@ -6,7 +6,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sync"
 	"time"
+
+	"github.com/bluele/go-timecop"
+
+	"github.com/beego/beego/v2/client/orm"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -16,48 +21,64 @@ import (
 	"github.com/karngyan/maek/routers"
 )
 
-var FrozenTime = time.Unix(1234567890, 0)
+var frozenTime = time.Unix(1234567890, 0)
+var initOnce sync.Once
 
 func InitApp() error {
-	log := logs.NewLogger()
-	defer log.Flush()
+	initFn := func() error {
+		log := logs.NewLogger()
+		defer log.Flush()
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		return err
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		root := os.Getenv("ROOT")
+		web.TestBeegoInit(root)
+
+		// beego changes dir internally after TestBeegoInit
+		// we'd like it back for approvals to work
+		err = os.Chdir(cwd)
+		if err != nil {
+			return err
+		}
+
+		if err := routers.Init(log); err != nil {
+			return err
+		}
+
+		if err := conf.Init(); err != nil {
+			return err
+		}
+
+		if err := db.Init(); err != nil {
+			panic(err)
+		}
+
+		if err := domains.InitTest(); err != nil {
+			return err
+		}
+
+		return nil
 	}
 
-	root := os.Getenv("ROOT")
-	web.TestBeegoInit(root)
+	var initErr error
 
-	// beego changes dir internally after TestBeegoInit
-	// we'd like it back for approvals to work
-	err = os.Chdir(cwd)
-	if err != nil {
-		return err
-	}
+	initOnce.Do(func() {
+		initErr = initFn()
+	})
 
-	if err := routers.Init(log); err != nil {
-		return err
-	}
-
-	if err := conf.Init(); err != nil {
-		return err
-	}
-
-	if err := db.InitTest(); err != nil {
-		return err
-	}
-
-	if err := domains.InitTest(); err != nil {
-		return err
-	}
-
-	return nil
+	return initErr
 }
 
-func CleanUp() {
-	domains.CleanupTest()
+func FreezeTime() {
+	timecop.Freeze(frozenTime)
+}
+
+func CleanDBRows() {
+	// force would drop the tables and recreate them
+	_ = orm.RunSyncdb("default", true, false)
 }
 
 func Post(path string, body any) (*httptest.ResponseRecorder, error) {

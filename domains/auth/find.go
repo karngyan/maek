@@ -88,7 +88,7 @@ func FetchUserByEmail(ctx context.Context, email string) (*User, error) {
 			return err
 		}
 
-		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "Accounts")
+		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "accounts")
 		if err != nil {
 			return err
 		}

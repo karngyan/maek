@@ -13,6 +13,8 @@ import (
 )
 
 func TestLogin(t *testing.T) {
+	defer tests.CleanDBRows()
+
 	user, session, err := auth.CreateDefaultAccountWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
 	assert.Nil(t, err)
 	assert.NotNil(t, user)

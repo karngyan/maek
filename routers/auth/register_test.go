@@ -10,6 +10,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
+	defer tests.CleanDBRows()
 	rr, err := tests.Post("/v1/auth/register", map[string]any{
 		"name":     "Karn",
 		"email":    "karn@maek.ai",

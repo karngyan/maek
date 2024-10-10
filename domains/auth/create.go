@@ -54,8 +54,8 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 		}
 
 		// Add the account to the user
-		m2m := txOrmer.QueryM2M(user, "Accounts")
-		if _, err := m2m.Add(acc); err != nil {
+		m2m := txOrmer.QueryM2M(user, "accounts")
+		if _, err := m2m.AddWithCtx(ctx, acc); err != nil {
 			return err
 		}
 

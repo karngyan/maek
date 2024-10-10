@@ -2,7 +2,6 @@ package domains
 
 import (
 	"github.com/beego/beego/v2/client/orm"
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/karngyan/maek/domains/auth"
 )
 
@@ -63,15 +62,4 @@ func InitTest() error {
 	}
 
 	return nil
-}
-
-// CleanupTest cleans up the test database
-func CleanupTest() {
-	// force would drop the tables and recreate them
-	err := orm.RunSyncdb("default", true, false)
-	if err != nil {
-		logs.Info("Error cleaning up test database: %v", err)
-	} else {
-		logs.Info("Cleaned up test database")
-	}
 }

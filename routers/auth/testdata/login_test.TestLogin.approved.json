@@ -1,5 +1,13 @@
 {
-  "accounts": [],
+  "accounts": [
+    {
+      "created": 1234567890,
+      "description": "Default account",
+      "id": 1,
+      "name": "Default",
+      "updated": 1234567890
+    }
+  ],
   "user": {
     "created": 1234567890,
     "email": "karn@maek.ai",
