@@ -11,7 +11,9 @@ import (
 
 func TestRegister(t *testing.T) {
 	defer tests.CleanDBRows()
-	rr, err := tests.Post("/v1/auth/register", map[string]any{
+	cs := tests.NewClientState()
+
+	rr, err := cs.Post("/v1/auth/register", map[string]any{
 		"name":     "Karn",
 		"email":    "karn@maek.ai",
 		"password": "test-password",
@@ -25,6 +27,8 @@ func TestRegister(t *testing.T) {
 }
 
 func TestRegisterErrors(t *testing.T) {
+	cs := tests.NewClientState()
+
 	type testCase struct {
 		name         string
 		body         map[string]any
@@ -70,7 +74,7 @@ func TestRegisterErrors(t *testing.T) {
 
 	for _, tt := range tcs {
 		t.Run(tt.name, func(t *testing.T) {
-			rr, err := tests.Post("/v1/auth/register", tt.body)
+			rr, err := cs.Post("/v1/auth/register", tt.body)
 			assert.Nil(t, err)
 			assert.Equal(t, tt.expectedCode, rr.Code)
 			approvals.VerifyJSONBytes(t, rr.Body.Bytes())

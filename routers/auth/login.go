@@ -33,10 +33,16 @@ func Login(ctx *base.WebContext) {
 	user, session, err := auth.Login(ctx.Request.Context(), req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
 
 	if err != nil {
+		if errors.Is(err, auth.ErrUserNotFound) {
+			base.BadRequestStr(ctx, "User not found", "Please check your email and try again.")
+			return
+		}
+
 		if errors.Is(err, auth.ErrInvalidPassword) {
 			base.BadRequestStr(ctx, "Invalid password", "Please check your password and try again.")
 			return
 		}
+
 		base.InternalError(ctx, err)
 		return
 	}

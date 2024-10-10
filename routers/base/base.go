@@ -18,8 +18,8 @@ import (
 
 type WebContext struct {
 	*beectx.Context
-	User *auth.User
-
+	Session   *auth.Session
+	User      *auth.User
 	l         *logs.BeeLogger
 	requestId string
 }
@@ -100,7 +100,7 @@ func BadRequestStr(c *WebContext, title, detail string) {
 }
 
 func InternalError(c *WebContext, err error) {
-	ref := randstr.Hex(8)
+	ref := randstr.Hex(16)
 	e := &ResponseError{
 		Title:  fmt.Sprintf("Internal error reference #%s", ref),
 		Detail: "Please try connecting again. If the issue keeps on happening, contact us.",
@@ -162,6 +162,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFun
 			return
 		}
 
+		c.Session = session
 		if withUser {
 			user, err := auth.FetchUserById(rctx, session.User.Id)
 			if err != nil {

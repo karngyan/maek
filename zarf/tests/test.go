@@ -2,12 +2,18 @@ package tests
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"sync"
+	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/karngyan/maek/domains/auth"
 
 	"github.com/bluele/go-timecop"
 
@@ -52,7 +58,7 @@ func InitApp() error {
 			return err
 		}
 
-		if err := db.Init(); err != nil {
+		if err := db.InitTest(); err != nil {
 			panic(err)
 		}
 
@@ -81,27 +87,50 @@ func CleanDBRows() {
 	_ = orm.RunSyncdb("default", true, false)
 }
 
-func Post(path string, body any) (*httptest.ResponseRecorder, error) {
-	return request(http.MethodPost, path, body)
+type ClientState struct {
+	User    *auth.User
+	Session *auth.Session
 }
 
-func Get(path string) (*httptest.ResponseRecorder, error) {
-	return request(http.MethodGet, path, nil)
+func NewClientState() *ClientState {
+	return &ClientState{}
 }
 
-func Put(path string, body any) (*httptest.ResponseRecorder, error) {
-	return request(http.MethodPut, path, body)
+func NewClientStateWithUser(t *testing.T) *ClientState {
+	c := NewClientState()
+
+	user, session, err := auth.CreateDefaultAccountWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
+	assert.Nil(t, err)
+	assert.NotNil(t, user)
+	assert.NotNil(t, session)
+
+	c.User = user
+	c.Session = session
+
+	return c
 }
 
-func Patch(path string, body any) (*httptest.ResponseRecorder, error) {
-	return request(http.MethodPatch, path, body)
+func (c *ClientState) Post(path string, body any) (*httptest.ResponseRecorder, error) {
+	return c.request(http.MethodPost, path, body)
 }
 
-func Delete(path string) (*httptest.ResponseRecorder, error) {
-	return request(http.MethodDelete, path, nil)
+func (c *ClientState) Get(path string) (*httptest.ResponseRecorder, error) {
+	return c.request(http.MethodGet, path, nil)
 }
 
-func request(method string, path string, body any) (*httptest.ResponseRecorder, error) {
+func (c *ClientState) Put(path string, body any) (*httptest.ResponseRecorder, error) {
+	return c.request(http.MethodPut, path, body)
+}
+
+func (c *ClientState) Delete(path string) (*httptest.ResponseRecorder, error) {
+	return c.request(http.MethodDelete, path, nil)
+}
+
+func (c *ClientState) Patch(path string, body any) (*httptest.ResponseRecorder, error) {
+	return c.request(http.MethodPatch, path, body)
+}
+
+func (c *ClientState) request(method string, path string, body any) (*httptest.ResponseRecorder, error) {
 	buf := bytes.NewBuffer([]byte{})
 	if body != nil {
 		b, err := json.Marshal(body)
@@ -117,6 +146,17 @@ func request(method string, path string, body any) (*httptest.ResponseRecorder, 
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	if c.Session != nil {
+		req.AddCookie(&http.Cookie{
+			Name:     "session_token",
+			Value:    c.Session.Token,
+			Path:     "/",
+			MaxAge:   int(c.Session.Age().Seconds()),
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		})
+	}
 
 	rr := httptest.NewRecorder()
 

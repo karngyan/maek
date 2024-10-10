@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -85,6 +86,9 @@ func FetchUserByEmail(ctx context.Context, email string) (*User, error) {
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 		err := ormer.QueryTable("user").Filter("email", email).One(&user)
 		if err != nil {
+			if errors.Is(err, orm.ErrNoRows) {
+				return ErrUserNotFound
+			}
 			return err
 		}
 

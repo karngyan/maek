@@ -1,26 +1,19 @@
 package auth_test
 
 import (
-	"context"
 	"testing"
 
 	approvals "github.com/customerio/go-approval-tests"
 
 	"github.com/karngyan/maek/zarf/tests"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/karngyan/maek/domains/auth"
 )
 
 func TestLogin(t *testing.T) {
 	defer tests.CleanDBRows()
 
-	user, session, err := auth.CreateDefaultAccountWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
-	assert.Nil(t, err)
-	assert.NotNil(t, user)
-	assert.NotNil(t, session)
-
-	rr, err := tests.Post("/v1/auth/login", map[string]any{
+	cs := tests.NewClientStateWithUser(t)
+	rr, err := cs.Post("/v1/auth/login", map[string]any{
 		"email":    "karn@maek.ai",
 		"password": "test-password",
 	})
@@ -33,11 +26,7 @@ func TestLogin(t *testing.T) {
 
 func TestLoginErrors(t *testing.T) {
 	defer tests.CleanDBRows()
-
-	user, session, err := auth.CreateDefaultAccountWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
-	assert.Nil(t, err)
-	assert.NotNil(t, user)
-	assert.NotNil(t, session)
+	cs := tests.NewClientState()
 
 	type testCase struct {
 		name         string
@@ -66,7 +55,7 @@ func TestLoginErrors(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			rr, err := tests.Post("/v1/auth/login", tc.body)
+			rr, err := cs.Post("/v1/auth/login", tc.body)
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedCode, rr.Code)
 			approvals.VerifyJSONBytes(t, rr.Body.Bytes())

@@ -48,7 +48,7 @@ func initCaches() error {
 	return nil
 }
 
-// InitTest initializes the test database
+// InitTest initializes the test database + caches
 func InitTest() error {
 	var err error
 
@@ -58,6 +58,10 @@ func InitTest() error {
 
 	// force cleans up the database
 	if err := orm.RunSyncdb("default", true, false); err != nil {
+		return err
+	}
+
+	if err = initCaches(); err != nil {
 		return err
 	}
 
