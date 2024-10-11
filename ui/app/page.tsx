@@ -63,7 +63,7 @@ function Glow() {
   return (
     <div className='absolute inset-0 -z-10 overflow-hidden bg-gray-950'>
       <svg
-        className='rotate-0 absolute bottom-auto -right-40 left-auto top-[-40%] h-[180%] w-[80rem]'
+        className='-rotate-90 absolute bottom-auto -right-40 left-auto top-[-40%] h-[180%] w-[80rem]'
         aria-hidden='true'
       >
         <defs>
