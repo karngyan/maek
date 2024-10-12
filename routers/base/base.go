@@ -64,7 +64,7 @@ func RespondCookie(c *WebContext, v any, status int, cookie *http.Cookie) {
 }
 
 func Unauth(c *WebContext) {
-	v := Response{Error: &ResponseError{
+	v := map[string]any{"error": &ResponseError{
 		Title:  "Logged out?",
 		Detail: "Please sign in to continue.",
 		Type:   ResponseErrorInfo,
@@ -74,22 +74,22 @@ func Unauth(c *WebContext) {
 }
 
 func UnauthWithError(c *WebContext, err error) {
-	v := Response{Error: &ResponseError{Title: "Logged out?", Detail: "Please sign in to continue."}}
+	v := map[string]any{"error": &ResponseError{Title: "Logged out?", Detail: "Please sign in to continue."}}
 	c.Output.SetStatus(http.StatusUnauthorized)
 	JSON(c, v, false, false)
 }
 
 func UnprocessableEntity(c *WebContext, err error) {
-	var resp = Response{
-		Error: &ResponseError{Title: "Unprocessable request", Detail: err.Error()},
+	var resp = map[string]any{
+		"error": &ResponseError{Title: "Unprocessable request", Detail: err.Error()},
 	}
 
 	Respond(c, resp, http.StatusUnprocessableEntity)
 }
 
 func BadRequest(c *WebContext, err *ResponseError) {
-	var resp = Response{
-		Error: err,
+	var resp = map[string]any{
+		"error": err,
 	}
 
 	Respond(c, resp, http.StatusBadRequest)
@@ -105,8 +105,8 @@ func InternalError(c *WebContext, err error) {
 		Title:  fmt.Sprintf("Internal error reference #%s", ref),
 		Detail: "Please try connecting again. If the issue keeps on happening, contact us.",
 	}
-	var resp = Response{
-		Error: e,
+	var resp = map[string]any{
+		"error": e,
 	}
 
 	c.Error("internal error ref: %s err: %+v", ref, errors.WithStack(err))

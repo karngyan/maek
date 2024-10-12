@@ -1,9 +1,7 @@
 {
-  "data": null,
   "error": {
     "detail": "mail: missing '@' or angle-addr",
     "title": "Invalid email",
     "type": "warning"
-  },
-  "meta": null
+  }
 }

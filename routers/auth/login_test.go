@@ -26,7 +26,7 @@ func TestLogin(t *testing.T) {
 
 func TestLoginErrors(t *testing.T) {
 	defer tests.CleanDBRows()
-	cs := tests.NewClientState()
+	cs := tests.NewClientStateWithUser(t)
 
 	type testCase struct {
 		name         string

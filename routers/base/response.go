@@ -1,11 +1,5 @@
 package base
 
-type Response struct {
-	Data  any            `json:"data"`
-	Error *ResponseError `json:"error"`
-	Meta  *ResponseMeta  `json:"meta"`
-}
-
 type ErrorType string
 
 const (
