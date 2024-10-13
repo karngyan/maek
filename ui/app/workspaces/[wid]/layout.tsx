@@ -43,6 +43,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { workspaceAvatarValue } from '@/libs/utils/auth'
 import { Workspace } from '@/queries/services/auth-service'
+import { Link } from '@/components/ui/link'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -61,7 +62,11 @@ function WorkspaceDropdownMenu({
       {workspaces.map((workspace) => {
         return (
           <DropdownItem key={workspace.id} href={`/workspaces/${workspace.id}`}>
-            <Avvvatars value={workspaceAvatarValue(workspace)} />
+            <Avvvatars
+              style='shape'
+              size={20}
+              value={workspaceAvatarValue(workspace)}
+            />
             <DropdownLabel>{workspace.name}</DropdownLabel>
           </DropdownItem>
         )
@@ -69,7 +74,7 @@ function WorkspaceDropdownMenu({
       <DropdownDivider />
       <DropdownItem href='/workspaces/create'>
         <PlusIcon />
-        <DropdownLabel>New workspace&hellip;</DropdownLabel>
+        <DropdownLabel>new workspace&hellip;</DropdownLabel>
       </DropdownItem>
     </DropdownMenu>
   )
@@ -92,7 +97,7 @@ export default function WorkspacesHomeLayout({
     ],
     [workspaceId]
   )
-  const { isPending, data, isError } = useAuthInfo()
+  const { isPending, data, isError, error } = useAuthInfo()
 
   if (isPending) {
     return (
@@ -105,7 +110,16 @@ export default function WorkspacesHomeLayout({
   if (isError) {
     return (
       <div className='h-screen flex items-center justify-center'>
-        <Text>Something went wrong, please reload the page.</Text>
+        <Text>
+          You&#39;ve been logged out. Please{' '}
+          <Link
+            href='/login'
+            className='dark:text-cyan-600 dark:hover:text-cyan-500'
+          >
+            login
+          </Link>{' '}
+          again.
+        </Text>
       </div>
     )
   }

@@ -25,7 +25,7 @@ export interface AuthInfoResponse {
 }
 
 export const fetchAuthInfo = async (): Promise<AuthInfoResponse> => {
-  const response = await authApiClient.get<AuthInfoResponse>('/v1/auth/me')
+  const response = await authApiClient.get<AuthInfoResponse>('/v1/auth/info')
   return response.data
 }
 
