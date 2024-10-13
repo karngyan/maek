@@ -4,7 +4,7 @@ import clsx from 'clsx'
 export function Spinner({ className }: { className?: string }) {
   return (
     <svg
-      className={clsx(className, 'dark:text-zinc-950 text-zinc-500')}
+      className={clsx('dark:text-zinc-950 text-zinc-500', className)}
       viewBox='0 0 24 24'
       xmlns='http://www.w3.org/2000/svg'
       fill='currentColor'

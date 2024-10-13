@@ -49,6 +49,11 @@ func InitCache() error {
 				return err
 			}
 
+			_, err = ormer.LoadRelatedWithCtx(ctx, &user, "accounts")
+			if err != nil {
+				return err
+			}
+
 			return nil
 		}); err != nil {
 			return nil, err

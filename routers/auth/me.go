@@ -8,6 +8,7 @@ import (
 
 func Me(ctx *base.WebContext) {
 	base.Respond(ctx, map[string]any{
-		"user": ctx.User,
+		"user":     ctx.User,
+		"accounts": ctx.User.Accounts,
 	}, http.StatusOK)
 }

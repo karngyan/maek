@@ -2,9 +2,9 @@
   "accounts": [
     {
       "created": 1234567890,
-      "description": "Default account",
+      "description": "default account",
       "id": 1,
-      "name": "Default",
+      "name": "default",
       "updated": 1234567890
     }
   ],

@@ -68,3 +68,7 @@ export const login = async ({
   )
   return response.data
 }
+
+export const logout = async () => {
+  await authApiClient.get('/v1/auth/logout')
+}

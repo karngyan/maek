@@ -28,6 +28,7 @@ CGO_ENABLED = '0'
 go = '1.23.1'
 skeema = '1.12.0'
 node = '20.17.0'
+'npm:pnpm' = '9.12.1'
 
 'go:github.com/beego/bee/v2' = 'v2.1.0'
 
