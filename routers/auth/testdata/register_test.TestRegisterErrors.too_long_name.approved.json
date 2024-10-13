@@ -1,7 +1,7 @@
 {
   "error": {
-    "detail": "Name must be at most 200 characters long",
+    "detail": "It must be at most 200 characters long",
     "title": "Invalid name",
-    "type": "warning"
+    "type": "error"
   }
 }

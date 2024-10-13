@@ -2,6 +2,6 @@
   "error": {
     "detail": "mail: missing '@' or angle-addr",
     "title": "Invalid email",
-    "type": "warning"
+    "type": "error"
   }
 }
