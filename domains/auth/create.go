@@ -15,12 +15,12 @@ import (
 
 var ErrUserAlreadyExists = errors.New("user already exists")
 
-func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, ua string) (*User, *Session, error) {
+func CreateDefaultWorkspaceWithUser(ctx context.Context, name, email, passwd, ip, ua string) (*User, *Session, error) {
 	now := timecop.Now().Unix()
 
-	acc := &Account{
-		Name:        "Default",
-		Description: "Default account",
+	workspace := &Workspace{
+		Name:        "default",
+		Description: "default workspace",
 		Created:     now,
 		Updated:     now,
 	}
@@ -55,22 +55,22 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 			return ErrUserAlreadyExists
 		}
 
-		if _, err = txOrmer.Insert(acc); err != nil {
+		if _, err = txOrmer.Insert(workspace); err != nil {
 			return err
 		}
 
-		user.DefaultAccountId = acc.Id
+		user.DefaultWorkspaceId = workspace.Id
 		if _, err = txOrmer.Insert(user); err != nil {
 			return err
 		}
 
-		// Add the account to the user
-		m2m := txOrmer.QueryM2M(user, "accounts")
-		if _, err := m2m.AddWithCtx(ctx, acc); err != nil {
+		// Add the workspace to the user
+		m2m := txOrmer.QueryM2M(user, "workspaces")
+		if _, err := m2m.AddWithCtx(ctx, workspace); err != nil {
 			return err
 		}
 
-		user.Accounts = []*Account{acc}
+		user.Workspaces = []*Workspace{workspace}
 
 		session.User = user
 		session.Token = GenerateToken(user)
@@ -89,5 +89,5 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 }
 
 func GenerateToken(user *User) string {
-	return fmt.Sprintf("%d:%d:%d:%s", user.DefaultAccountId, user.Id, timecop.Now().Unix(), randstr.Base62(16))
+	return fmt.Sprintf("%d:%d:%d:%s", user.DefaultWorkspaceId, user.Id, timecop.Now().Unix(), randstr.Base62(16))
 }

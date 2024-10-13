@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `user` (
     `id`                    bigint unsigned AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    `default_account_id`    bigint unsigned NOT NULL DEFAULT 0,
+    `default_workspace_id`    bigint unsigned NOT NULL DEFAULT 0,
     `name`                  varchar(255) NOT NULL DEFAULT '' ,
     `email`                 varchar(255) NOT NULL DEFAULT ''  UNIQUE,
     `role`                  varchar(255) NOT NULL DEFAULT 'user',

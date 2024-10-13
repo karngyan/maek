@@ -63,7 +63,7 @@ func Register(ctx *base.WebContext) {
 
 	rctx := ctx.Request.Context()
 
-	user, session, err := auth.CreateDefaultAccountWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
+	user, session, err := auth.CreateDefaultWorkspaceWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
 
 	if err != nil {
 		if errors.Is(err, auth.ErrUserAlreadyExists) {
@@ -78,8 +78,8 @@ func Register(ctx *base.WebContext) {
 	}
 
 	base.RespondCookie(ctx, map[string]any{
-		"user":     user,
-		"accounts": user.Accounts,
+		"user":       user,
+		"workspaces": user.Workspaces,
 	}, http.StatusCreated, &http.Cookie{
 		Name:     "session_token",
 		Value:    session.Token,

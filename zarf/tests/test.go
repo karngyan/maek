@@ -99,7 +99,7 @@ func NewClientState() *ClientState {
 func NewClientStateWithUser(t *testing.T) *ClientState {
 	c := NewClientState()
 
-	user, session, err := auth.CreateDefaultAccountWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
+	user, session, err := auth.CreateDefaultWorkspaceWithUser(context.Background(), "Karn", "karn@maek.ai", "test-password", "1.2.3.4", "Mozilla/5.0")
 	assert.Nil(t, err)
 	assert.NotNil(t, user)
 	assert.NotNil(t, session)

@@ -49,7 +49,7 @@ func InitCache() error {
 				return err
 			}
 
-			_, err = ormer.LoadRelatedWithCtx(ctx, &user, "accounts")
+			_, err = ormer.LoadRelatedWithCtx(ctx, &user, "workspaces")
 			if err != nil {
 				return err
 			}
@@ -97,7 +97,7 @@ func FetchUserByEmail(ctx context.Context, email string) (*User, error) {
 			return err
 		}
 
-		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "accounts")
+		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "workspaces")
 		if err != nil {
 			return err
 		}

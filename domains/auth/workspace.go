@@ -1,6 +1,6 @@
 package auth
 
-type Account struct {
+type Workspace struct {
 	Id          uint64  `json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description" orm:"type(text)"`
@@ -9,6 +9,6 @@ type Account struct {
 	Updated     int64   `json:"updated"`
 }
 
-func (u *Account) TableEngine() string {
+func (w *Workspace) TableEngine() string {
 	return "InnoDB"
 }

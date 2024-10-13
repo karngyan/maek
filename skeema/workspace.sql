@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `account` (
+CREATE TABLE IF NOT EXISTS `workspace` (
     `id`            bigint unsigned AUTO_INCREMENT NOT NULL PRIMARY KEY,
     `name`          varchar(255) NOT NULL DEFAULT '',
     `description`   text NOT NULL,

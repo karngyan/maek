@@ -56,8 +56,8 @@ func Login(ctx *base.WebContext) {
 	}
 
 	base.RespondCookie(ctx, map[string]interface{}{
-		"user":     user,
-		"accounts": user.Accounts,
+		"user":       user,
+		"workspaces": user.Workspaces,
 	}, http.StatusOK, &http.Cookie{
 		Name:     "session_token",
 		Value:    session.Token,
