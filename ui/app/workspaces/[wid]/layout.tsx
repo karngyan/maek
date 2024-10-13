@@ -1,6 +1,5 @@
 'use client'
 
-import { Avatar } from '@/components/ui/avatar'
 import {
   Dropdown,
   DropdownButton,
@@ -44,6 +43,8 @@ import { Text } from '@/components/ui/text'
 import { workspaceAvatarValue } from '@/libs/utils/auth'
 import { Workspace } from '@/queries/services/auth-service'
 import { Link } from '@/components/ui/link'
+import { useLogout } from '@/queries/hooks/use-logout'
+import { usePathname, useRouter } from 'next/navigation'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -64,7 +65,7 @@ function WorkspaceDropdownMenu({
           <DropdownItem key={workspace.id} href={`/workspaces/${workspace.id}`}>
             <Avvvatars
               style='shape'
-              size={20}
+              size={16}
               value={workspaceAvatarValue(workspace)}
             />
             <DropdownLabel>{workspace.name}</DropdownLabel>
@@ -72,7 +73,7 @@ function WorkspaceDropdownMenu({
         )
       })}
       <DropdownDivider />
-      <DropdownItem href='/workspaces/create'>
+      <DropdownItem href='/create-workspace'>
         <PlusIcon />
         <DropdownLabel>new workspace&hellip;</DropdownLabel>
       </DropdownItem>
@@ -87,6 +88,8 @@ export default function WorkspacesHomeLayout({
   params: { wid: string }
   children: React.ReactNode
 }) {
+  const router = useRouter()
+  const pathname = usePathname()
   const workspaceId = +params.wid
   const navItems = useMemo(
     () => [
@@ -98,6 +101,7 @@ export default function WorkspacesHomeLayout({
     [workspaceId]
   )
   const { isPending, data, isError, error } = useAuthInfo()
+  const { mutate: logout } = useLogout()
 
   if (isPending) {
     return (
@@ -124,6 +128,10 @@ export default function WorkspacesHomeLayout({
     )
   }
 
+  if (data == null) {
+    return
+  }
+
   const { workspaces, user } = data
   const workspace = workspaces.find((workspace) => workspace.id === workspaceId)
 
@@ -133,6 +141,18 @@ export default function WorkspacesHomeLayout({
         <Text>Workspace not found.</Text>
       </div>
     )
+  }
+
+  const openFeedbackModal = () => {
+    // TODO: Implement a feedback modal
+  }
+
+  const logoutUser = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        router.replace('/')
+      },
+    })
   }
 
   return (
@@ -157,7 +177,7 @@ export default function WorkspacesHomeLayout({
           <NavbarDivider className='max-lg:hidden' />
           <NavbarSection className='max-lg:hidden'>
             {navItems.map(({ label, href }) => (
-              <NavbarItem key={label} href={href}>
+              <NavbarItem current={pathname === href} key={label} href={href}>
                 {label}
               </NavbarItem>
             ))}
@@ -172,30 +192,34 @@ export default function WorkspacesHomeLayout({
             </NavbarItem>
             <Dropdown>
               <DropdownButton as={NavbarItem}>
-                <Avatar src='/profile-photo.jpg' square />
+                <Avvvatars
+                  style='character'
+                  size={20}
+                  value={user.name.length > 0 ? user.name : user.email}
+                />
               </DropdownButton>
               <DropdownMenu className='min-w-64' anchor='bottom end'>
-                <DropdownItem href='/my-profile'>
+                <DropdownItem href='/profile'>
                   <UserIcon />
-                  <DropdownLabel>My profile</DropdownLabel>
+                  <DropdownLabel>my profile</DropdownLabel>
                 </DropdownItem>
                 <DropdownItem href='/settings'>
                   <Cog8ToothIcon />
-                  <DropdownLabel>Settings</DropdownLabel>
+                  <DropdownLabel>settings</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href='/privacy-policy'>
+                <DropdownItem href='/privacy'>
                   <ShieldCheckIcon />
-                  <DropdownLabel>Privacy policy</DropdownLabel>
+                  <DropdownLabel>privacy policy</DropdownLabel>
                 </DropdownItem>
-                <DropdownItem href='/share-feedback'>
+                <DropdownItem onClick={openFeedbackModal}>
                   <LightBulbIcon />
-                  <DropdownLabel>Share feedback</DropdownLabel>
+                  <DropdownLabel>share feedback</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href='/logout'>
+                <DropdownItem onClick={logoutUser}>
                   <ArrowRightStartOnRectangleIcon />
-                  <DropdownLabel>Sign out</DropdownLabel>
+                  <DropdownLabel>sign out</DropdownLabel>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -207,8 +231,12 @@ export default function WorkspacesHomeLayout({
           <SidebarHeader>
             <Dropdown>
               <DropdownButton as={SidebarItem} className='lg:mb-2.5'>
-                <Avatar src='/tailwind-logo.svg' />
-                <SidebarLabel>Tailwind Labs</SidebarLabel>
+                <Avvvatars
+                  size={20}
+                  value={workspaceAvatarValue(workspace)}
+                  style='shape'
+                />
+                <SidebarLabel>{workspace.name}</SidebarLabel>
                 <ChevronDownIcon />
               </DropdownButton>
               <WorkspaceDropdownMenu
@@ -220,7 +248,11 @@ export default function WorkspacesHomeLayout({
           <SidebarBody>
             <SidebarSection>
               {navItems.map(({ label, href }) => (
-                <SidebarItem key={label} href={href}>
+                <SidebarItem
+                  current={pathname === href}
+                  key={label}
+                  href={href}
+                >
                   {label}
                 </SidebarItem>
               ))}

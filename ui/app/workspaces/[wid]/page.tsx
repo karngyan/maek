@@ -1,13 +1,3 @@
-'use client'
-
-import { Button } from '@/components/ui/button'
-import { useLogout } from '@/queries/hooks/use-logout'
-
 export default function WorkspaceHomePage() {
-  const { mutate: logout } = useLogout()
-
-  const handleLogout = () => {
-    logout()
-  }
-  return <Button onClick={handleLogout}>Logout</Button>
+  return <div className='text-zinc-50'>home</div>
 }
