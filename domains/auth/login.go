@@ -9,7 +9,6 @@ import (
 	"github.com/karngyan/maek/db"
 
 	"github.com/bluele/go-timecop"
-	"github.com/karngyan/maek/libs/randstr"
 )
 
 var ErrInvalidPassword = errors.New("invalid password")
@@ -30,7 +29,7 @@ func Login(ctx context.Context, email, password, ip, ua string) (*User, *Session
 		Ua:      ua,
 		Ip:      ip,
 		User:    user,
-		Token:   randstr.Base62(32),
+		Token:   GenerateToken(user),
 		Expires: now.Add(30 * 24 * time.Hour).Unix(),
 		Created: now.Unix(),
 		Updated: now.Unix(),

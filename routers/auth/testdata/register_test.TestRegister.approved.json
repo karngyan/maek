@@ -10,6 +10,7 @@
   ],
   "user": {
     "created": 1234567890,
+    "defaultAccountId": 1,
     "email": "karn@maek.ai",
     "id": 1,
     "name": "Karn",

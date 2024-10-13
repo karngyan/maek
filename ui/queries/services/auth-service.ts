@@ -8,6 +8,7 @@ interface User {
   role: string
   created: number
   updated: number
+  defaultAccountId: number
 }
 
 interface Account {

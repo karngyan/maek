@@ -3,12 +3,14 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
+
+	"github.com/karngyan/maek/libs/randstr"
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/db"
-	"github.com/karngyan/maek/libs/randstr"
 )
 
 var ErrUserAlreadyExists = errors.New("user already exists")
@@ -41,7 +43,6 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 	session := &Session{
 		Ua:      ua,
 		Ip:      ip,
-		Token:   randstr.Base62(32),
 		Expires: timecop.Now().Add(30 * 24 * time.Hour).Unix(),
 		Created: now,
 		Updated: now,
@@ -54,11 +55,12 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 			return ErrUserAlreadyExists
 		}
 
-		if _, err = txOrmer.Insert(user); err != nil {
+		if _, err = txOrmer.Insert(acc); err != nil {
 			return err
 		}
 
-		if _, err = txOrmer.Insert(acc); err != nil {
+		user.DefaultAccountId = acc.Id
+		if _, err = txOrmer.Insert(user); err != nil {
 			return err
 		}
 
@@ -71,6 +73,7 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 		user.Accounts = []*Account{acc}
 
 		session.User = user
+		session.Token = GenerateToken(user)
 		if _, err := txOrmer.Insert(session); err != nil {
 			return err
 		}
@@ -83,4 +86,8 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 	}
 
 	return user, session, nil
+}
+
+func GenerateToken(user *User) string {
+	return fmt.Sprintf("%d:%d:%d:%s", user.DefaultAccountId, user.Id, timecop.Now().Unix(), randstr.Base62(16))
 }
