@@ -6,7 +6,7 @@ import (
 	"github.com/karngyan/maek/routers/base"
 )
 
-func Me(ctx *base.WebContext) {
+func Info(ctx *base.WebContext) {
 	base.Respond(ctx, map[string]any{
 		"user":       ctx.User,
 		"workspaces": ctx.User.Workspaces,
