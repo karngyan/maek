@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import type React from 'react'
+import Providers from '@/libs/providers'
 
 const monaSansGithub = localFont({
   src: '../fonts/Mona-Sans.woff2', // variable font
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

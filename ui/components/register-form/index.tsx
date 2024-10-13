@@ -1,7 +1,13 @@
 'use client'
 
 import LogoMaek from '@/components/logo/maek'
-import { Field, FieldGroup, Fieldset, Label } from '@/components/ui/fieldset'
+import {
+  ErrorMessage,
+  Field,
+  FieldGroup,
+  Fieldset,
+  Label,
+} from '@/components/ui/fieldset'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -9,9 +15,17 @@ import * as Headless from '@headlessui/react'
 import { FormEvent, useMemo, useState } from 'react'
 import { Link } from '@/components/ui/link'
 import { useRegister } from '@/queries/hooks/use-register'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
+
+type ApiError = {
+  email?: string
+  password?: string
+}
 
 export default function RegisterForm() {
-  const { mutate: register, isPending, isSuccess, isError } = useRegister()
+  const router = useRouter()
+  const { mutate: register, isPending, error } = useRegister()
   const [{ name, email, password, accept }, setFormData] = useState({
     name: '',
     email: '',
@@ -21,19 +35,39 @@ export default function RegisterForm() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    register({ name, email, password })
+    register(
+      { name, email, password },
+      {
+        onSuccess: (data) => {
+          router.replace(`/accounts/${data.accounts[0].id}`)
+        },
+      }
+    )
   }
 
   const disabled = useMemo(() => {
     return (
-      !name ||
       !email ||
       !password ||
       password.length < 6 ||
       password.length > 64 ||
-      !accept
+      !accept ||
+      isPending
     )
-  }, [name, email, password, accept])
+  }, [email, password, accept, isPending])
+
+  const errors = useMemo(() => {
+    if (!axios.isAxiosError(error)) {
+      return
+    }
+
+    if (!error.response) {
+      return
+    }
+
+    const apiError: ApiError = error.response?.data
+    return apiError
+  }, [error])
 
   return (
     <>
@@ -57,6 +91,7 @@ export default function RegisterForm() {
                     required={false}
                     autoComplete='name'
                     value={name}
+                    maxLength={200}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
@@ -73,6 +108,7 @@ export default function RegisterForm() {
                     required={true}
                     autoComplete='email'
                     value={email}
+                    invalid={errors?.email != null}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
@@ -80,6 +116,11 @@ export default function RegisterForm() {
                       }))
                     }
                   />
+                  <ErrorMessage
+                    className={`transition-all duration-300 ease-in-out transform ${errors?.email ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'}`}
+                  >
+                    {errors?.email}
+                  </ErrorMessage>
                 </Field>
                 <Field>
                   <Label>passwd</Label>
@@ -87,7 +128,10 @@ export default function RegisterForm() {
                     name='password'
                     type='password'
                     required={true}
+                    maxLength={64}
                     autoComplete='current-password'
+                    placeholder={'6-64 characters of whatever you want'}
+                    invalid={errors?.password != null}
                     value={password}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -96,6 +140,11 @@ export default function RegisterForm() {
                       }))
                     }
                   />
+                  <ErrorMessage
+                    className={`transition-all duration-300 ease-in-out transform ${errors?.password ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'}`}
+                  >
+                    {errors?.password}
+                  </ErrorMessage>
                 </Field>
               </FieldGroup>
             </Fieldset>
@@ -116,7 +165,7 @@ export default function RegisterForm() {
             </Headless.Field>
 
             <Button
-              loading={true}
+              loading={isPending}
               disabled={disabled}
               className='w-full'
               type='submit'
@@ -125,7 +174,7 @@ export default function RegisterForm() {
             </Button>
           </form>
 
-          <p className='mt-10 text-center text-sm text-zinc-400'>
+          <p className='mt-6 text-center text-sm text-zinc-400'>
             already have an account?{' '}
             <Link
               href='/login'

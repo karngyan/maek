@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
@@ -9,6 +10,8 @@ import (
 	"github.com/karngyan/maek/db"
 	"github.com/karngyan/maek/libs/randstr"
 )
+
+var ErrUserAlreadyExists = errors.New("user already exists")
 
 func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, ua string) (*User, *Session, error) {
 	now := timecop.Now().Unix()
@@ -45,11 +48,17 @@ func CreateDefaultAccountWithUser(ctx context.Context, name, email, passwd, ip, 
 	}
 
 	err = db.WithTxOrmerCtx(ctx, func(ctx context.Context, txOrmer orm.TxOrmer) error {
-		if _, err := txOrmer.Insert(user); err != nil {
+		var u User
+		err := txOrmer.QueryTable("user").Filter("email", email).One(&u, "id")
+		if err == nil {
+			return ErrUserAlreadyExists
+		}
+
+		if _, err = txOrmer.Insert(user); err != nil {
 			return err
 		}
 
-		if _, err := txOrmer.Insert(acc); err != nil {
+		if _, err = txOrmer.Insert(acc); err != nil {
 			return err
 		}
 

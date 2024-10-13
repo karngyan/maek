@@ -21,7 +21,7 @@ func InitCache() error {
 	var err error
 
 	// read through cache for session
-	if sessionCache, err = cache.NewReadThroughCache(sessionCache, 5*time.Minute, func(ctx context.Context, token string) (any, error) {
+	if sessionCache, err = cache.NewReadThroughCache(sessionCache, 10*time.Minute, func(ctx context.Context, token string) (any, error) {
 		var session Session
 		if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 			now := timecop.Now().Unix()
@@ -41,7 +41,7 @@ func InitCache() error {
 	}
 
 	// read through cache for user
-	if userCache, err = cache.NewReadThroughCache(userCache, 5*time.Minute, func(ctx context.Context, id string) (any, error) {
+	if userCache, err = cache.NewReadThroughCache(userCache, 10*time.Minute, func(ctx context.Context, id string) (any, error) {
 		var user User
 		if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 			err := ormer.QueryTable("user").Filter("id", id).One(&user)

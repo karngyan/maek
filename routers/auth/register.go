@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -33,22 +34,30 @@ func Register(ctx *base.WebContext) {
 
 	_, err := mail.ParseAddress(req.Email)
 	if err != nil {
-		base.BadRequestStr(ctx, "Invalid email", err.Error())
+		base.BadRequest(ctx, mpa{
+			"email": "Invalid email address",
+		})
 		return
 	}
 
 	if len(req.Password) < minPasswordLength {
-		base.BadRequestStr(ctx, "Invalid password", "Password must be at least 6 characters long")
+		base.BadRequest(ctx, mpa{
+			"password": "Must be at least 6 characters long",
+		})
 		return
 	}
 
 	if len(req.Password) > maxPasswordLength {
-		base.BadRequestStr(ctx, "Invalid password", "Password must be at most 64 characters long")
+		base.BadRequest(ctx, mpa{
+			"password": "Must be at most 64 characters long",
+		})
 		return
 	}
 
 	if len(req.Name) > maxNameLength {
-		base.BadRequestStr(ctx, "Invalid name", "Name must be at most 200 characters long")
+		base.BadRequest(ctx, mpa{
+			"name": "Must be at most 200 characters long",
+		})
 		return
 	}
 
@@ -57,6 +66,13 @@ func Register(ctx *base.WebContext) {
 	user, session, err := auth.CreateDefaultAccountWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
 
 	if err != nil {
+		if errors.Is(err, auth.ErrUserAlreadyExists) {
+			base.BadRequest(ctx, mpa{
+				"email": "User already exists with this email",
+			})
+			return
+		}
+
 		base.InternalError(ctx, err)
 		return
 	}

@@ -11,6 +11,8 @@ import (
 	"github.com/karngyan/maek/routers/base"
 )
 
+type mpa map[string]any
+
 func Login(ctx *base.WebContext) {
 	var req struct {
 		Email    string `json:"email"`
@@ -26,7 +28,9 @@ func Login(ctx *base.WebContext) {
 
 	_, err := mail.ParseAddress(req.Email)
 	if err != nil {
-		base.BadRequestStr(ctx, "Invalid email", err.Error())
+		base.BadRequest(ctx, mpa{
+			"email": "Invalid email address",
+		})
 		return
 	}
 
@@ -34,12 +38,16 @@ func Login(ctx *base.WebContext) {
 
 	if err != nil {
 		if errors.Is(err, auth.ErrUserNotFound) {
-			base.BadRequestStr(ctx, "User not found", "Please check your email and try again.")
+			base.BadRequest(ctx, mpa{
+				"email": "User not found with this email",
+			})
 			return
 		}
 
 		if errors.Is(err, auth.ErrInvalidPassword) {
-			base.BadRequestStr(ctx, "Invalid password", "Please check your password and try again.")
+			base.BadRequest(ctx, mpa{
+				"password": "Password is incorrect",
+			})
 			return
 		}
 

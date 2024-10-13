@@ -24,9 +24,6 @@ CORS_ALLOWED_ORIGINS = 'http://localhost:3000'
 # CGO_ENABLED is set to 0 to disable cgo
 CGO_ENABLED = '0'
 
-# ui vars
-PORT = '3000'
-
 [tools]
 go = '1.23.1'
 skeema = '1.12.0'

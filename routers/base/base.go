@@ -64,49 +64,28 @@ func RespondCookie(c *WebContext, v any, status int, cookie *http.Cookie) {
 }
 
 func Unauth(c *WebContext) {
-	v := map[string]any{"error": &ResponseError{
-		Title:  "Logged out?",
-		Detail: "Please sign in to continue.",
-		Type:   ResponseErrorInfo,
-	}}
 	c.Output.SetStatus(http.StatusUnauthorized)
-	JSON(c, v, false, false)
-}
-
-func UnauthWithError(c *WebContext, err error) {
-	v := map[string]any{"error": &ResponseError{Title: "Logged out?", Detail: "Please sign in to continue."}}
-	c.Output.SetStatus(http.StatusUnauthorized)
-	JSON(c, v, false, false)
+	JSON(c, nil, false, false)
 }
 
 func UnprocessableEntity(c *WebContext, err error) {
 	var resp = map[string]any{
-		"error": &ResponseError{Title: "Unprocessable request", Detail: err.Error()},
+		"error": err.Error(),
 	}
 
 	Respond(c, resp, http.StatusUnprocessableEntity)
 }
 
-func BadRequest(c *WebContext, err *ResponseError) {
-	var resp = map[string]any{
-		"error": err,
-	}
-
-	Respond(c, resp, http.StatusBadRequest)
-}
-
-func BadRequestStr(c *WebContext, title, detail string) {
-	BadRequest(c, &ResponseError{Title: title, Detail: detail, Type: ResponseErrorWarning})
+func BadRequest(c *WebContext, v any) {
+	Respond(c, v, http.StatusBadRequest)
 }
 
 func InternalError(c *WebContext, err error) {
 	ref := randstr.Hex(16)
-	e := &ResponseError{
-		Title:  fmt.Sprintf("Internal error reference #%s", ref),
-		Detail: "Please try connecting again. If the issue keeps on happening, contact us.",
-	}
-	var resp = map[string]any{
-		"error": e,
+	resp := map[string]any{
+		"title":  fmt.Sprintf("Internal error reference #%s", ref),
+		"detail": "Please try connecting again. If the issue keeps on happening, contact us.",
+		"type":   "alert",
 	}
 
 	c.Error("internal error ref: %s err: %+v", ref, errors.WithStack(err))
@@ -166,7 +145,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFun
 		if withUser {
 			user, err := auth.FetchUserById(rctx, session.User.Id)
 			if err != nil {
-				UnauthWithError(c, err)
+				Unauth(c)
 				return
 			}
 

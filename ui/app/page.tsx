@@ -7,7 +7,7 @@ import { IconLink } from '@/components/icon-link'
 import React, { useId } from 'react'
 import { StarField } from '@/components/star-field'
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className='h-screen flex flex-col justify-between'>
       <Glow />
@@ -61,7 +61,7 @@ function Glow() {
   const id = useId()
 
   return (
-    <div className='absolute inset-0 -z-10 overflow-hidden bg-gray-950'>
+    <div className='absolute inset-0 -z-10 overflow-hidden bg-zinc-950'>
       <svg
         className='-rotate-90 absolute bottom-auto -right-40 left-auto top-[-40%] h-[180%] w-[80rem]'
         aria-hidden='true'
@@ -103,7 +103,7 @@ function XIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 function FooterKarn() {
   return (
-    <p className='flex items-baseline gap-x-2 text-[0.8125rem]/6 text-gray-500'>
+    <p className='flex items-baseline gap-x-2 text-[0.8125rem]/6 text-zinc-500'>
       <span className='hidden md:block'>Brought to you by </span>
       <IconLink
         target='_blank'
@@ -120,7 +120,7 @@ function FooterKarn() {
 
 function FooterGithub() {
   return (
-    <p className='flex items-baseline gap-x-2 text-[0.8125rem]/6 text-gray-500'>
+    <p className='flex items-baseline gap-x-2 text-[0.8125rem]/6 text-zinc-500'>
       <IconLink
         target='_blank'
         rel='noopener noreferrer'
