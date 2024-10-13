@@ -38,7 +38,7 @@ export default function LoginForm() {
       { email, password, rememberMe },
       {
         onSuccess: (data) => {
-          router.replace(`/accounts/${data.accounts[0].id}`)
+          router.replace(`/workspaces/${data.user.defaultWorkspaceId}`)
         },
       }
     )

@@ -41,53 +41,56 @@ import Avvvatars from 'avvvatars-react'
 import { useAuthInfo } from '@/queries/hooks/use-auth-info'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
+import { workspaceAvatarValue } from '@/libs/utils/auth'
+import { Workspace } from '@/queries/services/auth-service'
 
-function TeamDropdownMenu() {
+function WorkspaceDropdownMenu({
+  workspaces,
+  currentWorkspaceId,
+}: {
+  workspaces: Workspace[]
+  currentWorkspaceId: number
+}) {
   return (
     <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
-      <DropdownItem href='/teams/1/settings'>
+      <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings`}>
         <Cog8ToothIcon />
-        <DropdownLabel>Settings</DropdownLabel>
+        <DropdownLabel>settings</DropdownLabel>
       </DropdownItem>
       <DropdownDivider />
-      <DropdownItem href='/teams/1'>
-        <Avatar slot='icon' src='/tailwind-logo.svg' />
-        <DropdownLabel>Tailwind Labs</DropdownLabel>
-      </DropdownItem>
-      <DropdownItem href='/teams/2'>
-        <Avatar
-          slot='icon'
-          initials='WC'
-          className='bg-purple-500 text-white'
-        />
-        <DropdownLabel>Workcation</DropdownLabel>
-      </DropdownItem>
+      {workspaces.map((workspace) => {
+        return (
+          <DropdownItem key={workspace.id} href={`/workspaces/${workspace.id}`}>
+            <Avvvatars value={workspaceAvatarValue(workspace)} />
+            <DropdownLabel>{workspace.name}</DropdownLabel>
+          </DropdownItem>
+        )
+      })}
       <DropdownDivider />
-      <DropdownItem href='/teams/create'>
+      <DropdownItem href='/workspaces/create'>
         <PlusIcon />
-        <DropdownLabel>New team&hellip;</DropdownLabel>
+        <DropdownLabel>New workspace&hellip;</DropdownLabel>
       </DropdownItem>
     </DropdownMenu>
   )
 }
 
-export default function AccountsHomeLayout({
+export default function WorkspacesHomeLayout({
   params,
   children,
 }: {
-  params: { accountId: string }
+  params: { wid: string }
   children: React.ReactNode
 }) {
-  let { accountId } = params
-  accountId = number(accountId)
+  const workspaceId = +params.wid
   const navItems = useMemo(
     () => [
-      { label: 'home', href: `/accounts/${accountId}` },
-      { label: 'collections', href: `/accounts/${accountId}/collections` },
-      { label: 'favorites', href: `/accounts/${accountId}/favorites` },
-      { label: 'chat', href: `/accounts/${accountId}/chat` },
+      { label: 'home', href: `/workspaces/${workspaceId}` },
+      { label: 'collections', href: `/workspaces/${workspaceId}/collections` },
+      { label: 'favorites', href: `/workspaces/${workspaceId}/favorites` },
+      { label: 'chat', href: `/workspaces/${workspaceId}/chat` },
     ],
-    [accountId]
+    [workspaceId]
   )
   const { isPending, data, isError } = useAuthInfo()
 
@@ -107,13 +110,13 @@ export default function AccountsHomeLayout({
     )
   }
 
-  const { accounts, user } = data
-  const account = accounts.find((account) => account.id === accountId)
+  const { workspaces, user } = data
+  const workspace = workspaces.find((workspace) => workspace.id === workspaceId)
 
-  if (account == null) {
+  if (workspace == null) {
     return (
       <div className='h-screen flex items-center justify-center'>
-        <Text>Account not found.</Text>
+        <Text>Workspace not found.</Text>
       </div>
     )
   }
@@ -125,13 +128,17 @@ export default function AccountsHomeLayout({
           <Dropdown>
             <DropdownButton as={NavbarItem} className='max-lg:hidden'>
               <Avvvatars
-                value={`${account.id}:${account.name}`}
+                size={20}
+                value={workspaceAvatarValue(workspace)}
                 style='shape'
               />
-              <NavbarLabel>Tailwind Labs</NavbarLabel>
+              <NavbarLabel>{workspace.name}</NavbarLabel>
               <ChevronDownIcon />
             </DropdownButton>
-            <TeamDropdownMenu />
+            <WorkspaceDropdownMenu
+              workspaces={workspaces}
+              currentWorkspaceId={workspaceId}
+            />
           </Dropdown>
           <NavbarDivider className='max-lg:hidden' />
           <NavbarSection className='max-lg:hidden'>
@@ -190,7 +197,10 @@ export default function AccountsHomeLayout({
                 <SidebarLabel>Tailwind Labs</SidebarLabel>
                 <ChevronDownIcon />
               </DropdownButton>
-              <TeamDropdownMenu />
+              <WorkspaceDropdownMenu
+                workspaces={workspaces}
+                currentWorkspaceId={workspaceId}
+              />
             </Dropdown>
           </SidebarHeader>
           <SidebarBody>

@@ -1,6 +1,6 @@
 import { authApiClient, publicApiClient } from '@/queries/services/base'
 
-interface User {
+export interface User {
   id: number
   name: string
   email: string
@@ -8,10 +8,10 @@ interface User {
   role: string
   created: number
   updated: number
-  defaultAccountId: number
+  defaultWorkspaceId: number
 }
 
-interface Account {
+export interface Workspace {
   id: number
   name: string
   description: string
@@ -19,9 +19,9 @@ interface Account {
   updated: number
 }
 
-interface AuthInfoResponse {
+export interface AuthInfoResponse {
   user: User
-  accounts: Account[]
+  workspaces: Workspace[]
 }
 
 export const fetchAuthInfo = async (): Promise<AuthInfoResponse> => {

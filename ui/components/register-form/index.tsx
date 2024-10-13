@@ -39,7 +39,7 @@ export default function RegisterForm() {
       { name, email, password },
       {
         onSuccess: (data) => {
-          router.replace(`/accounts/${data.accounts[0].id}`)
+          router.replace(`/workspaces/${data.user.defaultWorkspaceId}`)
         },
       }
     )

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { useLogout } from '@/queries/hooks/use-logout'
 
-export default function AccountsHomePage() {
+export default function WorkspaceHomePage() {
   const { mutate: logout } = useLogout()
 
   const handleLogout = () => {
