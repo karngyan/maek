@@ -55,10 +55,7 @@ func Login(ctx *base.WebContext) {
 		return
 	}
 
-	base.RespondCookie(ctx, map[string]interface{}{
-		"user":       user,
-		"workspaces": user.Workspaces,
-	}, http.StatusOK, &http.Cookie{
+	base.RespondCookie(ctx, modelsForAuthInfo(user), http.StatusOK, &http.Cookie{
 		Name:     "session_token",
 		Value:    session.Token,
 		Path:     "/",

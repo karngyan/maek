@@ -7,8 +7,5 @@ import (
 )
 
 func Info(ctx *base.WebContext) {
-	base.Respond(ctx, map[string]any{
-		"user":       ctx.User,
-		"workspaces": ctx.User.Workspaces,
-	}, http.StatusOK)
+	base.Respond(ctx, modelsForAuthInfo(ctx.User), http.StatusOK)
 }

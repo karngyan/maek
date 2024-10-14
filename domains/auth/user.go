@@ -16,16 +16,16 @@ const (
 var ErrUserNotFound = errors.New("user not found")
 
 type User struct {
-	Id                 uint64       `json:"id"`
-	Name               string       `json:"name"`
-	Email              string       `json:"email" orm:"unique"`
-	Password           string       `json:"-" orm:"type(text)"`
-	Verified           bool         `json:"verified"`
-	Role               UserRole     `json:"role"`
-	DefaultWorkspaceId uint64       `json:"defaultWorkspaceId"`
-	Workspaces         []*Workspace `json:"-" orm:"rel(m2m)"`
-	Created            int64        `json:"created"`
-	Updated            int64        `json:"updated"`
+	Id                 uint64
+	Name               string
+	Email              string `orm:"unique"`
+	Password           string `orm:"type(text)"`
+	Verified           bool
+	Role               UserRole
+	DefaultWorkspaceId uint64
+	Workspaces         []*Workspace `orm:"rel(m2m)"`
+	Created            int64
+	Updated            int64
 }
 
 func (u *User) TableEngine() string {

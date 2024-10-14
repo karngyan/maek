@@ -77,10 +77,7 @@ func Register(ctx *base.WebContext) {
 		return
 	}
 
-	base.RespondCookie(ctx, map[string]any{
-		"user":       user,
-		"workspaces": user.Workspaces,
-	}, http.StatusCreated, &http.Cookie{
+	base.RespondCookie(ctx, modelsForAuthInfo(user), http.StatusCreated, &http.Cookie{
 		Name:     "session_token",
 		Value:    session.Token,
 		Path:     "/",
