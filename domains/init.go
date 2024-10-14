@@ -2,7 +2,9 @@ package domains
 
 import (
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/karngyan/maek/conf"
 	"github.com/karngyan/maek/domains/auth"
+	"github.com/karngyan/maek/domains/notes"
 )
 
 func Init() error {
@@ -13,11 +15,11 @@ func Init() error {
 	}
 
 	// local dev hack
-	// if conf.IsDevEnv() {
-	// 	if err := orm.RunSyncdb("default", false, true); err != nil {
-	// 		return err
-	// 	}
-	// }
+	if conf.IsDevEnv() {
+		if err := orm.RunSyncdb("default", false, true); err != nil {
+			return err
+		}
+	}
 
 	if err = initCaches(); err != nil {
 		return err
@@ -29,6 +31,7 @@ func Init() error {
 func registerModels() error {
 	var ms = [][]any{
 		auth.Models,
+		notes.Models,
 	}
 
 	for _, m := range ms {
