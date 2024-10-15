@@ -33,7 +33,13 @@ func Create(ctx *base.WebContext) {
 		return
 	}
 
+	uiNote, err := modelForNote(note)
+	if err != nil {
+		base.InternalError(ctx, err)
+		return
+	}
+
 	base.Respond(ctx, map[string]any{
-		"note": note,
+		"note": uiNote,
 	}, http.StatusCreated)
 }
