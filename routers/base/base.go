@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -20,6 +21,7 @@ type WebContext struct {
 	*beectx.Context
 	Session   *auth.Session
 	User      *auth.User
+	Workspace *auth.Workspace
 	l         *logs.BeeLogger
 	requestId string
 }
@@ -99,11 +101,7 @@ func WrapPublicRoute(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 }
 
 func WrapAuthenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
-	return Authenticated(h, l, false)
-}
-
-func WrapAuthenticatedWithUser(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
-	return Authenticated(h, l, true)
+	return Authenticated(h, l)
 }
 
 func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
@@ -120,7 +118,7 @@ func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 	}
 }
 
-func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFunc {
+func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 	return func(bctx *beectx.Context) {
 		rid := uuid.NewString()
 
@@ -142,14 +140,37 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser bool) web.HandleFun
 		}
 
 		c.Session = session
-		if withUser {
-			user, err := auth.FetchUserById(rctx, session.User.Id)
+		user, err := auth.FetchUserById(rctx, session.User.Id)
+		if err != nil {
+			Unauth(c)
+			return
+		}
+
+		c.User = user
+
+		// try checking :workspace_id param if present
+		workspaceId := bctx.Input.Param(":workspace_id")
+		if workspaceId != "" {
+			wid, err := strconv.ParseUint(workspaceId, 10, 64)
 			if err != nil {
-				Unauth(c)
+				BadRequest(c, nil)
 				return
 			}
 
-			c.User = user
+			// check if the user is part of the workspace
+			var found bool
+			for _, ws := range user.Workspaces {
+				if ws.Id == wid {
+					found = true
+					c.Workspace = ws
+					break
+				}
+			}
+
+			if !found {
+				Unauth(c)
+				return
+			}
 		}
 
 		h(c)

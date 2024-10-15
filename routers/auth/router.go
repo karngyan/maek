@@ -11,5 +11,5 @@ func Configure(l *logs.BeeLogger) {
 	web.Post("/v1/auth/register", base.WrapPublicRoute(Register, l))
 	web.Post("/v1/auth/login", base.WrapPublicRoute(Login, l))
 	web.Get("/v1/auth/logout", base.WrapAuthenticated(Logout, l))
-	web.Get("/v1/auth/info", base.WrapAuthenticatedWithUser(Info, l))
+	web.Get("/v1/auth/info", base.WrapAuthenticated(Info, l))
 }

@@ -88,8 +88,9 @@ func CleanDBRows() {
 }
 
 type ClientState struct {
-	User    *auth.User
-	Session *auth.Session
+	User      *auth.User
+	Session   *auth.Session
+	Workspace *auth.Workspace
 }
 
 func NewClientState() *ClientState {
@@ -106,6 +107,7 @@ func NewClientStateWithUser(t *testing.T) *ClientState {
 
 	c.User = user
 	c.Session = session
+	c.Workspace = user.Workspaces[0]
 
 	return c
 }
