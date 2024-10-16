@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/karngyan/maek/domains/auth"
-
 	"github.com/karngyan/maek/routers/base"
 )
 

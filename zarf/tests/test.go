@@ -30,7 +30,11 @@ import (
 var frozenTime = time.Unix(1234567890, 0)
 var initOnce sync.Once
 
-func InitApp() error {
+type CleanupFn func()
+
+func InitApp() (CleanupFn, error) {
+	var cleanupDB CleanupFn
+
 	initFn := func() error {
 		log := logs.NewLogger()
 		defer log.Flush()
@@ -58,7 +62,8 @@ func InitApp() error {
 			return err
 		}
 
-		if err := db.InitTest(); err != nil {
+		cleanupDB, err = db.InitTest()
+		if err != nil {
 			panic(err)
 		}
 
@@ -75,7 +80,9 @@ func InitApp() error {
 		initErr = initFn()
 	})
 
-	return initErr
+	return func() {
+		cleanupDB()
+	}, initErr
 }
 
 func FreezeTime() {

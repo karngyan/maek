@@ -10,14 +10,18 @@ import (
 
 func TestMain(m *testing.M) {
 	tests.FreezeTime()
+	os.Exit(runTests(m))
+}
 
-	if err := tests.InitApp(); err != nil {
-		os.Exit(1)
+func runTests(m *testing.M) int {
+	cleanup, err := tests.InitApp()
+	if err != nil {
+		cleanup()
+		return 1
 	}
+	defer cleanup()
 
 	approvals.UseFolder("./testdata")
 
-	if code := m.Run(); code != 0 {
-		os.Exit(code)
-	}
+	return m.Run()
 }

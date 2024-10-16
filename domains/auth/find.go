@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/beego/beego/v2/client/cache"
@@ -45,9 +44,6 @@ func InitCache() error {
 
 func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
 	if session, err := sessionCache.Get(ctx, token); err == nil {
-		fmt.Printf("session: %v\n", session)
-		fmt.Printf("user: %v\n", session.(*Session).User)
-		fmt.Printf("workspaces: %v\n", session.(*Session).User.Workspaces)
 		return session.(*Session), nil
 	}
 
