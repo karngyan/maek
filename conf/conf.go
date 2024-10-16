@@ -25,7 +25,6 @@ var (
 	MysqlPassword      string
 	TestMysqlHost      string
 	TestMysqlPort      string
-	TestMysqlSchema    string
 	TestMysqlUser      string
 	TestMysqlPassword  string
 	SQLConn            string
@@ -95,10 +94,6 @@ func Init() error {
 	}
 
 	if TestMysqlPort, err = web.AppConfig.String("TestMysqlPort"); err != nil {
-		return err
-	}
-
-	if TestMysqlSchema, err = web.AppConfig.String("TestMysqlSchema"); err != nil {
 		return err
 	}
 
