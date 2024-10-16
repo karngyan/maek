@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	userCache    = cache.NewMemoryCache()
 	sessionCache = cache.NewMemoryCache()
 )
 
@@ -25,12 +24,13 @@ func InitCache() error {
 		var session Session
 		if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 			now := timecop.Now().Unix()
-			err := ormer.QueryTable("session").Filter("token", token).Filter("expires__gt", now).One(&session)
+			err := ormer.QueryTable("session").Filter("token", token).Filter("expires__gt", now).RelatedSel().One(&session)
 			if err != nil {
 				return err
 			}
 
-			return nil
+			_, err = ormer.LoadRelatedWithCtx(ctx, session.User, "workspaces")
+			return err
 		}); err != nil {
 			return nil, err
 		}
@@ -40,50 +40,19 @@ func InitCache() error {
 		return err
 	}
 
-	// read through cache for user
-	if userCache, err = cache.NewReadThroughCache(userCache, 10*time.Minute, func(ctx context.Context, id string) (any, error) {
-		var user User
-		if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-			err := ormer.QueryTable("user").Filter("id", id).One(&user)
-			if err != nil {
-				return err
-			}
-
-			_, err = ormer.LoadRelatedWithCtx(ctx, &user, "workspaces")
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}); err != nil {
-			return nil, err
-		}
-
-		return &user, nil
-	}); err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
 	if session, err := sessionCache.Get(ctx, token); err == nil {
+		fmt.Printf("session: %v\n", session)
+		fmt.Printf("user: %v\n", session.(*Session).User)
+		fmt.Printf("workspaces: %v\n", session.(*Session).User.Workspaces)
 		return session.(*Session), nil
 	}
 
 	// cache is read through so if Get failed session doesn't exist in db
 	return nil, ErrSessionNotFound
-}
-
-func FetchUserById(ctx context.Context, id uint64) (*User, error) {
-	key := fmt.Sprintf("%d", id)
-	if user, err := userCache.Get(ctx, key); err == nil {
-		return user.(*User), nil
-	}
-
-	// cache is read through so if Get failed user doesn't exist in db
-	return nil, ErrUserNotFound
 }
 
 func FetchUserByEmail(ctx context.Context, email string) (*User, error) {

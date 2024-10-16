@@ -52,5 +52,5 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 	}), web.WithReturnOnOutput(false))
 
-	web.Run("localhost")
+	web.Run("0.0.0.0")
 }

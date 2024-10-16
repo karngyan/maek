@@ -124,7 +124,7 @@ func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		}
 
 		h(c)
-		c.Info(fmt.Sprintf("[method=%s] [path=%s] [status=%d] [duration=%s]", c.Request.Method, c.Request.URL.Path, c.Output.Status, timecop.Now().Sub(start)))
+		c.Info(fmt.Sprintf("[method=%s] [path=%s] [status=%d] [duration=%s]", c.Request.Method, c.Request.URL.Path, c.ResponseWriter.Status, timecop.Now().Sub(start)))
 	}
 }
 
@@ -152,13 +152,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		}
 
 		c.Session = session
-		user, err := auth.FetchUserById(rctx, session.User.Id)
-		if err != nil {
-			Unauth(c)
-			return
-		}
-
-		c.User = user
+		c.User = session.User
 
 		// try checking :workspace_id param if present
 		workspaceId := bctx.Input.Param(":workspace_id")
@@ -171,7 +165,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 
 			// check if the user is part of the workspace
 			var found bool
-			for _, ws := range user.Workspaces {
+			for _, ws := range c.User.Workspaces {
 				if ws.Id == wid {
 					found = true
 					c.Workspace = ws

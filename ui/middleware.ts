@@ -7,6 +7,7 @@ import { AuthInfoResponse } from '@/queries/services/auth-service'
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const sessionToken = req.cookies.get('session_token')
+  console.log('sessionToken', sessionToken)
   if (!sessionToken || sessionToken.value === 'undefined') {
     if (pathname === '/login' || pathname === '/register') {
       return NextResponse.next()
@@ -34,6 +35,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (pathname === '/workspaces') {
+    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
+  }
+
+  if (pathname === '/workspaces/') {
     return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
   }
 
