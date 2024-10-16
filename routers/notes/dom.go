@@ -17,6 +17,7 @@ func modelForNote(note *notes.Note) (*models.Note, error) {
 		Id:        note.Id,
 		Content:   content,
 		Favorite:  note.Favorite,
+		Trashed:   note.Trashed,
 		Created:   note.Created,
 		Updated:   note.Updated,
 		CreatedBy: models.ModelForUser(note.CreatedBy),

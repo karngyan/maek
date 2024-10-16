@@ -16,6 +16,7 @@
     },
     "favorite": true,
     "id": 1,
+    "trashed": false,
     "updated": 1234567890,
     "updatedBy": {
       "created": 1234567890,
