@@ -18,10 +18,10 @@ func TestGet(t *testing.T) {
 	cs := tests.NewClientStateWithUser(t)
 	cs2 := tests.NewClientStateWithUserEmail(t, "john@maek.ai")
 
-	n, err := notes.CreateNoteCtx(context.Background(), notes.WithContent("{ \"foo\": \"bar\" }"), notes.WithWorkspace(cs.Workspace), notes.WithCreatedBy(cs.User), notes.WithFavorite(true))
+	n, err := notes.CreateNoteCtx(context.Background(), notes.WithContent("{ \"dom\": [] }"), notes.WithWorkspace(cs.Workspace), notes.WithCreatedBy(cs.User), notes.WithFavorite(true))
 	assert.Nil(t, err)
 
-	n2, err := notes.CreateNoteCtx(context.Background(), notes.WithContent("{ \"john\": \"doe\" }"), notes.WithWorkspace(cs2.Workspace), notes.WithCreatedBy(cs2.User), notes.WithFavorite(true))
+	n2, err := notes.CreateNoteCtx(context.Background(), notes.WithContent("{ \"dom\": [] }"), notes.WithWorkspace(cs2.Workspace), notes.WithCreatedBy(cs2.User), notes.WithFavorite(true))
 	assert.Nil(t, err)
 
 	var testCases = []struct {

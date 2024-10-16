@@ -19,6 +19,12 @@ func WithContent(content string) CreateOpt {
 	}
 }
 
+func WithUuid(uuid string) CreateOpt {
+	return func(note *Note) {
+		note.Uuid = uuid
+	}
+}
+
 func WithFavorite(favorite bool) CreateOpt {
 	return func(note *Note) {
 		note.Favorite = favorite

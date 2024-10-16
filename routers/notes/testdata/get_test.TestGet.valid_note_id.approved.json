@@ -1,7 +1,7 @@
 {
   "note": {
     "content": {
-      "foo": "bar"
+      "dom": []
     },
     "created": 1234567890,
     "createdBy": {
@@ -27,6 +27,8 @@
       "role": "admin",
       "updated": 1234567890,
       "verified": false
-    }
+    },
+    "uuid": "",
+    "workspaceId": 1
   }
 }

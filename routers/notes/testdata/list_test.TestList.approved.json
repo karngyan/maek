@@ -28,7 +28,9 @@
         "role": "admin",
         "updated": 1234567890,
         "verified": false
-      }
+      },
+      "uuid": "123",
+      "workspaceId": 1
     }
   ]
 }

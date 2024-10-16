@@ -16,9 +16,10 @@ func TestCreate(t *testing.T) {
 
 	rr, err := cs.Post(fmt.Sprintf("/v1/workspaces/%d/notes", cs.Workspace.Id), map[string]any{
 		"content": map[string]any{
-			"foo": "bar",
+			"dom": "some paragraph",
 		},
 		"favorite": true,
+		"uuid":     "123",
 	})
 
 	assert.Nil(t, err)

@@ -83,7 +83,7 @@ func InitTest() (func(), error) {
 			return
 		}
 
-		logs.Info("closed connection to nsdb")
+		logs.Info("closed db connection")
 
 	}, nil
 }
