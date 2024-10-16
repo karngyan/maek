@@ -27,22 +27,22 @@ type WebContext struct {
 }
 
 func (c *WebContext) Info(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s]", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
 	c.l.Info(prefix+msg, v...)
 }
 
 func (c *WebContext) Error(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s]", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
 	c.l.Error(prefix+msg, v...)
 }
 
 func (c *WebContext) Warn(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s]", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
 	c.l.Warn(prefix+msg, v...)
 }
 
 func (c *WebContext) Debug(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s]", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
 	c.l.Debug(prefix+msg, v...)
 }
 
@@ -82,6 +82,13 @@ func BadRequest(c *WebContext, v any) {
 	Respond(c, v, http.StatusBadRequest)
 }
 
+func NotFound(c *WebContext, err error) {
+	if err != nil {
+		c.Info("not found err: %+v", err)
+	}
+	Respond(c, nil, http.StatusNotFound)
+}
+
 func InternalError(c *WebContext, err error) {
 	ref := randstr.Hex(16)
 	resp := map[string]any{
@@ -106,6 +113,8 @@ func WrapAuthenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 
 func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 	return func(bctx *beectx.Context) {
+		start := timecop.Now()
+
 		rid := uuid.NewString()
 
 		c := &WebContext{
@@ -115,11 +124,14 @@ func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		}
 
 		h(c)
+		c.Info(fmt.Sprintf("[method=%s] [path=%s] [status=%d] [duration=%s]", c.Request.Method, c.Request.URL.Path, c.Output.Status, timecop.Now().Sub(start)))
 	}
 }
 
 func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 	return func(bctx *beectx.Context) {
+		start := timecop.Now()
+
 		rid := uuid.NewString()
 
 		c := &WebContext{
@@ -174,5 +186,6 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		}
 
 		h(c)
+		c.Info(fmt.Sprintf("[method=%s] [path=%s] [status=%d] [duration=%s]", c.Request.Method, c.Request.URL.Path, c.ResponseWriter.Status, timecop.Now().Sub(start)))
 	}
 }

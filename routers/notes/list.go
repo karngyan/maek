@@ -12,7 +12,7 @@ import (
 func List(ctx *base.WebContext) {
 	rctx := ctx.Request.Context()
 
-	mn, err := notes.FetchNotesForWorkspace(rctx, ctx.Workspace.Id)
+	mn, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id)
 	if err != nil {
 		base.InternalError(ctx, err)
 		return

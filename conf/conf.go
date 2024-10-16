@@ -61,12 +61,14 @@ func Init() error {
 	}
 
 	web.BConfig.Log = web.LogConfig{
-		AccessLogs:       true,
+		AccessLogs:       false,
 		EnableStaticLogs: true,
 		FileLineNum:      true,
 		AccessLogsFormat: "APACHE_FORMAT",
 		Outputs:          nil,
 	}
+
+	web.BConfig.EnableGzip = true
 
 	if MysqlHost, err = web.AppConfig.String("MysqlHost"); err != nil {
 		return err

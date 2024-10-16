@@ -10,4 +10,5 @@ import (
 func Configure(l *logs.BeeLogger) {
 	web.Get("/v1/workspaces/:workspace_id/notes", base.WrapAuthenticated(List, l))
 	web.Post("/v1/workspaces/:workspace_id/notes", base.WrapAuthenticated(Create, l))
+	web.Get("/v1/workspaces/:workspace_id/notes/:note_id", base.WrapAuthenticated(Get, l))
 }

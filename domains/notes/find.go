@@ -7,7 +7,7 @@ import (
 	"github.com/karngyan/maek/db"
 )
 
-func FetchNotesForWorkspace(ctx context.Context, wsId uint64) ([]*Note, error) {
+func FindNotesForWorkspace(ctx context.Context, wsId uint64) ([]*Note, error) {
 	var notes []*Note
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 		_, err := ormer.QueryTable("note").Filter("workspace_id", wsId).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
@@ -21,4 +21,20 @@ func FetchNotesForWorkspace(ctx context.Context, wsId uint64) ([]*Note, error) {
 	}
 
 	return notes, nil
+}
+
+func FindNoteById(ctx context.Context, noteId uint64, workspaceId uint64) (*Note, error) {
+	var note Note
+	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
+		err := ormer.QueryTable("note").Filter("id", noteId).Filter("workspace_id", workspaceId).RelatedSel("CreatedBy", "UpdatedBy").One(&note)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return &note, nil
 }
