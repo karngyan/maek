@@ -1,7 +1,7 @@
 {
   "note": {
     "content": {
-      "dom": []
+      "dom": "some more text"
     },
     "created": 1234567890,
     "createdBy": {
@@ -14,7 +14,7 @@
       "updated": 1234567890,
       "verified": false
     },
-    "favorite": true,
+    "favorite": false,
     "id": 1,
     "trashed": false,
     "updated": 1234567890,

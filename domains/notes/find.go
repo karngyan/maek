@@ -23,10 +23,10 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64) ([]*Note, error) {
 	return notes, nil
 }
 
-func FindNoteById(ctx context.Context, noteId uint64, workspaceId uint64) (*Note, error) {
+func FindNoteByUuid(ctx context.Context, nuuid string, workspaceId uint64) (*Note, error) {
 	var note Note
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		err := ormer.QueryTable("note").Filter("deleted", false).Filter("id", noteId).Filter("workspace_id", workspaceId).RelatedSel("CreatedBy", "UpdatedBy").One(&note)
+		err := ormer.QueryTable("note").Filter("deleted", false).Filter("uuid", nuuid).Filter("workspace_id", workspaceId).RelatedSel("CreatedBy", "UpdatedBy").One(&note)
 		if err != nil {
 			return err
 		}

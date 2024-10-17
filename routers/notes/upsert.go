@@ -9,9 +9,16 @@ import (
 	"github.com/karngyan/maek/routers/base"
 )
 
-func Create(ctx *base.WebContext) {
+func Upsert(ctx *base.WebContext) {
+	nuuid := strings.TrimSpace(ctx.Input.Param(":note_uuid"))
+	if nuuid == "" {
+		base.BadRequest(ctx, map[string]any{
+			"note_uuid": "note_uuid is required",
+		})
+		return
+	}
+
 	var req struct {
-		Uuid     string         `json:"uuid"`
 		Content  map[string]any `json:"content"`
 		Favorite bool           `json:"favorite"`
 	}
@@ -29,15 +36,7 @@ func Create(ctx *base.WebContext) {
 		return
 	}
 
-	req.Uuid = strings.TrimSpace(req.Uuid)
-	if req.Uuid == "" {
-		base.BadRequest(ctx, map[string]any{
-			"uuid": "uuid is required",
-		})
-		return
-	}
-
-	note, err := notes.CreateNoteCtx(rctx, notes.WithUuid(req.Uuid), notes.WithContent(string(contentBytes)), notes.WithFavorite(req.Favorite), notes.WithWorkspace(ctx.Workspace), notes.WithCreatedBy(ctx.User))
+	note, err := notes.UpsertNoteCtx(rctx, notes.WithUuid(nuuid), notes.WithContent(string(contentBytes)), notes.WithFavorite(req.Favorite), notes.WithWorkspace(ctx.Workspace), notes.WithUpdatedBy(ctx.User))
 	if err != nil {
 		base.InternalError(ctx, err)
 		return
@@ -51,5 +50,5 @@ func Create(ctx *base.WebContext) {
 
 	base.Respond(ctx, map[string]any{
 		"note": uiNote,
-	}, http.StatusCreated)
+	}, http.StatusOK)
 }

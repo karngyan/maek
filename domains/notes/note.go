@@ -4,7 +4,7 @@ import "github.com/karngyan/maek/domains/auth"
 
 type Note struct {
 	Id        uint64
-	Uuid      string
+	Uuid      string          `orm:"unique"`
 	Content   string          `orm:"type(text)"`
 	Favorite  bool            `orm:"default(false)"`
 	Trashed   bool            `orm:"default(false)"`

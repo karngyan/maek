@@ -17,7 +17,7 @@ func TestList(t *testing.T) {
 
 	cs := tests.NewClientStateWithUser(t)
 
-	_, err := notes.CreateNoteCtx(context.Background(), notes.WithUuid("123"), notes.WithContent("{ \"foo\": \"bar\" }"), notes.WithWorkspace(cs.Workspace), notes.WithCreatedBy(cs.User), notes.WithFavorite(true))
+	_, err := notes.UpsertNoteCtx(context.Background(), notes.WithUuid("123"), notes.WithContent("{ \"foo\": \"bar\" }"), notes.WithWorkspace(cs.Workspace), notes.WithUpdatedBy(cs.User), notes.WithFavorite(true))
 	assert.Nil(t, err)
 
 	rr, err := cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes", cs.Workspace.Id))

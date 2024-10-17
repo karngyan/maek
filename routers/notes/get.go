@@ -1,26 +1,25 @@
 package notes
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
 )
 
 func Get(ctx *base.WebContext) {
-	nid := ctx.Input.Param(":note_id")
+	nuuid := ctx.Input.Param(":note_uuid")
 	wid := ctx.Workspace.Id
 
-	noteId, err := strconv.ParseUint(nid, 10, 64)
-	if err != nil {
-		base.BadRequest(ctx, fmt.Errorf("invalid note id: %s", nid))
+	if nuuid == "" {
+		base.BadRequest(ctx, map[string]any{
+			"note_uuid": "note_uuid is required",
+		})
 		return
 	}
 
 	rctx := ctx.Request.Context()
-	n, err := notes.FindNoteById(rctx, noteId, wid)
+	n, err := notes.FindNoteByUuid(rctx, nuuid, wid)
 	if err != nil {
 		base.NotFound(ctx, err)
 		return
