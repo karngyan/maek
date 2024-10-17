@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import type React from 'react'
-import Providers from '@/libs/providers'
+import { QueryProvider } from '@/libs/providers/query'
+import { NoteStoreProvider } from '@/libs/providers/note-store'
 
 const monaSansGithub = localFont({
   src: '../fonts/Mona-Sans.woff2', // variable font
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
-        <Providers>{children}</Providers>
+        <QueryProvider>
+          <NoteStoreProvider>{children}</NoteStoreProvider>
+        </QueryProvider>
       </body>
     </html>
   )

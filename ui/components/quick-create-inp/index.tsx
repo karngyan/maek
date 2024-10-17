@@ -1,23 +1,63 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import QuoteIcon from '@/components/ui/icons/quote'
 import {
   Bars3CenterLeftIcon,
   BookOpenIcon,
-  ListBulletIcon,
   NewspaperIcon,
   SunIcon,
   UsersIcon,
 } from '@heroicons/react/16/solid'
 import RecipeIcon from '@/components/ui/icons/recipe'
+import { useParams, useRouter } from 'next/navigation'
+import { v4 as uuidv4 } from 'uuid'
+import { useNoteStore } from '@/libs/providers/note-store'
 
 const QuickCreateInp = () => {
-  const [value, setValue] = useState('')
+  const router = useRouter()
+  const params = useParams<{ wid: string }>()
+  const [noteUuid, _] = useState(() => uuidv4())
+  const { addNote } = useNoteStore((state) => state)
 
   const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    setValue(e.currentTarget.value)
+    const val = e.currentTarget.value
+    if (val.trim() === '') {
+      return
+    }
+
+    addNote({
+      uuid: noteUuid,
+      workspaceId: +params.wid,
+      trashed: false,
+      favorite: false,
+      content: {
+        dom: [
+          {
+            type: 'paragraph',
+            props: {
+              textColor: 'default',
+              backgroundColor: 'default',
+              textAlignment: 'left',
+            },
+            content: [
+              {
+                type: 'text',
+                text: val,
+                styles: {},
+              },
+            ],
+          },
+        ],
+      },
+    })
+
+    router.push(`/workspaces/${params.wid}/notes/${noteUuid}`)
   }
+
+  useEffect(() => {
+    router.prefetch('/workspaces/[wid]/notes/[nid]')
+  }, [router])
 
   return (
     <div className='min-w-0 flex-1 relative'>
@@ -31,7 +71,7 @@ const QuickCreateInp = () => {
           rows={2}
           placeholder='add to your notes ...'
           className='caret-zinc-400 block w-full resize-none border-0 bg-transparent py-1.5 text-zinc-300 placeholder:text-zinc-600 focus:ring-0 text-sm leading-6'
-          defaultValue={value}
+          defaultValue={''}
           onInput={handleInput}
         />
 

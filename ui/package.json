@@ -14,7 +14,9 @@
     "axios": "^1.7.7",
     "next": "14.2.15",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "uuid": "^10.0.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@headlessui/react": "^2.1.10",
@@ -25,6 +27,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",

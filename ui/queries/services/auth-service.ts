@@ -66,7 +66,6 @@ export const login = async ({
       rememberMe,
     }
   )
-  console.log(response.data.user.email, response.data.user.id)
   return response.data
 }
 
