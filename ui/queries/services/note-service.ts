@@ -1,10 +1,15 @@
 import { User } from '@/queries/services/auth-service'
 import { authApiClient } from '@/queries/services/base'
+import { PartialBlock } from '@blocknote/core'
+
+interface NoteContent {
+  dom: PartialBlock[]
+}
 
 export interface Note {
   id: number
   uuid: string
-  content: Record<string, unknown>
+  content: NoteContent
   favorite: boolean
   trashed: boolean
   created: number

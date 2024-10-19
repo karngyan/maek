@@ -261,7 +261,7 @@ export default function WorkspacesHomeLayout({
         </Sidebar>
       }
     >
-      <div className='max-w-5xl mx-auto'>{children}</div>
+      {children}
     </StackedLayout>
   )
 }

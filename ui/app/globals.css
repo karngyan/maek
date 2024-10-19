@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+::-moz-selection {
+  @apply text-zinc-100 bg-cyan-800;
+}
+
+::selection {
+  @apply text-zinc-100 bg-cyan-800;
+}
