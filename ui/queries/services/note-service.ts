@@ -27,15 +27,9 @@ export interface ListNotesResponse {
   notes: Note[]
 }
 
-export const upsertNote = async ({
-  note,
-  workspaceId,
-}: {
-  note: Note
-  workspaceId: number
-}): Promise<NoteResponse> => {
+export const upsertNote = async (note: Note): Promise<NoteResponse> => {
   const response = await authApiClient.put<NoteResponse>(
-    `/v1/workspaces/${workspaceId}/notes/${note.uuid}`,
+    `/v1/workspaces/${note.workspaceId}/notes/${note.uuid}`,
     { content: note.content, favorite: note.favorite }
   )
   return response.data

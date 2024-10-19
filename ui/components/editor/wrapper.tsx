@@ -1,7 +1,6 @@
 'use client'
 
-import { useNoteStore } from '@/libs/providers/note-store'
-import React, { useMemo } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 import { BlockNoteEditorProps } from '@/components/editor/blocknote'
 import { PartialBlock } from '@blocknote/core'
@@ -20,6 +19,7 @@ import {
   DropdownMenu,
 } from '@/components/ui/dropdown'
 import { useToast } from '@/components/ui/hooks/use-toast'
+import { useFetchNote } from '@/queries/hooks/use-fetch-note'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -36,37 +36,8 @@ export const EditorWrapper = ({
   noteUuid,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
-  const { notes } = useNoteStore((state) => state)
-  let note = useMemo(() => notes[noteUuid], [noteUuid])
-
-  if (note == null) {
-    // upsert from api if noteUuid
-    note = {
-      uuid: noteUuid,
-      workspaceId: workspaceId,
-      trashed: false,
-      favorite: false,
-      content: {
-        dom: [
-          {
-            type: 'paragraph',
-            props: {
-              textColor: 'default',
-              backgroundColor: 'default',
-              textAlignment: 'left',
-            },
-            content: [
-              {
-                type: 'text',
-                text: '',
-                styles: {},
-              },
-            ],
-          },
-        ],
-      },
-    }
-  }
+  const { data } = useFetchNote(workspaceId, noteUuid)
+  const note = data?.note
 
   const handleOnChangeDom = (dom: PartialBlock[]) => {
     console.log('new dom', dom)
@@ -115,7 +86,7 @@ export const EditorWrapper = ({
         </div>
       </div>
       <BlockNoteEditor
-        content={note.content?.dom}
+        content={note?.content?.dom}
         onChangeDom={(dom) => handleOnChangeDom(dom)}
       />
     </div>

@@ -12,14 +12,16 @@ import {
 import RecipeIcon from '@/components/ui/icons/recipe'
 import { useParams, useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
-import { useNoteStore } from '@/libs/providers/note-store'
-import { defaultNote } from '@/libs/utils/note'
+import { defaultNewNote } from '@/libs/utils/note'
+import { useQueryClient } from '@tanstack/react-query'
+import { useAuthInfo } from '@/queries/hooks/use-auth-info'
 
 const QuickCreateInp = () => {
   const router = useRouter()
   const params = useParams<{ wid: string }>()
   const [noteUuid, _] = useState(() => uuidv4())
-  const { addNote } = useNoteStore((state) => state)
+  const { data } = useAuthInfo()
+  const qc = useQueryClient()
 
   const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
     const val = e.currentTarget.value
@@ -27,7 +29,9 @@ const QuickCreateInp = () => {
       return
     }
 
-    addNote(defaultNote(noteUuid, +params.wid, val))
+    qc.setQueryData(['notes', { uuid: noteUuid, wid: +params.wid }], {
+      note: defaultNewNote(noteUuid, +params.wid, val, data!.user),
+    })
     router.push(`/workspaces/${params.wid}/notes/${noteUuid}`)
   }
 

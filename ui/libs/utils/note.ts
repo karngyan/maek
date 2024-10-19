@@ -1,11 +1,16 @@
 import { Note } from '@/queries/services/note-service'
+import { User } from '@/queries/services/auth-service'
 
-export const defaultNote = (
+export const defaultNewNote = (
   uuid: string,
   wid: number,
-  text: string
-): Partial<Note> => {
+  text: string,
+  user: User
+): Note => {
+  const nowInSeconds = Date.now() / 1000
+
   return {
+    id: 0,
     uuid,
     workspaceId: wid,
     trashed: false,
@@ -29,5 +34,9 @@ export const defaultNote = (
         },
       ],
     },
+    created: nowInSeconds,
+    updated: nowInSeconds,
+    createdBy: user,
+    updatedBy: user,
   }
 }

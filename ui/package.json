@@ -21,8 +21,7 @@
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.5.4",
-    "uuid": "^10.0.0",
-    "zustand": "^5.0.0"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@headlessui/react": "^2.1.10",

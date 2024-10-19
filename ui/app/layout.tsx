@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import type React from 'react'
 import { QueryProvider } from '@/libs/providers/query'
-import { NoteStoreProvider } from '@/libs/providers/note-store'
 import { monaSansGithub } from '@/fonts'
 import { Toaster } from '@/components/ui/toaster'
 
@@ -19,9 +18,7 @@ export default function RootLayout({
   return (
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
-        <QueryProvider>
-          <NoteStoreProvider>{children}</NoteStoreProvider>
-        </QueryProvider>
+        <QueryProvider>{children}</QueryProvider>
         <Toaster />
       </body>
     </html>
