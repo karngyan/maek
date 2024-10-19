@@ -1,44 +1,44 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import axios from 'axios'
-import { AuthInfoResponse } from '@/queries/services/auth-service'
+
+const isPathPublic = (pathname: string) => {
+  return (
+    isProtectedWhenLoggedIn(pathname) ||
+    pathname === '/' ||
+    pathname === '/privacy' ||
+    pathname === '/terms'
+  )
+}
+
+const isProtectedWhenLoggedIn = (pathname: string) => {
+  return pathname === '/login' || pathname === '/register'
+}
 
 // runs on server
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const sessionToken = req.cookies.get('session_token')
 
+  // redirect to log-in page if the user is not logged in
+  // presence of session token can be considered as logged in
+  // the next time `useAuthInfo` runs, it will fetch the user info
+  // if the session token is expired, the api would return 401 and clear the httponly secure cookie
   if (!sessionToken || sessionToken.value === 'undefined') {
-    if (pathname === '/login' || pathname === '/register') {
+    if (isPathPublic(pathname)) {
       return NextResponse.next()
     }
 
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  const authInfo = await fetchAuthInfoServer(sessionToken.value)
-  if (!authInfo) {
-    const response = NextResponse.redirect(new URL('/login', req.url))
-    response.cookies.set('session_token', '', {
-      maxAge: -1,
-      path: '/',
-    })
+  const workspaceId = +sessionToken.value.split(':')[0]
 
-    return response
-  }
-
-  const workspaceId = authInfo?.user.defaultWorkspaceId
-
-  // Redirect if the user is logged in and tries to visit /login or /register
-  if (pathname === '/login' || pathname === '/register') {
+  // redirect to workspace if the user is logged in and tries to visit /login or /register
+  if (isProtectedWhenLoggedIn(pathname)) {
     return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
   }
 
-  if (pathname === '/workspaces') {
-    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
-  }
-
-  if (pathname === '/workspaces/') {
+  if (pathname === '/workspaces' || pathname === '/workspaces/') {
     return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
   }
 
@@ -47,28 +47,4 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: ['/login', '/register', '/workspaces/:path*'],
-}
-
-const fetchAuthInfoServer = async (
-  token: string
-): Promise<AuthInfoResponse | null> => {
-  const apiUrl = process.env.API_URL
-
-  try {
-    const response = await axios.get(`${apiUrl}/v1/auth/info`, {
-      headers: {
-        Cookie: `session_token=${token}`,
-      },
-    })
-
-    return response.data
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        return null
-      }
-    }
-
-    throw error
-  }
 }

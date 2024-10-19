@@ -19,7 +19,7 @@ import { useAuthInfo } from '@/queries/hooks/use-auth-info'
 const QuickCreateInp = () => {
   const router = useRouter()
   const params = useParams<{ wid: string }>()
-  const [noteUuid, _] = useState(() => uuidv4())
+  const [noteUuid] = useState(() => uuidv4())
   const { data } = useAuthInfo()
   const qc = useQueryClient()
 

@@ -45,6 +45,7 @@ import { Workspace } from '@/queries/services/auth-service'
 import { Link } from '@/components/ui/link'
 import { useLogout } from '@/queries/hooks/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
+import axios from 'axios'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -100,7 +101,7 @@ export default function WorkspacesHomeLayout({
     ],
     [workspaceId]
   )
-  const { isPending, data, isError, error } = useAuthInfo()
+  const { isPending, data, error } = useAuthInfo()
   const { mutate: logout } = useLogout()
 
   if (isPending) {
@@ -111,7 +112,7 @@ export default function WorkspacesHomeLayout({
     )
   }
 
-  if (isError) {
+  if (axios.isAxiosError(error) && error?.response?.status === 401) {
     return (
       <div className='h-screen flex items-center justify-center'>
         <Text>
