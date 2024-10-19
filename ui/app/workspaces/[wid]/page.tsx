@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 
 export default function WorkspaceHomePage() {
   return (
-    <>
+    <div className='max-w-4xl mx-auto'>
       <QuickCreateInp />
-    </>
+    </div>
   )
 }

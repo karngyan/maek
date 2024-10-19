@@ -3,7 +3,7 @@
 import { useCreateBlockNote } from '@blocknote/react'
 import { BlockNoteView } from '@blocknote/mantine'
 import '@blocknote/mantine/style.css'
-import { PartialBlock } from '@blocknote/core'
+import { locales, PartialBlock } from '@blocknote/core'
 import { maekDarkTheme } from '@/components/editor/theme'
 
 export type BlockNoteEditorProps = {
@@ -20,6 +20,13 @@ export default function BlockNoteEditor({
     animations: true,
     _tiptapOptions: {
       autofocus: 'end',
+    },
+    dictionary: {
+      ...locales.en,
+      placeholders: {
+        ...locales.en.placeholders,
+        default: 'enter text or type / for commands',
+      },
     },
   })
 

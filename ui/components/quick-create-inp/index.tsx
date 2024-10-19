@@ -13,6 +13,7 @@ import RecipeIcon from '@/components/ui/icons/recipe'
 import { useParams, useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import { useNoteStore } from '@/libs/providers/note-store'
+import { defaultNote } from '@/libs/utils/note'
 
 const QuickCreateInp = () => {
   const router = useRouter()
@@ -26,32 +27,7 @@ const QuickCreateInp = () => {
       return
     }
 
-    addNote({
-      uuid: noteUuid,
-      workspaceId: +params.wid,
-      trashed: false,
-      favorite: false,
-      content: {
-        dom: [
-          {
-            type: 'paragraph',
-            props: {
-              textColor: 'default',
-              backgroundColor: 'default',
-              textAlignment: 'left',
-            },
-            content: [
-              {
-                type: 'text',
-                text: val,
-                styles: {},
-              },
-            ],
-          },
-        ],
-      },
-    })
-
+    addNote(defaultNote(noteUuid, +params.wid, val))
     router.push(`/workspaces/${params.wid}/notes/${noteUuid}`)
   }
 

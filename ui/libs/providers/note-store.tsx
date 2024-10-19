@@ -29,11 +29,11 @@ export const NoteStoreProvider = ({ children }: NoteStoreProviderProps) => {
 }
 
 export const useNoteStore = <T,>(selector: (store: NoteStore) => T): T => {
-  const counterStoreContext = useContext(NoteStoreContext)
+  const noteStoreContext = useContext(NoteStoreContext)
 
-  if (!counterStoreContext) {
+  if (!noteStoreContext) {
     throw new Error(`useNoteStore must be used within NoteStoreProvider`)
   }
 
-  return useStore(counterStoreContext, selector)
+  return useStore(noteStoreContext, selector)
 }

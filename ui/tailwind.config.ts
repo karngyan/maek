@@ -7,10 +7,8 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  plugins: [
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('@tailwindcss/forms'),
-  ],
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
 }
 
 export default config
