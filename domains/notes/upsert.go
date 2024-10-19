@@ -6,8 +6,6 @@ import (
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/karngyan/maek/db"
-
-	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/domains/auth"
 )
 
@@ -43,53 +41,61 @@ func WithUpdatedBy(user *auth.User) UpsertOpt {
 	}
 }
 
-func UpsertNoteCtx(ctx context.Context, opts ...UpsertOpt) (*Note, error) {
+type UpsertNoteRequest struct {
+	Uuid      string
+	Content   string
+	Favorite  bool
+	Trashed   bool
+	Created   int64
+	Updated   int64
+	Workspace *auth.Workspace
+	CreatedBy *auth.User
+	UpdatedBy *auth.User
+}
 
-	note := &Note{}
-	for _, opt := range opts {
-		opt(note)
-	}
-
-	nuuid := note.Uuid
+func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
+	nuuid := req.Uuid
 	if nuuid == "" {
 		return nil, errors.New("uuid is required")
 	}
 
-	if note.Content == "" {
+	if req.Content == "" {
 		return nil, errors.New("content is required")
 	}
 
-	if note.Workspace == nil {
+	if req.Workspace == nil {
 		return nil, errors.New("workspace is required")
 	}
 
-	if note.UpdatedBy == nil {
+	if req.UpdatedBy == nil {
 		return nil, errors.New("updated by is required")
 	}
 
 	// check if note already exists
-	existingNote, err := FindNoteByUuid(ctx, nuuid, note.Workspace.Id)
+	existingNote, err := FindNoteByUuid(ctx, nuuid, req.Workspace.Id)
 	if err != nil {
 		if !errors.Is(err, orm.ErrNoRows) {
 			return nil, err
 		}
 	}
 
-	now := timecop.Now().Unix()
-
-	if existingNote != nil {
-		// update existing note
-		note.Id = existingNote.Id
-		note.Created = existingNote.Created
-		note.CreatedBy = existingNote.CreatedBy
-		note.Updated = now
-	} else {
-		note.Created = now
-		note.Updated = now
+	note := &Note{
+		Uuid:      nuuid,
+		Content:   req.Content,
+		Favorite:  req.Favorite,
+		Trashed:   req.Trashed,
+		Workspace: req.Workspace,
+		Updated:   req.Updated,
+		Created:   req.Created,
+		UpdatedBy: req.UpdatedBy,
+		CreatedBy: req.CreatedBy,
 	}
 
-	if note.CreatedBy == nil {
-		note.CreatedBy = note.UpdatedBy
+	if existingNote != nil {
+		note.Id = existingNote.Id
+		// don't let client change created and created by once created
+		note.Created = existingNote.Created
+		note.CreatedBy = existingNote.CreatedBy
 	}
 
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {

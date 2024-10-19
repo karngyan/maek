@@ -13,7 +13,7 @@ import (
 
 var ErrInvalidPassword = errors.New("invalid password")
 
-func Login(ctx context.Context, email, password, ip, ua string) (*User, *Session, error) {
+func Login(ctx context.Context, email, password string, remember bool, ip, ua string) (*User, *Session, error) {
 	user, err := FetchUserByEmail(ctx, email)
 	if err != nil {
 		return nil, nil, err
@@ -24,13 +24,18 @@ func Login(ctx context.Context, email, password, ip, ua string) (*User, *Session
 	}
 
 	now := timecop.Now()
+	expires := now.Add(30 * 24 * time.Hour)
+
+	if remember {
+		expires = now.Add(365 * 24 * time.Hour)
+	}
 
 	session := &Session{
 		Ua:      ua,
 		Ip:      ip,
 		User:    user,
 		Token:   GenerateToken(user),
-		Expires: now.Add(30 * 24 * time.Hour).Unix(),
+		Expires: expires.Unix(),
 		Created: now.Unix(),
 		Updated: now.Unix(),
 	}

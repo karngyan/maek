@@ -16,6 +16,7 @@ func Login(ctx *base.WebContext) {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Remember bool   `json:"remember"`
 	}
 
 	if err := ctx.DecodeJSON(&req); err != nil {
@@ -33,7 +34,7 @@ func Login(ctx *base.WebContext) {
 		return
 	}
 
-	user, session, err := auth.Login(ctx.Request.Context(), req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
+	user, session, err := auth.Login(ctx.Request.Context(), req.Email, req.Password, req.Remember, ctx.Input.IP(), ctx.Input.UserAgent())
 
 	if err != nil {
 		if errors.Is(err, auth.ErrUserNotFound) {

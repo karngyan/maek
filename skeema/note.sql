@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `note`
 (
     `id`            bigint unsigned AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `uuid`          varchar(100)                   NOT NULL UNIQUE,
     `content`       longtext                       NOT NULL,
     `favorite`      bool                           NOT NULL DEFAULT FALSE,
     `deleted`       bool                           NOT NULL DEFAULT FALSE,

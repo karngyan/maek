@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/karngyan/maek/routers/models"
+
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
 )
@@ -18,10 +20,7 @@ func Upsert(ctx *base.WebContext) {
 		return
 	}
 
-	var req struct {
-		Content  map[string]any `json:"content"`
-		Favorite bool           `json:"favorite"`
-	}
+	var req models.Note
 
 	if err := ctx.DecodeJSON(&req); err != nil {
 		base.UnprocessableEntity(ctx, err)
@@ -36,7 +35,17 @@ func Upsert(ctx *base.WebContext) {
 		return
 	}
 
-	note, err := notes.UpsertNoteCtx(rctx, notes.WithUuid(nuuid), notes.WithContent(string(contentBytes)), notes.WithFavorite(req.Favorite), notes.WithWorkspace(ctx.Workspace), notes.WithUpdatedBy(ctx.User))
+	note, err := notes.UpsertNoteCtx(rctx, &notes.UpsertNoteRequest{
+		Uuid:      nuuid,
+		Content:   string(contentBytes),
+		Favorite:  req.Favorite,
+		Trashed:   req.Trashed,
+		Created:   req.Created,
+		Updated:   req.Updated,
+		Workspace: ctx.Workspace,
+		CreatedBy: ctx.User, // only used if it's an insert, otherwise ignored
+		UpdatedBy: ctx.User,
+	})
 	if err != nil {
 		base.InternalError(ctx, err)
 		return

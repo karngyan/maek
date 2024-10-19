@@ -67,7 +67,15 @@ func RespondCookie(c *WebContext, v any, status int, cookie *http.Cookie) {
 
 func Unauth(c *WebContext) {
 	c.Output.SetStatus(http.StatusUnauthorized)
-	JSON(c, nil, false, false)
+	RespondCookie(c, nil, http.StatusUnauthorized, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 }
 
 func UnprocessableEntity(c *WebContext, err error) {
