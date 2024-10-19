@@ -52,18 +52,18 @@ export const register = async ({
 export const login = async ({
   email,
   password,
-  rememberMe,
+  remember,
 }: {
   email: string
   password: string
-  rememberMe: boolean
+  remember: boolean
 }): Promise<AuthInfoResponse> => {
   const response = await publicApiClient.post<AuthInfoResponse>(
     '/v1/auth/login',
     {
       email,
       password,
-      rememberMe,
+      remember,
     }
   )
   return response.data

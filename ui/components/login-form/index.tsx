@@ -26,16 +26,16 @@ type ApiError = {
 export default function LoginForm() {
   const router = useRouter()
   const { mutate: login, isPending, error } = useLogin()
-  const [{ email, password, rememberMe }, setFormData] = useState({
+  const [{ email, password, remember }, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
+    remember: false,
   })
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     login(
-      { email, password, rememberMe },
+      { email, password, remember },
       {
         onSuccess: (data) => {
           router.replace(`/workspaces/${data.user.defaultWorkspaceId}`)
@@ -129,11 +129,11 @@ export default function LoginForm() {
 
             <Headless.Field className='flex items-center gap-4'>
               <Switch
-                checked={rememberMe}
+                checked={remember}
                 onChange={(checked) => {
                   setFormData((prev) => ({
                     ...prev,
-                    rememberMe: checked,
+                    remember: checked,
                   }))
                 }}
                 color='cyan'

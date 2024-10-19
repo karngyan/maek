@@ -7,7 +7,7 @@ export const defaultNewNote = (
   text: string,
   user: User
 ): Note => {
-  const nowInSeconds = Date.now() / 1000
+  const nowInSeconds = Math.floor(Date.now() / 1000)
 
   return {
     id: 0,

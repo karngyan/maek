@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/dropdown'
 import { useToast } from '@/components/ui/hooks/use-toast'
 import { useFetchNote } from '@/queries/hooks/use-fetch-note'
+import { useUpsertNote } from '@/queries/hooks/use-upsert-note'
+import { useDebounceCallback } from '@react-hook/debounce'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -37,10 +39,24 @@ export const EditorWrapper = ({
 }: EditorWrapperProps) => {
   const { toast } = useToast()
   const { data } = useFetchNote(workspaceId, noteUuid)
+  const { mutate: upsertNote } = useUpsertNote()
   const note = data?.note
 
+  const debouncedUpsert = useDebounceCallback((dom: PartialBlock[]) => {
+    if (!note) return
+
+    upsertNote({
+      ...note,
+      updated: Math.floor(Date.now() / 1000),
+      content: {
+        ...note.content,
+        dom,
+      },
+    })
+  }, 600)
+
   const handleOnChangeDom = (dom: PartialBlock[]) => {
-    console.log('new dom', dom)
+    debouncedUpsert(dom)
   }
 
   const onCopyMaekLinkClick = () => {

@@ -5,6 +5,5 @@ export const useAuthInfo = () => {
   return useQuery({
     queryKey: ['authInfo'],
     queryFn: fetchAuthInfo,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

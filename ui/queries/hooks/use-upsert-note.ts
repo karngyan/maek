@@ -30,8 +30,5 @@ export const useUpsertNote = () => {
         { note: context?.previousNote }
       )
     },
-    onSettled: (resp) => {
-      if (resp) void qc.invalidateQueries({ queryKey: qk(resp.note) })
-    },
   })
 }
