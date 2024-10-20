@@ -45,7 +45,6 @@ type UpsertNoteRequest struct {
 	Uuid      string
 	Content   string
 	Favorite  bool
-	Trashed   bool
 	Created   int64
 	Updated   int64
 	Workspace *auth.Workspace
@@ -83,7 +82,7 @@ func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		Uuid:      nuuid,
 		Content:   req.Content,
 		Favorite:  req.Favorite,
-		Trashed:   req.Trashed,
+		Trashed:   false,
 		Workspace: req.Workspace,
 		Updated:   req.Updated,
 		Created:   req.Created,
@@ -93,6 +92,7 @@ func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 
 	if existingNote != nil {
 		note.Id = existingNote.Id
+		note.Trashed = existingNote.Trashed
 		// don't let client change created and created by once created
 		note.Created = existingNote.Created
 		note.CreatedBy = existingNote.CreatedBy

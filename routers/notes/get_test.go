@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/bluele/go-timecop"
+
 	approvals "github.com/customerio/go-approval-tests"
 
 	"github.com/karngyan/maek/domains/notes"
@@ -18,10 +20,29 @@ func TestGet(t *testing.T) {
 	cs := tests.NewClientStateWithUser(t)
 	cs2 := tests.NewClientStateWithUserEmail(t, "john@maek.ai")
 
-	n, err := notes.UpsertNoteCtx(context.Background(), notes.WithUuid("123"), notes.WithContent("{ \"dom\": [] }"), notes.WithWorkspace(cs.Workspace), notes.WithUpdatedBy(cs.User), notes.WithFavorite(true))
+	n, err := notes.UpsertNoteCtx(context.Background(), &notes.UpsertNoteRequest{
+		Uuid:      "123",
+		Content:   "{ \"dom\": [] }",
+		Favorite:  true,
+		Created:   timecop.Now().Unix(),
+		Updated:   timecop.Now().Unix(),
+		Workspace: cs.Workspace,
+		CreatedBy: cs.User,
+		UpdatedBy: cs.User,
+	})
 	assert.Nil(t, err)
 
-	n2, err := notes.UpsertNoteCtx(context.Background(), notes.WithUuid("321"), notes.WithContent("{ \"dom\": [] }"), notes.WithWorkspace(cs2.Workspace), notes.WithUpdatedBy(cs2.User), notes.WithFavorite(true))
+	n2, err := notes.UpsertNoteCtx(context.Background(), &notes.UpsertNoteRequest{
+		Uuid:      "321",
+		Content:   "{ \"dom\": [] }",
+		Favorite:  true,
+		Created:   timecop.Now().Unix(),
+		Updated:   timecop.Now().Unix(),
+		Workspace: cs2.Workspace,
+		CreatedBy: cs2.User,
+		UpdatedBy: cs2.User,
+	})
+
 	assert.Nil(t, err)
 
 	var testCases = []struct {

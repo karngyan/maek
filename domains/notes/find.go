@@ -2,10 +2,13 @@ package notes
 
 import (
 	"context"
+	"errors"
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/karngyan/maek/db"
 )
+
+var ErrNoteNotFound = errors.New("note not found")
 
 func FindNotesForWorkspace(ctx context.Context, wsId uint64) ([]*Note, error) {
 	var notes []*Note

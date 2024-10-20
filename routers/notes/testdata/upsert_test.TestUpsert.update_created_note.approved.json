@@ -1,7 +1,7 @@
 {
   "note": {
     "content": {
-      "dom": "some more text"
+      "dom": "some text"
     },
     "created": 1234567890,
     "createdBy": {
@@ -14,10 +14,10 @@
       "updated": 1234567890,
       "verified": false
     },
-    "favorite": false,
+    "favorite": true,
     "id": 1,
     "trashed": false,
-    "updated": 1234567890,
+    "updated": 9999999999,
     "updatedBy": {
       "created": 1234567890,
       "defaultWorkspaceId": 1,

@@ -18,36 +18,40 @@ func TestUpsert(t *testing.T) {
 	var testCases = []struct {
 		name           string
 		uuid           string
-		content        map[string]any
-		favorite       bool
+		updates        map[string]any
 		expectedStatus int
 	}{
 		{
 			name: "valid note first time",
 			uuid: "123",
-			content: map[string]any{
-				"dom": "some paragraph",
+			updates: map[string]any{
+				"content": map[string]any{
+					"dom": "some text",
+				},
+				"favorite": true,
+				"created":  1234567890,
+				"updated":  1234567890,
 			},
-			favorite:       true,
 			expectedStatus: 200,
 		},
 		{
 			name: "update created note",
 			uuid: "123",
-			content: map[string]any{
-				"dom": "some more text",
+			updates: map[string]any{
+				"content": map[string]any{
+					"dom": "some text",
+				},
+				"favorite": true,
+				"created":  1234567890,
+				"updated":  9999999999,
 			},
-			favorite:       false,
 			expectedStatus: 200,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rr, err := cs.Put(fmt.Sprintf("/v1/workspaces/%d/notes/%s", cs.Workspace.Id, tc.uuid), map[string]any{
-				"content":  tc.content,
-				"favorite": tc.favorite,
-			})
+			rr, err := cs.Put(fmt.Sprintf("/v1/workspaces/%d/notes/%s", cs.Workspace.Id, tc.uuid), tc.updates)
 
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedStatus, rr.Code)

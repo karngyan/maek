@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/karngyan/maek/routers/models"
-
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
 )
@@ -20,7 +18,12 @@ func Upsert(ctx *base.WebContext) {
 		return
 	}
 
-	var req models.Note
+	var req struct {
+		Content  map[string]any `json:"content"`
+		Favorite bool           `json:"favorite"`
+		Created  int64          `json:"created"`
+		Updated  int64          `json:"updated"`
+	}
 
 	if err := ctx.DecodeJSON(&req); err != nil {
 		base.UnprocessableEntity(ctx, err)
@@ -39,7 +42,6 @@ func Upsert(ctx *base.WebContext) {
 		Uuid:      nuuid,
 		Content:   string(contentBytes),
 		Favorite:  req.Favorite,
-		Trashed:   req.Trashed,
 		Created:   req.Created,
 		Updated:   req.Updated,
 		Workspace: ctx.Workspace,
