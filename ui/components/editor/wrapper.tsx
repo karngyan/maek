@@ -141,7 +141,7 @@ export const EditorWrapper = ({
         </div>
       </div>
       <div className='pl-[3.3rem]'>
-        <Text className='text-xs'>{`last updated: ${updated.toLowerCase()} -- ${note?.updatedBy.name ?? note?.updatedBy.email}`}</Text>
+        <Text className='text-xs'>{`last updated: ${updated.toLowerCase()} -- ${note?.updatedBy?.name ?? note?.updatedBy?.email}`}</Text>
       </div>
       <BlockNoteEditor
         content={note?.content?.dom}

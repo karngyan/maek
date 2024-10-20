@@ -28,6 +28,7 @@ export default function BlockNoteEditor({
         default: 'enter text or type / for commands',
       },
     },
+    trailingBlock: false,
   })
 
   return (
