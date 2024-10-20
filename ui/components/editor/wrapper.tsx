@@ -31,6 +31,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert'
+import { useDeleteNote } from '@/queries/hooks/use-delete-note'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -51,11 +52,13 @@ export const EditorWrapper = ({
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
   const { mutate: upsertNote } = useUpsertNote()
+  const { mutate: deleteNote } = useDeleteNote()
+
   const note = useMemo(() => data?.note, [data])
   const updated = useMemo(() => {
     if (!note) return ''
     return dayjs.unix(note.updated).format('MMMM D, YYYY h:mm:ss A	')
-  }, [note?.created])
+  }, [note?.updated])
 
   const debouncedUpsert = useDebounceCallback((dom: PartialBlock[]) => {
     if (!note) return
@@ -91,6 +94,7 @@ export const EditorWrapper = ({
 
   const onDeleteConfirm = () => {
     if (!note) return
+    deleteNote({ workspaceId, noteUuid })
   }
 
   const onFavoriteClick = () => {

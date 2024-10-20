@@ -48,6 +48,16 @@ export const fetchNote = async ({
   return response.data
 }
 
+export const deleteNote = async ({
+  workspaceId,
+  noteUuid,
+}: {
+  workspaceId: number
+  noteUuid: string
+}): Promise<void> => {
+  await authApiClient.delete(`/v1/workspaces/${workspaceId}/notes/${noteUuid}`)
+}
+
 export const fetchAllNotes = async ({
   workspaceId,
 }: {
