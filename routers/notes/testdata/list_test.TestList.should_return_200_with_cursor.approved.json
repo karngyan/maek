@@ -1,0 +1,133 @@
+{
+  "nextCursor": "OQ==",
+  "notes": [
+    {
+      "content": {
+        "foo": "bar"
+      },
+      "created": 1234567890,
+      "createdBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "favorite": true,
+      "id": 6,
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "uuid": "rand-uuid-6",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "foo": "bar"
+      },
+      "created": 1234567890,
+      "createdBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "favorite": true,
+      "id": 7,
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "uuid": "rand-uuid-7",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "foo": "bar"
+      },
+      "created": 1234567890,
+      "createdBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "favorite": true,
+      "id": 8,
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "uuid": "rand-uuid-8",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "foo": "bar"
+      },
+      "created": 1234567890,
+      "createdBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "favorite": true,
+      "id": 9,
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedBy": {
+        "created": 1234567890,
+        "defaultWorkspaceId": 1,
+        "email": "karn@maek.ai",
+        "id": 1,
+        "name": "Karn",
+        "role": "admin",
+        "updated": 1234567890,
+        "verified": false
+      },
+      "uuid": "rand-uuid-9",
+      "workspaceId": 1
+    }
+  ]
+}

@@ -15,14 +15,14 @@ import (
 func List(ctx *base.WebContext) {
 	rctx := ctx.Request.Context()
 
-	cursor := strings.TrimSpace(ctx.Input.Param("cursor"))
-	limit := strings.TrimSpace(ctx.Input.Param("limit"))
+	cursor := strings.TrimSpace(ctx.Input.Query("cursor"))
+	limit := strings.TrimSpace(ctx.Input.Query("limit"))
 
 	var l int
 	var err error
 	l, err = strconv.Atoi(limit)
 	if err != nil {
-		l = 500
+		l = notes.DefaultLimit
 	}
 
 	mn, nextCursor, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id, cursor, l)

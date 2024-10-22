@@ -13,6 +13,10 @@ import (
 var ErrNoteNotFound = errors.New("note not found")
 var ErrLimitTooHigh = errors.New("limit too high")
 
+const (
+	DefaultLimit = 500
+)
+
 func decodeCursor(cursor string) (uint64, error) {
 	csb, err := base64.StdEncoding.DecodeString(cursor)
 	if err != nil {
@@ -27,8 +31,12 @@ func encodeCursor(id uint64) string {
 }
 
 func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limit int) ([]*Note, string, error) {
-	if limit > 500 {
+	if limit > DefaultLimit {
 		return nil, "", ErrLimitTooHigh
+	}
+
+	if limit < 1 {
+		limit = DefaultLimit
 	}
 
 	var notes []*Note
