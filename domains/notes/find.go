@@ -17,6 +17,30 @@ const (
 	DefaultLimit = 500
 )
 
+type SortKey string
+
+const (
+	SortKeyCreatedAsc SortKey = "created"
+	SortKeyUpdatedAsc SortKey = "updated"
+	SortKeyCreatedDsc SortKey = "-created"
+	SortKeyUpdatedDsc SortKey = "-updated"
+)
+
+func FromSortString(sort string) SortKey {
+	switch sort {
+	case "created":
+		return SortKeyCreatedAsc
+	case "updated":
+		return SortKeyUpdatedAsc
+	case "-created":
+		return SortKeyCreatedDsc
+	case "-updated":
+		return SortKeyUpdatedDsc
+	default:
+		return SortKeyUpdatedDsc
+	}
+}
+
 func decodeCursor(cursor string) (uint64, error) {
 	csb, err := base64.StdEncoding.DecodeString(cursor)
 	if err != nil {
@@ -30,7 +54,7 @@ func encodeCursor(id uint64) string {
 	return base64.StdEncoding.EncodeToString([]byte(strconv.FormatUint(id, 10)))
 }
 
-func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limit int) ([]*Note, string, error) {
+func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limit int, sortKey SortKey) ([]*Note, string, error) {
 	if limit > DefaultLimit {
 		return nil, "", ErrLimitTooHigh
 	}
@@ -47,7 +71,10 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 	}
 
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		_, err := ormer.QueryTable("note").Filter("deleted", false).Filter("workspace_id", wsId).Filter("id__gt", lastNoteId).Limit(limit).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
+		_, err := ormer.QueryTable("note").Filter("deleted", false).Filter("workspace_id", wsId).
+			Filter("id__gt", lastNoteId).Limit(limit).
+			OrderBy(string(sortKey)).
+			RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
 		if err != nil {
 			return err
 		}

@@ -17,6 +17,7 @@ func List(ctx *base.WebContext) {
 
 	cursor := strings.TrimSpace(ctx.Input.Query("cursor"))
 	limit := strings.TrimSpace(ctx.Input.Query("limit"))
+	sort := strings.TrimSpace(ctx.Input.Query("sort"))
 
 	var l int
 	var err error
@@ -25,7 +26,8 @@ func List(ctx *base.WebContext) {
 		l = notes.DefaultLimit
 	}
 
-	mn, nextCursor, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id, cursor, l)
+	sk := notes.FromSortString(sort)
+	mn, nextCursor, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id, cursor, l, sk)
 	if err != nil {
 		if errors.Is(err, notes.ErrLimitTooHigh) {
 			base.BadRequest(ctx, err)

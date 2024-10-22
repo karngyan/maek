@@ -36,6 +36,7 @@ func TestList(t *testing.T) {
 
 	var tests = []struct {
 		name               string
+		sort               string
 		cursor             string
 		limit              string
 		expectedStatusCode int
@@ -68,7 +69,7 @@ func TestList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr, err := cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes?limit=%s&cursor=%s", cs.Workspace.Id, tt.limit, tt.cursor))
+			rr, err := cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes?limit=%s&cursor=%s&sort=%s", cs.Workspace.Id, tt.limit, tt.cursor, tt.sort))
 
 			assert.Nil(t, err)
 			assert.Equal(t, tt.expectedStatusCode, rr.Code)
