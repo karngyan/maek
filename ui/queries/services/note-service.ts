@@ -25,6 +25,7 @@ export interface NoteResponse {
 
 export interface ListNotesResponse {
   notes: Note[]
+  nextCursor: string
 }
 
 export const upsertNote = async (note: Note): Promise<NoteResponse> => {
@@ -60,11 +61,24 @@ export const deleteNote = async ({
 
 export const fetchAllNotes = async ({
   workspaceId,
+  cursor = '',
+  sort = '-updated',
+  limit = 500,
 }: {
   workspaceId: number
+  cursor?: string
+  limit?: number
+  sort?: 'created' | '-created' | 'updated' | '-updated'
 }): Promise<ListNotesResponse> => {
   const response = await authApiClient.get<ListNotesResponse>(
-    `/v1/workspaces/${workspaceId}/notes`
+    `/v1/workspaces/${workspaceId}/notes`,
+    {
+      params: {
+        cursor,
+        sort,
+        limit,
+      },
+    }
   )
   return response.data
 }

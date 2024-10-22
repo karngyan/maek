@@ -70,9 +70,14 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 		lastNoteId = 0
 	}
 
+	filterKey := "id__gt"
+	if sortKey == SortKeyCreatedDsc || sortKey == SortKeyUpdatedDsc {
+		filterKey = "id__lt"
+	}
+
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 		_, err := ormer.QueryTable("note").Filter("deleted", false).Filter("workspace_id", wsId).
-			Filter("id__gt", lastNoteId).Limit(limit).
+			Filter(filterKey, lastNoteId).Limit(limit).
 			OrderBy(string(sortKey)).
 			RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
 		if err != nil {
