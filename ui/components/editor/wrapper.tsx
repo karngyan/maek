@@ -32,6 +32,7 @@ import {
   AlertTitle,
 } from '@/components/ui/alert'
 import { useDeleteNote } from '@/queries/hooks/use-delete-note'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -57,8 +58,9 @@ export const EditorWrapper = ({
   const note = useMemo(() => data?.note, [data])
   const updated = useMemo(() => {
     if (!note) return ''
-    return dayjs.unix(note.updated).format('MMMM D, YYYY h:mm:ss A	')
-  }, [note?.updated])
+    dayjs.extend(relativeTime)
+    return dayjs.unix(note.updated).fromNow()
+  }, [note])
 
   const debouncedUpsert = useDebounceCallback((dom: PartialBlock[]) => {
     if (!note) return
@@ -141,7 +143,7 @@ export const EditorWrapper = ({
         </div>
       </div>
       <div className='pl-[3.3rem]'>
-        <Text className='text-xs'>{`last updated: ${updated.toLowerCase()} -- ${note?.updatedBy?.name ?? note?.updatedBy?.email}`}</Text>
+        <Text className='text-xs'>{`last updated: ${updated.toLowerCase()}`}</Text>
       </div>
       <BlockNoteEditor
         content={note?.content?.dom}

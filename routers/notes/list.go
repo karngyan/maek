@@ -1,7 +1,10 @@
 package notes
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/karngyan/maek/routers/models"
 
@@ -12,8 +15,23 @@ import (
 func List(ctx *base.WebContext) {
 	rctx := ctx.Request.Context()
 
-	mn, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id)
+	cursor := strings.TrimSpace(ctx.Input.Param("cursor"))
+	limit := strings.TrimSpace(ctx.Input.Param("limit"))
+
+	var l int
+	var err error
+	l, err = strconv.Atoi(limit)
 	if err != nil {
+		l = 500
+	}
+
+	mn, nextCursor, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id, cursor, l)
+	if err != nil {
+		if errors.Is(err, notes.ErrLimitTooHigh) {
+			base.BadRequest(ctx, err)
+			return
+		}
+
 		base.InternalError(ctx, err)
 		return
 	}
@@ -30,6 +48,7 @@ func List(ctx *base.WebContext) {
 	}
 
 	base.Respond(ctx, map[string]any{
-		"notes": uiNotes,
+		"notes":      uiNotes,
+		"nextCursor": nextCursor,
 	}, http.StatusOK)
 }
