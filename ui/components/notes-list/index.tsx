@@ -12,6 +12,7 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 import NotesListSection from './section'
+import { NoteMetaProvider } from '@/libs/providers/note-meta'
 
 const SortOptions = [
   { value: '-created', label: 'last created' },
@@ -38,10 +39,6 @@ const NotesList = () => {
     return data?.pages.map((page) => page.notes).flat()
   }, [data])
 
-  console.log(allNotes)
-
-  // save computed part of notes based on sort key
-  // today, yesterday, earlier this week, last week, earlier this month, last month, older
   const todayNotes = useMemo(() => {
     return allNotes?.filter((note) => {
       const updated = dayjs.unix(note.updated)
@@ -114,11 +111,11 @@ const NotesList = () => {
   }
 
   return (
-    <div>
+    <NoteMetaProvider>
       <div className='flex flex-row justify-between items-center'>
         <h2 className='text-xl text-zinc-300 font-medium'>all notes</h2>
         <Dropdown>
-          <DropdownButton outline>
+          <DropdownButton plain>
             {SortOptions.find((option) => option.value === sortKey)?.label}
             <ChevronDownIcon />
           </DropdownButton>
@@ -137,7 +134,7 @@ const NotesList = () => {
       {isPending ? (
         <div>Loading...</div>
       ) : (
-        <div>
+        <div className='space-y-6 mt-6'>
           <NotesListSection
             title='today'
             notes={todayNotes}
@@ -171,7 +168,7 @@ const NotesList = () => {
           <NotesListSection title='older' notes={olderNotes} />
         </div>
       )}
-    </div>
+    </NoteMetaProvider>
   )
 }
 

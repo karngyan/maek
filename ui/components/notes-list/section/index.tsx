@@ -18,14 +18,12 @@ const NotesListSection = ({
 
   return (
     <div>
-      <h2 className='text-lg font-medium text-zinc-500'>{title}</h2>
-      <div className='mt-2 space-y-2'>
+      <h2 className='text-lg font-semibold text-zinc-400'>{title}</h2>
+      <div className='mt-2'>
         {notes?.map((note) => (
-          <NotesListSectionItem
-            key={note.uuid}
-            note={note}
-            timeFormat={timeFormat}
-          />
+          <div key={note.uuid}>
+            <NotesListSectionItem note={note} timeFormat={timeFormat} />
+          </div>
         ))}
       </div>
     </div>

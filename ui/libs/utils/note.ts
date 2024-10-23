@@ -65,3 +65,7 @@ export const forEachBlock = (
 
   traverseBlockArray(blocks)
 }
+
+export type NoteMeta = {
+  isSelected: boolean
+}
