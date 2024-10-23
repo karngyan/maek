@@ -1,5 +1,6 @@
 import { Note } from '@/queries/services/note-service'
 import { User } from '@/queries/services/auth-service'
+import { Block } from '@blocknote/core'
 
 export const defaultNewNote = (
   uuid: string,
@@ -18,6 +19,7 @@ export const defaultNewNote = (
     content: {
       dom: [
         {
+          id: '',
           type: 'paragraph',
           props: {
             textColor: 'default',
@@ -31,6 +33,7 @@ export const defaultNewNote = (
               styles: {},
             },
           ],
+          children: [],
         },
       ],
     },
@@ -39,4 +42,26 @@ export const defaultNewNote = (
     createdBy: user,
     updatedBy: user,
   }
+}
+
+export const forEachBlock = (
+  blocks: Block[],
+  callback: (block: Block) => boolean
+) => {
+  function traverseBlockArray(blockArray: Block[]): boolean {
+    for (const block of blockArray) {
+      if (callback(block) === false) {
+        return false
+      }
+
+      const children = block.children
+      if (children && !traverseBlockArray(children)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  traverseBlockArray(blocks)
 }

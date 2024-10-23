@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { BlockNoteEditorProps } from '@/components/editor/blocknote'
-import { PartialBlock } from '@blocknote/core'
+import { Block } from '@blocknote/core'
 import {
   ArrowLeftIcon,
   EllipsisHorizontalIcon,
@@ -62,7 +62,7 @@ export const EditorWrapper = ({
     return dayjs.unix(note.updated).fromNow()
   }, [note])
 
-  const debouncedUpsert = useDebounceCallback((dom: PartialBlock[]) => {
+  const debouncedUpsert = useDebounceCallback((dom: Block[]) => {
     if (!note) return
 
     upsertNote({
@@ -75,7 +75,7 @@ export const EditorWrapper = ({
     })
   }, 600)
 
-  const handleOnChangeDom = (dom: PartialBlock[]) => {
+  const handleOnChangeDom = (dom: Block[]) => {
     debouncedUpsert(dom)
   }
 

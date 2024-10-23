@@ -3,12 +3,12 @@
 import { useCreateBlockNote } from '@blocknote/react'
 import { BlockNoteView } from '@blocknote/mantine'
 import '@blocknote/mantine/style.css'
-import { locales, PartialBlock } from '@blocknote/core'
+import { Block, locales } from '@blocknote/core'
 import { maekDarkTheme } from '@/components/editor/theme'
 
 export type BlockNoteEditorProps = {
-  content?: PartialBlock[]
-  onChangeDom?: (content: PartialBlock[]) => unknown
+  content?: Block[]
+  onChangeDom?: (content: Block[]) => unknown
 }
 
 export default function BlockNoteEditor({

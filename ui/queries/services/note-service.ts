@@ -1,9 +1,9 @@
 import { User } from '@/queries/services/auth-service'
 import { authApiClient } from '@/queries/services/base'
-import { PartialBlock } from '@blocknote/core'
+import { Block } from '@blocknote/core'
 
 interface NoteContent {
-  dom: PartialBlock[]
+  dom: Block[]
 }
 
 export interface Note {
@@ -68,7 +68,7 @@ export const fetchAllNotes = async ({
   workspaceId: number
   cursor?: string
   limit?: number
-  sort?: 'created' | '-created' | 'updated' | '-updated'
+  sort?: string
 }): Promise<ListNotesResponse> => {
   const response = await authApiClient.get<ListNotesResponse>(
     `/v1/workspaces/${workspaceId}/notes`,
