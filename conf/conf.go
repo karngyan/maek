@@ -105,7 +105,7 @@ func Init() error {
 		return err
 	}
 
-	SQLConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8", MysqlUser, MysqlPassword, MysqlHost, MysqlPort, MysqlSchema)
+	SQLConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&collation=utf8mb4_0900_ai_ci", MysqlUser, MysqlPassword, MysqlHost, MysqlPort, MysqlSchema)
 	SQLTestConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/", TestMysqlUser, TestMysqlPassword, TestMysqlHost, TestMysqlPort)
 
 	CorsAllowedOrigins = web.AppConfig.DefaultStrings("CorsAllowedOrigins", []string{"*"})

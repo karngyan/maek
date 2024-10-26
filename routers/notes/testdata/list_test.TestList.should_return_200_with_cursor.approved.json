@@ -1,5 +1,5 @@
 {
-  "nextCursor": "OQ==",
+  "nextCursor": "NA==",
   "notes": [
     {
       "content": {
@@ -17,7 +17,18 @@
         "verified": false
       },
       "favorite": true,
-      "id": 6,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 1,
       "trashed": false,
       "updated": 1234567890,
       "updatedBy": {
@@ -30,7 +41,7 @@
         "updated": 1234567890,
         "verified": false
       },
-      "uuid": "rand-uuid-6",
+      "uuid": "rand-uuid-1",
       "workspaceId": 1
     },
     {
@@ -49,7 +60,18 @@
         "verified": false
       },
       "favorite": true,
-      "id": 7,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 2,
       "trashed": false,
       "updated": 1234567890,
       "updatedBy": {
@@ -62,7 +84,7 @@
         "updated": 1234567890,
         "verified": false
       },
-      "uuid": "rand-uuid-7",
+      "uuid": "rand-uuid-2",
       "workspaceId": 1
     },
     {
@@ -81,7 +103,18 @@
         "verified": false
       },
       "favorite": true,
-      "id": 8,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 3,
       "trashed": false,
       "updated": 1234567890,
       "updatedBy": {
@@ -94,7 +127,7 @@
         "updated": 1234567890,
         "verified": false
       },
-      "uuid": "rand-uuid-8",
+      "uuid": "rand-uuid-3",
       "workspaceId": 1
     },
     {
@@ -113,7 +146,18 @@
         "verified": false
       },
       "favorite": true,
-      "id": 9,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 4,
       "trashed": false,
       "updated": 1234567890,
       "updatedBy": {
@@ -126,7 +170,7 @@
         "updated": 1234567890,
         "verified": false
       },
-      "uuid": "rand-uuid-9",
+      "uuid": "rand-uuid-4",
       "workspaceId": 1
     }
   ]

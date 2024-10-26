@@ -14,10 +14,8 @@ func Init() error {
 	}
 
 	// local dev hack
-	// if conf.IsDevEnv() {
-	// 	if err := orm.RunSyncdb("default", false, true); err != nil {
-	// 		return err
-	// 	}
+	// if err := orm.RunSyncdb("default", false, true); err != nil {
+	// 	return err
 	// }
 
 	if err = initCaches(); err != nil {

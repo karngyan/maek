@@ -42,14 +42,25 @@ func WithUpdatedBy(user *auth.User) UpsertOpt {
 }
 
 type UpsertNoteRequest struct {
-	Uuid      string
-	Content   string
-	Favorite  bool
-	Created   int64
-	Updated   int64
-	Workspace *auth.Workspace
-	CreatedBy *auth.User
-	UpdatedBy *auth.User
+	Uuid           string
+	Content        string
+	Favorite       bool
+	Created        int64
+	Updated        int64
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	Workspace      *auth.Workspace
+	CreatedBy      *auth.User
+	UpdatedBy      *auth.User
 }
 
 func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
@@ -79,15 +90,26 @@ func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 	}
 
 	note := &Note{
-		Uuid:      nuuid,
-		Content:   req.Content,
-		Favorite:  req.Favorite,
-		Trashed:   false,
-		Workspace: req.Workspace,
-		Updated:   req.Updated,
-		Created:   req.Created,
-		UpdatedBy: req.UpdatedBy,
-		CreatedBy: req.CreatedBy,
+		Uuid:           nuuid,
+		Content:        req.Content,
+		Favorite:       req.Favorite,
+		Trashed:        false,
+		Workspace:      req.Workspace,
+		Updated:        req.Updated,
+		Created:        req.Created,
+		UpdatedBy:      req.UpdatedBy,
+		CreatedBy:      req.CreatedBy,
+		HasContent:     req.HasContent,
+		HasImages:      req.HasImages,
+		HasVideos:      req.HasVideos,
+		HasOpenTasks:   req.HasOpenTasks,
+		HasClosedTasks: req.HasClosedTasks,
+		HasCode:        req.HasCode,
+		HasAudios:      req.HasAudios,
+		HasLinks:       req.HasLinks,
+		HasFiles:       req.HasFiles,
+		HasQuotes:      req.HasQuotes,
+		HasTables:      req.HasTables,
 	}
 
 	if existingNote != nil {
