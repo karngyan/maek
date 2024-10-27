@@ -20,14 +20,15 @@ func TestList(t *testing.T) {
 	i := 1
 	for i < 10 {
 		_, err := notes.UpsertNoteCtx(context.Background(), &notes.UpsertNoteRequest{
-			Uuid:      fmt.Sprintf("rand-uuid-%d", i),
-			Content:   "{ \"foo\": \"bar\" }",
-			Favorite:  true,
-			Created:   1234567890,
-			Updated:   1234567890,
-			Workspace: cs.Workspace,
-			CreatedBy: cs.User,
-			UpdatedBy: cs.User,
+			Uuid:       fmt.Sprintf("rand-uuid-%d", i),
+			Content:    "{ \"foo\": \"bar\" }",
+			Favorite:   true,
+			Created:    1234567890,
+			Updated:    1234567890,
+			Workspace:  cs.Workspace,
+			CreatedBy:  cs.User,
+			UpdatedBy:  cs.User,
+			HasContent: true,
 		})
 		assert.Nil(t, err)
 

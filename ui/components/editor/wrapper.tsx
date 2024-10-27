@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/alert'
 import { useDeleteNote } from '@/queries/hooks/use-delete-note'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { getHasMeta } from '@/libs/utils/note'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -64,14 +65,20 @@ export const EditorWrapper = ({
 
   const debouncedUpsert = useDebounceCallback((dom: Block[]) => {
     if (!note) return
-
-    upsertNote({
+    const newNote = {
       ...note,
       updated: dayjs().unix(),
       content: {
         ...note.content,
         dom,
       },
+    }
+
+    const hasMeta = getHasMeta(newNote) // a little too expensive, may be we should move this to the server or use a more efficient way to update this
+
+    upsertNote({
+      ...newNote,
+      ...hasMeta,
     })
   }, 600)
 

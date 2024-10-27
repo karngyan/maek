@@ -1,4 +1,4 @@
-import { forEachBlock } from '@/libs/utils/note'
+import { getNoteTitle } from '@/libs/utils/note'
 import { Note } from '@/queries/services/note-service'
 import Link from 'next/link'
 import { useMemo } from 'react'
@@ -27,35 +27,7 @@ const NotesListSectionItem = ({
   const { noteMeta, setNoteMeta } = useNoteMeta()
 
   const title = useMemo(() => {
-    let s = ''
-    let hasTable = false
-
-    forEachBlock(note.content.dom, (block) => {
-      if (block.content == null) {
-        return true // continue search
-      }
-
-      if (Array.isArray(block.content) === false) {
-        // TableContent
-        hasTable = true
-        return true // continue search for any direct text, not gonna look into table cells
-      }
-
-      for (const inlineContent of block.content) {
-        if ('text' in inlineContent) {
-          s = inlineContent.text
-          return false
-        }
-      }
-
-      return true
-    })
-
-    if (s == '' && hasTable) {
-      s = 'contains a table only'
-    }
-
-    return s
+    return getNoteTitle(note)
   }, [note])
 
   const onCheckboxClick = (checked: boolean, uuid: string) => {

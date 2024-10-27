@@ -17,6 +17,17 @@ export interface Note {
   createdBy: User
   updatedBy: User
   workspaceId: number
+  hasAudios: boolean
+  hasClosedTasks: boolean
+  hasCode: boolean
+  hasContent: boolean
+  hasFiles: boolean
+  hasImages: boolean
+  hasLinks: boolean
+  hasOpenTasks: boolean
+  hasQuotes: boolean
+  hasTables: boolean
+  hasVideos: boolean
 }
 
 export interface NoteResponse {
