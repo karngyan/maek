@@ -34,6 +34,8 @@ import {
 import { useDeleteNote } from '@/queries/hooks/use-delete-note'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { getHasMeta } from '@/libs/utils/note'
+import NotFound from '@/app/not-found'
+import { formatTimestamp } from '@/libs/utils/time'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -55,7 +57,7 @@ export const EditorWrapper = ({
   initialFocusOption,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
-  const { data, isPending } = useFetchNote(workspaceId, noteUuid)
+  const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
 
@@ -63,10 +65,13 @@ export const EditorWrapper = ({
   const { mutate: deleteNote } = useDeleteNote()
 
   const note = useMemo(() => data?.note, [data])
-  const updated = useMemo(() => {
-    if (!note) return ''
+  const ts = useMemo(() => {
+    if (!note) return { updated: '', created: '' }
     dayjs.extend(relativeTime)
-    return dayjs.unix(note.updated).fromNow()
+    return {
+      updated: formatTimestamp(note.updated),
+      created: formatTimestamp(note.created),
+    }
   }, [note])
 
   const debouncedUpsert = useDebounceCallback((dom: Block[]) => {
@@ -123,6 +128,10 @@ export const EditorWrapper = ({
     })
   }
 
+  if (isError) {
+    return <NotFound embed={true} statusCode={404} />
+  }
+
   return (
     <div className='max-w-4xl mx-auto relative shrink-0 w-full grow-0 h-[calc(100vh-144px)] border border-dashed border-zinc-800 rounded-xl overflow-scroll'>
       <div className='sticky top-0 z-10 backdrop-blur-sm bg-zinc-900/60 flex flex-row justify-between p-6'>
@@ -165,7 +174,7 @@ export const EditorWrapper = ({
       ) : (
         <>
           <div className='pl-[3.3rem]'>
-            <Text className='text-xs'>{`last updated: ${updated.toLowerCase()}`}</Text>
+            <Text className='text-xs'>{`${ts.created} -- ${ts.updated}`}</Text>
           </div>
           <BlockNoteEditor
             content={note?.content?.dom}

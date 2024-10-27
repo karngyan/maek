@@ -137,36 +137,18 @@ const NotesList = () => {
         <NotesListPendingPulse withHeader={false} />
       ) : (
         <div className='space-y-6 mt-6'>
-          <NotesListSection
-            title='today'
-            notes={todayNotes}
-            timeFormat='h:mm A'
-          />
-          <NotesListSection
-            title='yesterday'
-            notes={yesterdayNotes}
-            timeFormat='ddd h:mm A'
-          />
+          <NotesListSection title='today' notes={todayNotes} />
+          <NotesListSection title='yesterday' notes={yesterdayNotes} />
           <NotesListSection
             title='earlier this week'
             notes={earlierThisWeekNotes}
-            timeFormat='ddd h:mm A'
           />
-          <NotesListSection
-            title='last week'
-            notes={lastWeekNotes}
-            timeFormat='MMM D h:mm A'
-          />
+          <NotesListSection title='last week' notes={lastWeekNotes} />
           <NotesListSection
             title='earlier this month'
             notes={earlierThisMonthNotes}
-            timeFormat='MMM D h:mm A'
           />
-          <NotesListSection
-            title='last month'
-            notes={lastMonthNotes}
-            timeFormat='MMM D h:mm A'
-          />
+          <NotesListSection title='last month' notes={lastMonthNotes} />
           <NotesListSection title='older' notes={olderNotes} />
         </div>
       )}

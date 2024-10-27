@@ -4,7 +4,6 @@ import { getNoteTitle } from '@/libs/utils/note'
 import { Note } from '@/queries/services/note-service'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import days from 'dayjs'
 import ScribbleIcon from '@/components/ui/icons/scribble'
 import { useNoteMeta } from '@/libs/providers/note-meta'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -16,16 +15,13 @@ import {
   DropdownItem,
 } from '@/components/ui/dropdown'
 import { EllipsisHorizontalIcon } from '@heroicons/react/16/solid'
+import { formatTimestamp } from '@/libs/utils/time'
 
 type NotesListSectionItemProps = {
   note: Note
-  timeFormat?: string
 }
 
-const NotesListSectionItem = ({
-  note,
-  timeFormat = 'MMM D, YYYY h:mm A',
-}: NotesListSectionItemProps) => {
+const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
 
   const title = useMemo(() => {
@@ -80,7 +76,7 @@ const NotesListSectionItem = ({
       <div className='ml-3 flex-none'>
         <div className='flex items-center space-x-1 md:space-x-2 justify-center'>
           <span className='shrink-0 group-hover:text-zinc-400 text-xs text-zinc-500'>
-            {days.unix(note.updated).format(timeFormat)}
+            {formatTimestamp(note.updated)}
           </span>
           <div>
             <Dropdown>

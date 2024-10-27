@@ -3,15 +3,10 @@ import NotesListSectionItem from './item'
 
 type NotesListSectionProps = {
   title: string
-  timeFormat?: string
   notes?: Note[]
 }
 
-const NotesListSection = ({
-  title,
-  notes,
-  timeFormat,
-}: NotesListSectionProps) => {
+const NotesListSection = ({ title, notes }: NotesListSectionProps) => {
   if (notes == null || notes.length === 0) {
     return null
   }
@@ -22,7 +17,7 @@ const NotesListSection = ({
       <div className='mt-2'>
         {notes?.map((note) => (
           <div key={note.uuid}>
-            <NotesListSectionItem note={note} timeFormat={timeFormat} />
+            <NotesListSectionItem note={note} />
           </div>
         ))}
       </div>
