@@ -2,6 +2,8 @@ import { Note } from '@/queries/services/note-service'
 import { User } from '@/queries/services/auth-service'
 import { type Block } from '@blocknote/core'
 import QuoteIcon from '@/components/ui/icons/quote'
+import { SunIcon } from '@heroicons/react/16/solid'
+import dayjs from 'dayjs'
 
 export const defaultNewNote = (
   uuid: string,
@@ -342,6 +344,100 @@ export const QuickCreateOptions: {
           textColor: 'default',
         },
         type: 'paragraph',
+      },
+    ],
+  },
+  {
+    label: 'daily planner',
+    icon: <SunIcon className='h-4 text-zinc-500' />,
+    focusId: 'b94d5453-cf0c-4d0b-95e3-1e767fc3c7dd',
+    focusPlacement: 'end',
+    dom: [
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: `${dayjs().format('D MMMM YYYY')} Plan`,
+            type: 'text',
+          },
+        ],
+        id: '',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'My tasks',
+            type: 'text',
+          },
+        ],
+        id: '0f2d73e4-34a9-4825-b035-cdc2457fc348',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '124ce4ab-52aa-46cd-9f75-ef10820b28d1',
+        props: {
+          backgroundColor: 'default',
+          checked: false,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'checkListItem',
+      },
+      {
+        children: [],
+        content: [],
+        id: '419c5544-7ff9-466d-a185-7e0235917f22',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Schedule',
+            type: 'text',
+          },
+        ],
+        id: 'a818aafa-e70d-4bb4-b423-63a5377a921f',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: 'b94d5453-cf0c-4d0b-95e3-1e767fc3c7dd',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'bulletListItem',
       },
     ],
   },

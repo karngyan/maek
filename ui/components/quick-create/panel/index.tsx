@@ -2,7 +2,6 @@ import {
   Bars3CenterLeftIcon,
   BookOpenIcon,
   NewspaperIcon,
-  SunIcon,
   UsersIcon,
 } from '@heroicons/react/16/solid'
 import RecipeIcon from '@/components/ui/icons/recipe'
@@ -32,9 +31,6 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
           {option.label}
         </QuickButton>
       ))}
-      <QuickButton icon={<SunIcon className='h-4 text-zinc-500' />}>
-        daily planner
-      </QuickButton>
       <QuickButton icon={<Bars3CenterLeftIcon className='h-4 text-zinc-500' />}>
         meeting notes
       </QuickButton>
