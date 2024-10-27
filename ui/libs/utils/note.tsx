@@ -4,6 +4,7 @@ import { type Block } from '@blocknote/core'
 import QuoteIcon from '@/components/ui/icons/quote'
 import { Bars3CenterLeftIcon, SunIcon } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
+import TodoIcon from '@/components/ui/icons/todo'
 
 export const defaultNewNote = (
   uuid: string,
@@ -452,7 +453,7 @@ export const QuickCreateOptions: {
         content: [
           {
             styles: {},
-            text: ' - 27 October 2024',
+            text: ` - ${dayjs().format('D MMMM YYYY')}`,
             type: 'text',
           },
         ],
@@ -562,6 +563,44 @@ export const QuickCreateOptions: {
           textColor: 'default',
         },
         type: 'bulletListItem',
+      },
+    ],
+  },
+  {
+    label: 'to-do list',
+    icon: <TodoIcon className='h-3 text-zinc-500' />,
+    focusId: '8320befb-c3a4-4164-b0b3-b7732b0f2ff1',
+    focusPlacement: 'end',
+    dom: [
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: `My Tasks - ${dayjs().format('D MMMM YYYY')}`,
+            type: 'text',
+          },
+        ],
+        id: '0f14e78c-7e45-4de8-ba79-42309a4244de',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [],
+        id: '8320befb-c3a4-4164-b0b3-b7732b0f2ff1',
+        props: {
+          backgroundColor: 'default',
+          checked: false,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'checkListItem',
       },
     ],
   },
