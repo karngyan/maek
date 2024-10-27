@@ -55,9 +55,10 @@ export const EditorWrapper = ({
   initialFocusOption,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
-  const { data } = useFetchNote(workspaceId, noteUuid)
+  const { data, isPending } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
+
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote()
 
@@ -154,14 +155,25 @@ export const EditorWrapper = ({
           </Dropdown>
         </div>
       </div>
-      <div className='pl-[3.3rem]'>
-        <Text className='text-xs'>{`last updated: ${updated.toLowerCase()}`}</Text>
-      </div>
-      <BlockNoteEditor
-        content={note?.content?.dom}
-        onChangeDom={(dom) => handleOnChangeDom(dom)}
-        initialFocusOption={initialFocusOption}
-      />
+      {isPending ? (
+        <div className='space-y-4 w-full p-8'>
+          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-2/12'></div>
+          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-4/12'></div>
+          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-8/12'></div>
+          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-12/12'></div>
+        </div>
+      ) : (
+        <>
+          <div className='pl-[3.3rem]'>
+            <Text className='text-xs'>{`last updated: ${updated.toLowerCase()}`}</Text>
+          </div>
+          <BlockNoteEditor
+            content={note?.content?.dom}
+            onChangeDom={(dom) => handleOnChangeDom(dom)}
+            initialFocusOption={initialFocusOption}
+          />
+        </>
+      )}
       <Alert
         open={isDeleteConfirmAlertOpen}
         onClose={setIsDeleteConfirmAlertOpen}

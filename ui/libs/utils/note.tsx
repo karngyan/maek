@@ -346,3 +346,47 @@ export const QuickCreateOptions: {
     ],
   },
 ]
+
+export const isDomEmpty = (dom: Block[]) => {
+  if (dom.length > 1) {
+    return false
+  }
+
+  if (dom.length === 0) {
+    return true
+  }
+
+  const block = dom[0]
+  if (block.type !== 'paragraph') {
+    return false
+  }
+
+  if (block.children.length > 0) {
+    return false
+  }
+
+  const content = block.content
+  if (typeof content === 'string') {
+    return content === ''
+  }
+
+  if (Array.isArray(content)) {
+    // StyledText[] or Link[]
+    if (content.length === 0) {
+      return true
+    }
+
+    if (content.length > 1) {
+      return false
+    }
+
+    const inlineContent = content[0]
+    if (inlineContent.type === 'link') {
+      return false // if you have a link you got some content
+    }
+
+    return inlineContent.text === ''
+  }
+
+  return false
+}
