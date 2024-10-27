@@ -64,7 +64,7 @@ const QuickCreateInp = () => {
         </div>
       </div>
 
-      <div className='absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'>
+      <div className='no-scrollbar absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'>
         <span className='text-sm text-zinc-500 shrink-0'>quick create:</span>
         <QuickButton icon={<QuoteIcon className='h-3 text-zinc-500' />}>
           quote

@@ -1,3 +1,5 @@
+'use client'
+
 import { getNoteTitle } from '@/libs/utils/note'
 import { Note } from '@/queries/services/note-service'
 import Link from 'next/link'

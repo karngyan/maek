@@ -13,6 +13,7 @@ import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 import NotesListSection from './section'
 import { NoteMetaProvider } from '@/libs/providers/note-meta'
+import NotesListPendingPulse from './pending-pulse'
 
 const SortOptions = [
   { value: '-created', label: 'last created' },
@@ -102,12 +103,13 @@ const NotesList = () => {
     })
   }, [allNotes])
 
-  if (status === 'pending') {
-    return <div>Loading...</div>
-  }
-
   if (status === 'error') {
-    return <div>Error: {JSON.stringify(error)}</div>
+    return (
+      <div className='test-zinc-400'>
+        some error occurred while fetching your notes. try reloading?{' '}
+        {JSON.stringify(error, null, 2)}
+      </div>
+    )
   }
 
   return (
@@ -132,7 +134,7 @@ const NotesList = () => {
         </Dropdown>
       </div>
       {isPending ? (
-        <div>Loading...</div>
+        <NotesListPendingPulse withHeader={false} />
       ) : (
         <div className='space-y-6 mt-6'>
           <NotesListSection
