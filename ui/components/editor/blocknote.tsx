@@ -36,7 +36,7 @@ export default function BlockNoteEditor({
       ...locales.en,
       placeholders: {
         ...locales.en.placeholders,
-        default: 'enter text or type / for commands',
+        default: '',
       },
     },
     trailingBlock: true,

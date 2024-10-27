@@ -2,7 +2,7 @@ import { Note } from '@/queries/services/note-service'
 import { User } from '@/queries/services/auth-service'
 import { type Block } from '@blocknote/core'
 import QuoteIcon from '@/components/ui/icons/quote'
-import { SunIcon } from '@heroicons/react/16/solid'
+import { Bars3CenterLeftIcon, SunIcon } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 
 export const defaultNewNote = (
@@ -432,6 +432,130 @@ export const QuickCreateOptions: {
         children: [],
         content: [],
         id: 'b94d5453-cf0c-4d0b-95e3-1e767fc3c7dd',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'bulletListItem',
+      },
+    ],
+  },
+  {
+    label: 'meeting notes',
+    icon: <Bars3CenterLeftIcon className='h-4 text-zinc-500' />,
+    focusId: 'c54616f5-7b49-44ae-9051-908cf34ffc70',
+    focusPlacement: 'start',
+    dom: [
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: ' - 27 October 2024',
+            type: 'text',
+          },
+        ],
+        id: 'c54616f5-7b49-44ae-9051-908cf34ffc70',
+        props: {
+          backgroundColor: 'default',
+          level: 2,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Attendees: ',
+            type: 'text',
+          },
+        ],
+        id: '0ed01ac4-87a8-4a65-9dec-9456545faf84',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '99e1618e-699a-400a-b0e6-4e0c4d8a53b5',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Next Steps',
+            type: 'text',
+          },
+        ],
+        id: '74ad8a46-e5aa-4f88-bc69-23dbc31def27',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [],
+        id: '9f0cfa83-8d4e-41b2-afc6-c50ec86d7b6c',
+        props: {
+          backgroundColor: 'default',
+          checked: false,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'checkListItem',
+      },
+      {
+        children: [],
+        content: [],
+        id: 'c98ba6ea-d368-4bba-a922-887ddf1029a9',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Agenda',
+            type: 'text',
+          },
+        ],
+        id: '374f6ce1-446b-4725-8cbd-71589dbcdde0',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [],
+        id: 'de2182c9-1262-4c56-ab99-311805ac9569',
         props: {
           backgroundColor: 'default',
           textAlignment: 'left',
