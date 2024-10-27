@@ -38,6 +38,10 @@ import { getHasMeta } from '@/libs/utils/note'
 type EditorWrapperProps = {
   workspaceId: number
   noteUuid: string
+  initialFocusOption?: {
+    id: string
+    placement: 'end' | 'start'
+  }
 }
 
 const BlockNoteEditor = dynamic<BlockNoteEditorProps>(
@@ -48,6 +52,7 @@ const BlockNoteEditor = dynamic<BlockNoteEditorProps>(
 export const EditorWrapper = ({
   workspaceId,
   noteUuid,
+  initialFocusOption,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
   const { data } = useFetchNote(workspaceId, noteUuid)
@@ -155,6 +160,7 @@ export const EditorWrapper = ({
       <BlockNoteEditor
         content={note?.content?.dom}
         onChangeDom={(dom) => handleOnChangeDom(dom)}
+        initialFocusOption={initialFocusOption}
       />
       <Alert
         open={isDeleteConfirmAlertOpen}

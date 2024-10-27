@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import QuickCreateInp from '@/components/quick-create-inp'
+import QuickCreateInp from '@/components/quick-create/inp'
 import NotesList from '@/components/notes-list'
 
 export const metadata: Metadata = {

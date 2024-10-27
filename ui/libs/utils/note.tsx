@@ -1,12 +1,14 @@
 import { Note } from '@/queries/services/note-service'
 import { User } from '@/queries/services/auth-service'
 import { type Block } from '@blocknote/core'
+import QuoteIcon from '@/components/ui/icons/quote'
 
 export const defaultNewNote = (
   uuid: string,
   wid: number,
   text: string,
-  user: User
+  user: User,
+  dom?: Block[]
 ): Note => {
   const nowInSeconds = Math.floor(Date.now() / 1000)
 
@@ -17,7 +19,7 @@ export const defaultNewNote = (
     trashed: false,
     favorite: false,
     content: {
-      dom: [
+      dom: dom ?? [
         {
           id: '',
           type: 'paragraph',
@@ -242,3 +244,105 @@ export const getNoteTitle = (note: Note) => {
 export type NoteMeta = {
   isSelected: boolean
 }
+
+export const QuickCreateOptions: {
+  label: string
+  icon: React.ReactNode
+  dom: Block[]
+  focusId?: string
+  focusPlacement?: 'start' | 'end'
+}[] = [
+  {
+    label: 'quote',
+    icon: <QuoteIcon className='h-3 text-zinc-500' />,
+    focusId: '04df564a-47c9-490c-ac8d-297d3556d4dd',
+    focusPlacement: 'end',
+    dom: [
+      {
+        children: [
+          {
+            children: [],
+            content: [
+              {
+                styles: {},
+                text: 'Add a quote',
+                type: 'text',
+              },
+            ],
+            id: '04df564a-47c9-490c-ac8d-297d3556d4dd',
+            props: {
+              backgroundColor: 'default',
+              textAlignment: 'left',
+              textColor: 'default',
+            },
+            type: 'paragraph',
+          },
+        ],
+        content: [],
+        id: 'ae92379d-c15a-473f-8042-745f8f20ff91',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '9dd202e0-7059-484e-b4de-2802e62c5b05',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'author: ',
+            type: 'text',
+          },
+        ],
+        id: '99a4002c-780d-49aa-9871-2fcfeafeed17',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'source: ',
+            type: 'text',
+          },
+        ],
+        id: '20cc9623-6e3b-4eb9-843e-62a0f3197582',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '397772ba-4fa0-485e-b980-0cce87c6478a',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+    ],
+  },
+]
