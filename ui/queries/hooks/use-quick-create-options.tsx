@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 import TodoIcon from '@/components/ui/icons/todo'
+import RecipeIcon from '@/components/ui/icons/recipe'
 
 export const useQuickCreateOptions = (userName: string) => {
   return useQuery({
@@ -21,6 +22,7 @@ export const useQuickCreateOptions = (userName: string) => {
         todoList(),
         oneOnOneNotes(userName),
         projectPlan(userName),
+        recipe(),
       ]
     },
     queryKey: ['quick-create-options', { userName }],
@@ -35,6 +37,169 @@ export interface QuickCreateOption {
   focusOptions?: {
     id: string
     placement: 'start' | 'end'
+  }
+}
+
+const recipe = (): QuickCreateOption => {
+  return {
+    label: 'recipe',
+    icon: <RecipeIcon className='h-3 text-zinc-500' />,
+    focusOptions: {
+      id: 'f0e5eaf3-e9d8-4c3d-9fa2-0a801b3840ab',
+      placement: 'end',
+    },
+    dom: [
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Add a recipe title',
+            type: 'text',
+          },
+        ],
+        id: 'f0e5eaf3-e9d8-4c3d-9fa2-0a801b3840ab',
+        props: {
+          backgroundColor: 'default',
+          level: 2,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Servings: \nCook time: ',
+            type: 'text',
+          },
+        ],
+        id: '205ddda8-95c9-4715-98a6-d307d8caa5ff',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '43416eae-ce02-4a0a-8745-1ec374c90cda',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Ingredients',
+            type: 'text',
+          },
+        ],
+        id: 'c443be4f-0f94-4066-b3bd-0b0f8ea19d91',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [],
+        id: '14038154-8914-40b0-9284-bf44f2a24434',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'bulletListItem',
+      },
+      {
+        children: [],
+        content: [],
+        id: 'a94aa747-a4ec-4c51-82c2-22cc7315af83',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Instructions',
+            type: 'text',
+          },
+        ],
+        id: '27d34c87-c47c-4fce-a5fe-550aa6fe7aab',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [],
+        id: '03d060bc-b8a9-4a14-8e23-1bd0b80256dc',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'numberedListItem',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: '\n',
+            type: 'text',
+          },
+          {
+            styles: {
+              italic: true,
+            },
+            text: 'Source: ',
+            type: 'text',
+          },
+        ],
+        id: '41530192-1b27-4e7e-ae88-f95ad2afff16',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '78940b7e-006f-4f94-bf1a-346b28281179',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+    ],
   }
 }
 
