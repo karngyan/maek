@@ -1,15 +1,15 @@
 'use client'
 
-import {
-  BookOpenIcon,
-  NewspaperIcon,
-  UsersIcon,
-} from '@heroicons/react/16/solid'
+import { BookOpenIcon } from '@heroicons/react/16/solid'
 import RecipeIcon from '@/components/ui/icons/recipe'
 import { Block } from '@blocknote/core'
-import { QuickCreateOptions } from '@/libs/utils/note'
 import { useMemo } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import { useAuthInfo } from '@/queries/hooks/use-auth-info'
+import {
+  QuickCreateOption,
+  useQuickCreateOptions,
+} from '@/queries/hooks/use-quick-create-options'
 
 type QuickCreatePanelProps = {
   onQuickCreate: (
@@ -20,24 +20,37 @@ type QuickCreatePanelProps = {
 }
 
 const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
+  const { data: authInfo } = useAuthInfo()
+  const { data: quickCreateOptions } = useQuickCreateOptions(
+    authInfo?.user.name ?? ''
+  )
+
   const [optionsOrder, setOptionsOrder] = useLocalStorage<string[]>(
     'quick-create-options-order',
     []
   )
 
   const options = useMemo(() => {
-    if (optionsOrder.length !== QuickCreateOptions.length) {
-      return QuickCreateOptions
+    if (quickCreateOptions == null) {
+      return []
+    }
+
+    if (optionsOrder.length !== quickCreateOptions.length) {
+      return quickCreateOptions
     }
 
     return optionsOrder.map((label) =>
-      QuickCreateOptions.find((o) => o.label === label)
+      quickCreateOptions.find((o) => o.label === label)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [quickCreateOptions])
 
-  const onClick = (option: (typeof QuickCreateOptions)[0]) => {
-    const allOptions = QuickCreateOptions.map((o) => o.label)
+  const onClick = (option: QuickCreateOption) => {
+    if (quickCreateOptions == null) {
+      return
+    }
+
+    const allOptions = quickCreateOptions.map((o) => o.label)
     const existingOrder = optionsOrder
       .filter((o) => allOptions.includes(o))
       .filter((o) => o !== option.label)
@@ -46,7 +59,11 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
       .filter((o) => o !== option.label)
 
     setOptionsOrder([option.label, ...existingOrder, ...missingOptions])
-    onQuickCreate(option.dom, option.focusId, option.focusPlacement)
+    onQuickCreate(
+      option.dom,
+      option.focusOptions?.id,
+      option.focusOptions?.placement
+    )
   }
 
   if (options == null) {
@@ -69,12 +86,6 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
           </QuickButton>
         )
       })}
-      <QuickButton icon={<UsersIcon className='h-4 text-zinc-500' />}>
-        1:1 notes
-      </QuickButton>
-      <QuickButton icon={<NewspaperIcon className='h-4 text-zinc-500' />}>
-        project plan
-      </QuickButton>
       <QuickButton icon={<RecipeIcon className='h-3 text-zinc-500' />}>
         recipe
       </QuickButton>
