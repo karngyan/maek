@@ -28,6 +28,8 @@ export interface Note {
   hasQuotes: boolean
   hasTables: boolean
   hasVideos: boolean
+
+  isNew?: boolean // client side only
 }
 
 export interface NoteResponse {

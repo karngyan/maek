@@ -53,6 +53,7 @@ export const defaultNewNote = (
     hasQuotes: false,
     hasTables: false,
     hasVideos: false,
+    isNew: true, // client side only
   }
 }
 

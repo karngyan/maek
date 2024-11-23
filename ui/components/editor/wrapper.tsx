@@ -128,7 +128,10 @@ export const EditorWrapper = ({
     })
   }
 
-  if (isError) {
+  // if the note is not found, show a 404 page
+  // but only if the note is not new
+  // if its new and created via quick create, show the editor and wait for the user to edit it so we can save it
+  if (isError && !(note?.isNew === true)) {
     return <NotFound embed={true} statusCode={404} />
   }
 
