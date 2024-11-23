@@ -76,7 +76,7 @@ export const fetchAllNotes = async ({
   workspaceId,
   cursor = '',
   sort = '-updated',
-  limit = 500,
+  limit = 100,
 }: {
   workspaceId: number
   cursor?: string

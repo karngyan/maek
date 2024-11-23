@@ -14,7 +14,7 @@ var ErrNoteNotFound = errors.New("note not found")
 var ErrLimitTooHigh = errors.New("limit too high")
 
 const (
-	DefaultLimit = 500
+	DefaultLimit = 100
 )
 
 type SortKey string
