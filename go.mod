@@ -5,6 +5,7 @@ go 1.23.1
 require (
 	github.com/beego/beego/v2 v2.3.1
 	github.com/bluele/go-timecop v0.0.0-20201023003925-b95363da28d2
+	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/customerio/go-approval-tests v0.0.0-20240709183109-16f211aa5638
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/uuid v1.6.0
@@ -16,7 +17,6 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/brianvoe/gofakeit/v7 v7.1.2 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
