@@ -26,10 +26,6 @@ func Init() error {
 
 	orm.DefaultTimeLoc = time.UTC
 
-	if conf.IsDevEnv() {
-		orm.Debug = true
-	}
-
 	return nil
 }
 

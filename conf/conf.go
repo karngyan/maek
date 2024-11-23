@@ -2,6 +2,7 @@ package conf
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/beego/beego/v2/server/web"
@@ -47,6 +48,11 @@ func IsTestEnv() bool {
 func Init() error {
 
 	var err error
+
+	err = web.LoadAppConfig("ini", os.Getenv("ROOT")+"/conf/app.conf")
+	if err != nil {
+		return err
+	}
 
 	web.BConfig.Listen = web.Listen{
 		Graceful:      true,
