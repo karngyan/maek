@@ -1,7 +1,5 @@
 'use client'
 
-import { BookOpenIcon } from '@heroicons/react/16/solid'
-import RecipeIcon from '@/components/ui/icons/recipe'
 import { Block } from '@blocknote/core'
 import { useMemo } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
@@ -86,12 +84,6 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
           </QuickButton>
         )
       })}
-      <QuickButton icon={<RecipeIcon className='h-3 text-zinc-500' />}>
-        recipe
-      </QuickButton>
-      <QuickButton icon={<BookOpenIcon className='h-4 text-zinc-500' />}>
-        book recommendation
-      </QuickButton>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import {
   NewspaperIcon,
   SunIcon,
   UsersIcon,
+  BookOpenIcon,
 } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 import TodoIcon from '@/components/ui/icons/todo'
@@ -23,6 +24,7 @@ export const useQuickCreateOptions = (userName: string) => {
         oneOnOneNotes(userName),
         projectPlan(userName),
         recipe(),
+        bookRecommendation(),
       ]
     },
     queryKey: ['quick-create-options', { userName }],
@@ -37,6 +39,65 @@ export interface QuickCreateOption {
   focusOptions?: {
     id: string
     placement: 'start' | 'end'
+  }
+}
+
+const bookRecommendation = (): QuickCreateOption => {
+  return {
+    label: 'book recommendation',
+    icon: <BookOpenIcon className='h-4 text-zinc-500' />,
+    focusOptions: {
+      id: '596bc6ec-5143-44a0-893e-53ce9efcb155',
+      placement: 'end',
+    },
+    dom: [
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Add a book title',
+            type: 'text',
+          },
+        ],
+        id: '596bc6ec-5143-44a0-893e-53ce9efcb155',
+        props: {
+          backgroundColor: 'default',
+          level: 3,
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'heading',
+      },
+      {
+        children: [],
+        content: [
+          {
+            styles: {},
+            text: 'Book recommended by: \nAuthor:  ',
+            type: 'text',
+          },
+        ],
+        id: 'eb8ee238-d14b-4fac-9041-c6603250123b',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+      {
+        children: [],
+        content: [],
+        id: '203282fe-f377-4aba-8dd2-0d8363434d38',
+        props: {
+          backgroundColor: 'default',
+          textAlignment: 'left',
+          textColor: 'default',
+        },
+        type: 'paragraph',
+      },
+    ],
   }
 }
 
