@@ -15,7 +15,13 @@ import {
   DropdownItem,
 } from '@/components/ui/dropdown'
 import { EllipsisHorizontalIcon } from '@heroicons/react/16/solid'
-import { formatTimestamp } from '@/libs/utils/time'
+import { formatFullDate, formatTimestamp } from '@/libs/utils/time'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Text } from '@/components/ui/text'
 
 type NotesListSectionItemProps = {
   note: Note
@@ -76,7 +82,27 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
       <div className='ml-3 flex-none'>
         <div className='flex items-center space-x-1 md:space-x-2 justify-center'>
           <span className='shrink-0 group-hover:text-zinc-400 text-xs text-zinc-500'>
-            {formatTimestamp(note.updated)}
+            <Tooltip>
+              <TooltipTrigger>{formatTimestamp(note.created)}</TooltipTrigger>
+              <TooltipContent>
+                <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                  <p className='text-xs text-zinc-400'>
+                    Created {formatFullDate(note.created)}
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>{' '}
+            ·{' '}
+            <Tooltip>
+              <TooltipTrigger>{formatTimestamp(note.created)}</TooltipTrigger>
+              <TooltipContent>
+                <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                  <p className='text-xs text-zinc-400'>
+                    Updated {formatFullDate(note.updated)}
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
           </span>
           <div>
             <Dropdown>

@@ -4,6 +4,7 @@ import type React from 'react'
 import { QueryProvider } from '@/libs/providers/query'
 import { monaSansGithub } from '@/fonts'
 import { Toaster } from '@/components/ui/toaster'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
   title:
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>

@@ -50,3 +50,7 @@ export const formatTimestamp = (unixTimestamp: number) => {
   // older notes
   return date.format('MMM D, YYYY h:mm A')
 }
+
+export function formatFullDate(unixTimestamp: number) {
+  return dayjs.unix(unixTimestamp).format('MMM D, YYYY h:mm A')
+}

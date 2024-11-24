@@ -49,73 +49,95 @@ const NotesList = () => {
 
   const todayNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
-      return updated.isSame(dayjs(), 'day')
+      let date = dayjs.unix(note.updated)
+      if (sortKey.includes('created')) {
+        date = dayjs.unix(note.created)
+      }
+
+      return date.isSame(dayjs(), 'day')
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const yesterdayNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
-      return updated >= yesterdayStart && updated <= yesterdayEnd
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
+
+      return date >= yesterdayStart && date <= yesterdayEnd
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const earlierThisWeekNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
-      return updated >= weekStart && updated < yesterdayStart
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
+      return date >= weekStart && date < yesterdayStart
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const lastWeekNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
-      return (
-        updated >= lastWeekStart &&
-        updated < weekStart &&
-        updated < yesterdayStart
-      )
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
+
+      return date >= lastWeekStart && date < weekStart && date < yesterdayStart
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const earlierThisMonthNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
       return (
-        updated >= monthStart &&
-        updated < lastWeekStart &&
-        updated < weekStart &&
-        updated < yesterdayStart
+        date >= monthStart &&
+        date < lastWeekStart &&
+        date < weekStart &&
+        date < yesterdayStart
       )
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const lastMonthNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
+
       return (
-        updated >= lastMonthStart &&
-        updated < monthStart &&
-        updated < lastWeekStart &&
-        updated < weekStart &&
-        updated < yesterdayStart
+        date >= lastMonthStart &&
+        date < monthStart &&
+        date < lastWeekStart &&
+        date < weekStart &&
+        date < yesterdayStart
       )
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   const olderNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = note.updated
+      let date = note.updated
+      if (sortKey.includes('created')) {
+        date = note.created
+      }
+
       return (
-        updated < lastMonthStart &&
-        updated < monthStart &&
-        updated < lastWeekStart &&
-        updated < weekStart &&
-        updated < yesterdayStart
+        date < lastMonthStart &&
+        date < monthStart &&
+        date < lastWeekStart &&
+        date < weekStart &&
+        date < yesterdayStart
       )
     })
-  }, [allNotes])
+  }, [allNotes, sortKey])
 
   if (status === 'error') {
     return (
