@@ -1,17 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteNote } from '@/queries/services/note-service'
-import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/hooks/use-toast'
 
-export const useDeleteNote = () => {
+export const useDeleteNote = ({ onSuccess }: { onSuccess?: () => unknown }) => {
   const qc = useQueryClient()
-  const router = useRouter()
   const { toast } = useToast()
 
   return useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      router.replace('/workspaces')
+      if (onSuccess) onSuccess()
     },
     onError: (error) => {
       toast({

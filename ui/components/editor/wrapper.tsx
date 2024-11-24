@@ -36,6 +36,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { getHasMeta } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
+import { useRouter } from 'next/router'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -57,12 +58,17 @@ export const EditorWrapper = ({
   initialFocusOption,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
+  const router = useRouter()
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
 
   const { mutate: upsertNote } = useUpsertNote()
-  const { mutate: deleteNote } = useDeleteNote()
+  const { mutate: deleteNote } = useDeleteNote({
+    onSuccess: () => {
+      router.replace(`/workspaces/${workspaceId}`)
+    },
+  })
 
   const note = useMemo(() => data?.note, [data])
   const ts = useMemo(() => {

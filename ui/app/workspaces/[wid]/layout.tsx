@@ -144,10 +144,6 @@ export default function WorkspacesHomeLayout({
     )
   }
 
-  const openFeedbackModal = () => {
-    // TODO: Implement a feedback modal
-  }
-
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: () => {
@@ -213,7 +209,11 @@ export default function WorkspacesHomeLayout({
                   <ShieldCheckIcon />
                   <DropdownLabel>privacy policy</DropdownLabel>
                 </DropdownItem>
-                <DropdownItem onClick={openFeedbackModal}>
+                <DropdownItem
+                  href='https://x.com/intent/post?text=%40gyankarn+about+maek%3A'
+                  target='_blank'
+                  rel='noreferrer,noopener'
+                >
                   <LightBulbIcon />
                   <DropdownLabel>share feedback</DropdownLabel>
                 </DropdownItem>

@@ -97,7 +97,7 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 		conds := orm.NewCondition()
-		conds = conds.And("deleted", false).And("has_content", true).And("workspace_id", wsId)
+		conds = conds.And("deleted", false).And("trashed", false).And("has_content", true).And("workspace_id", wsId)
 
 		if lastSortValue > 0 {
 			switch sortKey {
