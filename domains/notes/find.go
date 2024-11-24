@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/karngyan/maek/db"
@@ -12,6 +14,8 @@ import (
 
 var ErrNoteNotFound = errors.New("note not found")
 var ErrLimitTooHigh = errors.New("limit too high")
+var ErrInvalidCursor = errors.New("invalid cursor")
+var ErrFailedToDecodeCursor = errors.New("failed to decode cursor")
 
 const (
 	DefaultLimit = 100
@@ -41,17 +45,37 @@ func FromSortString(sort string) SortKey {
 	}
 }
 
-func decodeCursor(cursor string) (uint64, error) {
-	csb, err := base64.StdEncoding.DecodeString(cursor)
-	if err != nil {
-		return 0, err
+func decodeCursor(cursor string) (int64, uint64, error) {
+	if cursor == "" {
+		return 0, 0, nil
 	}
 
-	return strconv.ParseUint(string(csb), 10, 64)
+	decodedBytes, err := base64.StdEncoding.DecodeString(cursor)
+	if err != nil {
+		return 0, 0, ErrInvalidCursor
+	}
+
+	parts := strings.Split(string(decodedBytes), ":")
+	if len(parts) != 2 {
+		return 0, 0, ErrInvalidCursor
+	}
+
+	sortValue, err := strconv.ParseInt(parts[0], 10, 64)
+	if err != nil {
+		return 0, 0, ErrFailedToDecodeCursor
+	}
+
+	id, err := strconv.ParseUint(parts[1], 10, 64)
+	if err != nil {
+		return 0, 0, ErrFailedToDecodeCursor
+	}
+
+	return sortValue, id, nil
 }
 
-func encodeCursor(id uint64) string {
-	return base64.StdEncoding.EncodeToString([]byte(strconv.FormatUint(id, 10)))
+func encodeCursor(sortValue int64, id uint64) string {
+	rawCursor := fmt.Sprintf("%d:%d", sortValue, id)
+	return base64.StdEncoding.EncodeToString([]byte(rawCursor))
 }
 
 func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limit int, sortKey SortKey) ([]*Note, string, error) {
@@ -65,25 +89,36 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 
 	var notes []*Note
 
-	lastNoteId, err := decodeCursor(cursor)
+	lastSortValue, lastNoteId, err := decodeCursor(cursor)
 	if err != nil {
 		lastNoteId = 0
+		lastSortValue = 0
 	}
 
 	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
 		conds := orm.NewCondition()
 		conds = conds.And("deleted", false).And("has_content", true).And("workspace_id", wsId)
-		if lastNoteId > 0 {
 
-			filterKey := "id__gt"
-			if sortKey == SortKeyCreatedDsc || sortKey == SortKeyUpdatedDsc {
-				filterKey = "id__lt"
+		if lastSortValue > 0 {
+			switch sortKey {
+			case SortKeyCreatedAsc:
+				conds = conds.And("created__gt", lastSortValue)
+			case SortKeyCreatedDsc:
+				conds = conds.And("created__lt", lastSortValue)
+			case SortKeyUpdatedAsc:
+				conds = conds.And("updated__gt", lastSortValue)
+			case SortKeyUpdatedDsc:
+				conds = conds.And("updated__lt", lastSortValue)
+			default:
+				return fmt.Errorf("unsupported sort key: %s", sortKey)
 			}
 
-			conds = conds.And(filterKey, lastNoteId)
+			// Tie-break with ID for stability
+			conds = conds.Or("created", lastSortValue).And("id__gt", lastNoteId)
 		}
 
-		_, err := ormer.QueryTable("note").OrderBy(string(sortKey)).SetCond(conds).Limit(limit).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
+		// fetche one more than the limit to determine if there are more notes
+		_, err := ormer.QueryTable("note").OrderBy(string(sortKey), "id").SetCond(conds).Limit(limit+1).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
 		if err != nil {
 			return err
 		}
@@ -97,7 +132,17 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 		return notes, "", nil
 	}
 
-	nextCursor := encodeCursor(notes[len(notes)-1].Id)
+	hasNextPage := len(notes) > limit
+	if hasNextPage {
+		notes = notes[:limit] // Trim to the requested limit
+	}
+
+	var nextCursor string
+	if hasNextPage {
+		lastNote := notes[len(notes)-1]
+		nextCursor = encodeCursor(lastNote.SortValue(sortKey), lastNote.Id)
+	}
+
 	return notes, nextCursor, nil
 }
 

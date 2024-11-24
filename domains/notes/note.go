@@ -27,6 +27,17 @@ type Note struct {
 	UpdatedBy      *auth.User `orm:"rel(fk)"`
 }
 
+func (note *Note) SortValue(sortKey SortKey) int64 {
+	switch sortKey {
+	case SortKeyCreatedAsc, SortKeyCreatedDsc:
+		return note.Created
+	case SortKeyUpdatedAsc, SortKeyUpdatedDsc:
+		return note.Updated
+	default:
+		return 0
+	}
+}
+
 func (n *Note) TableEngine() string {
 	return "InnoDB"
 }
