@@ -14,11 +14,19 @@ import dayjs from 'dayjs'
 import NotesListSection from './section'
 import { NoteMetaProvider } from '@/libs/providers/note-meta'
 import NotesListPendingPulse from './pending-pulse'
+import { Button } from '../ui/button'
 
 const SortOptions = [
   { value: '-created', label: 'last created' },
   { value: '-updated', label: 'last modified' },
 ]
+
+const yesterdayStart = dayjs().subtract(1, 'day').startOf('day').unix()
+const yesterdayEnd = dayjs().subtract(1, 'day').endOf('day').unix()
+const weekStart = dayjs().startOf('week').unix()
+const lastWeekStart = dayjs().subtract(1, 'week').startOf('week').unix()
+const monthStart = dayjs().startOf('month').unix()
+const lastMonthStart = dayjs().subtract(1, 'month').startOf('month').unix()
 
 const NotesList = () => {
   const { wid } = useParams<{ wid: string }>()
@@ -30,7 +38,6 @@ const NotesList = () => {
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isPending,
     isFetchingNextPage,
     status,
@@ -49,57 +56,64 @@ const NotesList = () => {
 
   const yesterdayNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
-      return updated.isSame(dayjs().subtract(1, 'day'), 'day')
+      const updated = note.updated
+      return updated >= yesterdayStart && updated <= yesterdayEnd
     })
   }, [allNotes])
 
   const earlierThisWeekNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
-      // this week but not today or yesterday
-      return (
-        updated.isAfter(dayjs().startOf('week')) &&
-        !updated.isSame(dayjs(), 'day') &&
-        !updated.isSame(dayjs().subtract(1, 'day'), 'day')
-      )
+      const updated = note.updated
+      return updated >= weekStart && updated < yesterdayStart
     })
   }, [allNotes])
 
   const lastWeekNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
+      const updated = note.updated
       return (
-        updated.isAfter(dayjs().subtract(1, 'week').startOf('week')) &&
-        updated.isBefore(dayjs().startOf('week'))
+        updated >= lastWeekStart &&
+        updated < weekStart &&
+        updated < yesterdayStart
       )
     })
   }, [allNotes])
 
   const earlierThisMonthNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
+      const updated = note.updated
       return (
-        updated.isAfter(dayjs().startOf('month')) &&
-        !updated.isAfter(dayjs().startOf('week'))
+        updated >= monthStart &&
+        updated < lastWeekStart &&
+        updated < weekStart &&
+        updated < yesterdayStart
       )
     })
   }, [allNotes])
 
   const lastMonthNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
+      const updated = note.updated
       return (
-        updated.isAfter(dayjs().subtract(1, 'month').startOf('month')) &&
-        updated.isBefore(dayjs().startOf('month'))
+        updated >= lastMonthStart &&
+        updated < monthStart &&
+        updated < lastWeekStart &&
+        updated < weekStart &&
+        updated < yesterdayStart
       )
     })
   }, [allNotes])
 
   const olderNotes = useMemo(() => {
     return allNotes?.filter((note) => {
-      const updated = dayjs.unix(note.updated)
-      return updated.isBefore(dayjs().subtract(1, 'month').startOf('month'))
+      const updated = note.updated
+      return (
+        updated < lastMonthStart &&
+        updated < monthStart &&
+        updated < lastWeekStart &&
+        updated < weekStart &&
+        updated < yesterdayStart
+      )
     })
   }, [allNotes])
 
@@ -152,6 +166,14 @@ const NotesList = () => {
           <NotesListSection title='older' notes={olderNotes} />
         </div>
       )}
+      {isFetchingNextPage ? <NotesListPendingPulse withHeader={false} /> : null}
+      {hasNextPage ? (
+        <div className='flex py-12 items-center justify-center'>
+          <Button outline onClick={() => fetchNextPage()}>
+            load more
+          </Button>
+        </div>
+      ) : null}
     </NoteMetaProvider>
   )
 }

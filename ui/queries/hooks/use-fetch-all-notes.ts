@@ -3,13 +3,16 @@ import { fetchAllNotes } from '../services/note-service'
 
 export const useFetchAllNotes = (workspaceId: number, sort: string) => {
   return useInfiniteQuery({
-    queryFn: () => fetchAllNotes({ workspaceId, sort }),
+    queryFn: ({ pageParam }) =>
+      fetchAllNotes({ workspaceId, sort, cursor: pageParam }),
     queryKey: ['notes', { wid: workspaceId, sort }],
-    initialPageParam: { cursor: '' },
-    getNextPageParam: ({ nextCursor }) => {
-      return {
-        cursor: nextCursor,
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => {
+      if (lastPage.nextCursor === '') {
+        return undefined
       }
+
+      return lastPage.nextCursor
     },
   })
 }
