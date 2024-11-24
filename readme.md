@@ -23,5 +23,5 @@ while maek is currently a solo project, contributions are welcome! if you’re i
 
 #### license
 
-maek is open source and available under the MIT license.
+maek is open source and available under the [MIT license](https://github.com/karngyan/maek?tab=MIT-1-ov-file).
 
