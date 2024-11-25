@@ -32,3 +32,27 @@ func TrashNoteCtx(ctx context.Context, nuuid string, wid uint64, user *auth.User
 		return nil
 	})
 }
+
+func TrashNoteMultiCtx(ctx context.Context, nuuids []string, wid uint64, user *auth.User) error {
+	return db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
+		for _, nuuid := range nuuids {
+			existingNote, err := FindNoteByUuid(ctx, nuuid, wid)
+			if err != nil {
+				if errors.Is(err, orm.ErrNoRows) {
+					return ErrNoteNotFound
+				}
+				return err
+			}
+
+			existingNote.Trashed = true
+			existingNote.Updated = timecop.Now().Unix()
+			existingNote.UpdatedBy = user
+
+			if _, err := ormer.Update(existingNote); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}

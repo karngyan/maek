@@ -117,7 +117,7 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 			conds = conds.Or("created", lastSortValue).And("id__gt", lastNoteId)
 		}
 
-		// fetche one more than the limit to determine if there are more notes
+		// fetch one more than the limit to determine if there are more notes
 		_, err := ormer.QueryTable("note").OrderBy(string(sortKey), "id").SetCond(conds).Limit(limit+1).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
 		if err != nil {
 			return err
