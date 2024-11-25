@@ -36,7 +36,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { getHasMeta } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 type EditorWrapperProps = {
   workspaceId: number

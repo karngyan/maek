@@ -72,6 +72,21 @@ export const deleteNote = async ({
   await authApiClient.delete(`/v1/workspaces/${workspaceId}/notes/${noteUuid}`)
 }
 
+export const deleteNoteMulti = async ({
+  workspaceId,
+  noteUuids,
+}: {
+  workspaceId: number
+  noteUuids: string[]
+}): Promise<void> => {
+  // DELETE /notes with query params noteUuids=uuid1&noteUuids=uuid2...
+  await authApiClient.delete(`/v1/workspaces/${workspaceId}/notes`, {
+    params: {
+      note_uuids: noteUuids,
+    },
+  })
+}
+
 export const fetchAllNotes = async ({
   workspaceId,
   cursor = '',

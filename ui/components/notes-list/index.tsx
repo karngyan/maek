@@ -15,6 +15,7 @@ import NotesListSection from './section'
 import { NoteMetaProvider } from '@/libs/providers/note-meta'
 import NotesListPendingPulse from './pending-pulse'
 import { Button } from '../ui/button'
+import NotesListBatchSelectActions from './batch-select-actions'
 
 const SortOptions = [
   { value: '-created', label: 'last created' },
@@ -196,6 +197,7 @@ const NotesList = () => {
           </Button>
         </div>
       ) : null}
+      <NotesListBatchSelectActions />
     </NoteMetaProvider>
   )
 }
