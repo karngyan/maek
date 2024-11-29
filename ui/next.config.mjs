@@ -9,7 +9,7 @@ const nextConfig = {
         destination: `${API_URL}/v1/:path*`,
       },
     ]
-  }
-};
+  },
+}
 
-export default nextConfig;
+export default nextConfig
