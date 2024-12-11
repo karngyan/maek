@@ -29,9 +29,9 @@ skeema = '1.12.0'
 node = '20.17.0'
 'npm:pnpm' = '9.12.1'
 
-'go:github.com/beego/bee/v2' = 'v2.3.0'
+'go:github.com/beego/bee/v2' = '2.3.0'
 
-[plugins]
+[alias]
 skeema = 'https://github.com/jatinn/asdf-skeema'
 
 [tasks.dev]
