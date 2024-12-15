@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	approvals "github.com/customerio/go-approval-tests"
+	approvals "github.com/approvals/go-approval-tests"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/karngyan/maek/domains/notes"

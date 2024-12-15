@@ -3,10 +3,10 @@ module github.com/karngyan/maek
 go 1.23.1
 
 require (
-	github.com/beego/beego/v2 v2.3.3
+	github.com/approvals/go-approval-tests v0.0.0-20241211183344-15d1ffb738a9
+	github.com/beego/beego/v2 v2.3.4
 	github.com/bluele/go-timecop v0.0.0-20201023003925-b95363da28d2
 	github.com/brianvoe/gofakeit/v7 v7.1.2
-	github.com/customerio/go-approval-tests v0.0.0-20240709183109-16f211aa5638
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/uuid v1.6.0
 	github.com/pkg/errors v0.9.1

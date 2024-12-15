@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	approvals "github.com/approvals/go-approval-tests"
 	"github.com/bluele/go-timecop"
-
-	approvals "github.com/customerio/go-approval-tests"
 
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/zarf/tests"
