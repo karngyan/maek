@@ -1,9 +1,12 @@
 package collections
 
 import (
+	"net/http"
 	"strconv"
 
+	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/routers/models"
 )
 
 func Get(ctx *base.WebContext) {
@@ -24,5 +27,18 @@ func Get(ctx *base.WebContext) {
 		})
 		return
 	}
+
+	rctx := ctx.Request.Context()
+	c, err := notes.FindCollectionByID(rctx, wid, cid, true)
+	if err != nil {
+		base.NotFound(ctx, err)
+		return
+	}
+
+	uiC := models.ModelForCollection(c)
+
+	base.Respond(ctx, map[string]any{
+		"collection": uiC,
+	}, http.StatusOK)
 
 }
