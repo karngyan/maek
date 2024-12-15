@@ -33,9 +33,9 @@ func TrashNoteCtx(ctx context.Context, nuuid string, wid uint64, user *auth.User
 	})
 }
 
-func TrashNoteMultiCtx(ctx context.Context, nuuids []string, wid uint64, user *auth.User) error {
+func TrashNoteMultiCtx(ctx context.Context, noteUuids []string, wid uint64, user *auth.User) error {
 	return db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		for _, nuuid := range nuuids {
+		for _, nuuid := range noteUuids {
 			existingNote, err := FindNoteByUuid(ctx, nuuid, wid)
 			if err != nil {
 				if errors.Is(err, orm.ErrNoRows) {
