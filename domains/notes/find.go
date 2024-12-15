@@ -161,3 +161,26 @@ func FindNoteByUuid(ctx context.Context, nuuid string, workspaceId uint64) (*Not
 
 	return &note, nil
 }
+
+func FindCollectionByID(ctx context.Context, id uint64, withNotes bool) (*Collection, error) {
+	var collection Collection
+	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
+		err := ormer.QueryTable("collection").Filter("id", id).RelatedSel("CreatedBy", "UpdatedBy").One(&collection)
+		if err != nil {
+			return err
+		}
+
+		if withNotes {
+			_, err = ormer.LoadRelatedWithCtx(ctx, &collection, "notes")
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return &collection, nil
+}

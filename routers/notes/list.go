@@ -6,10 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/karngyan/maek/routers/models"
-
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/routers/models"
 )
 
 func List(ctx *base.WebContext) {
@@ -40,7 +39,7 @@ func List(ctx *base.WebContext) {
 
 	uiNotes := make([]*models.Note, 0, len(mn))
 	for _, n := range mn {
-		mn, err := modelForNote(n)
+		mn, err := models.ModelForNote(n)
 		if err != nil {
 			base.InternalError(ctx, err)
 			return

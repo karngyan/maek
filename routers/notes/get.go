@@ -1,6 +1,7 @@
 package notes
 
 import (
+	"github.com/karngyan/maek/routers/models"
 	"net/http"
 
 	"github.com/karngyan/maek/domains/notes"
@@ -25,7 +26,7 @@ func Get(ctx *base.WebContext) {
 		return
 	}
 
-	uiNote, err := modelForNote(n)
+	uiNote, err := models.ModelForNote(n)
 	if err != nil {
 		base.InternalError(ctx, err)
 		return

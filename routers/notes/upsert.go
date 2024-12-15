@@ -7,6 +7,7 @@ import (
 
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/routers/models"
 )
 
 func Upsert(ctx *base.WebContext) {
@@ -75,7 +76,7 @@ func Upsert(ctx *base.WebContext) {
 		return
 	}
 
-	uiNote, err := modelForNote(note)
+	uiNote, err := models.ModelForNote(note)
 	if err != nil {
 		base.InternalError(ctx, err)
 		return
