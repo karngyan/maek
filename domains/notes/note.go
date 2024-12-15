@@ -1,6 +1,8 @@
 package notes
 
-import "github.com/karngyan/maek/domains/auth"
+import (
+	"github.com/karngyan/maek/domains/auth"
+)
 
 type Note struct {
 	Id             uint64
@@ -21,6 +23,7 @@ type Note struct {
 	HasQuotes      bool            `orm:"default(false)"`
 	HasTables      bool            `orm:"default(false)"`
 	Workspace      *auth.Workspace `orm:"rel(fk)"`
+	Collections    []*Collection   `orm:"reverse(many)"`
 	Created        int64
 	Updated        int64
 	CreatedBy      *auth.User `orm:"rel(fk)"`
