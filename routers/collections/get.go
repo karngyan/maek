@@ -1,12 +1,12 @@
 package collections
 
 import (
-	"github.com/karngyan/maek/domains/notes"
-	"github.com/karngyan/maek/routers/models"
 	"net/http"
 	"strconv"
 
+	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/routers/models"
 )
 
 func Get(ctx *base.WebContext) {
