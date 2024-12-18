@@ -8,7 +8,3 @@ type Workspace struct {
 	Created     int64
 	Updated     int64
 }
-
-func (w *Workspace) TableEngine() string {
-	return "InnoDB"
-}

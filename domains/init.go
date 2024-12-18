@@ -56,10 +56,10 @@ func InitTest() error {
 		return err
 	}
 
-	// force cleans up the database
-	if err := orm.RunSyncdb("default", true, false); err != nil {
-		return err
-	}
+	// // force cleans up the database
+	// if err := orm.RunSyncdb("default", true, false); err != nil {
+	// 	return err
+	// }
 
 	if err = initCaches(); err != nil {
 		return err

@@ -5,17 +5,10 @@ experimental = true
 ROOT = '{{env.HOME}}/code/karngyan/maek'
 RUN_MODE = 'dev'
 SERVER_PORT = '8080'
-POSTGRES_HOST = 'localhost'
-POSTGRES_PORT = '5432'
-POSTGRES_USER = 'postgres'
-POSTGRES_PASSWORD = 'passwd'
-POSTGRES_DB = 'maek_dev'
 
-POSTGRES_URL = 'postgres://{{env.POSTGRES_USER}}:{{env.POSTGRES_PASSWORD}}@{{env.POSTGRES_HOST}}:{{env.POSTGRES_PORT}}/{{env.POSTGRES_DB}}?sslmode=disable'
-
-# test db settings
-POSTGRES_TEST_PORT = '5433'
-POSTGRES_TEST_DB = 'maek_test'
+SQL_CONN = 'postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable'
+SQL_CONN_TEST = 'postgres://maek:passwd@localhost:5433/maek_test?sslmode=disable'
+ATLAS_TMP_DEV_URL = 'docker://postgres/17.2/dev'
 
 # Basically the domains on which the app is hosted separated by semicolons
 CORS_ALLOWED_ORIGINS = 'http://localhost:3000'

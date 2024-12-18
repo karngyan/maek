@@ -40,7 +40,3 @@ func (note *Note) SortValue(sortKey SortKey) int64 {
 		return 0
 	}
 }
-
-func (n *Note) TableEngine() string {
-	return "InnoDB"
-}

@@ -1,11 +1,11 @@
 package conf
 
 import (
-	"fmt"
 	"os"
 	"time"
 
 	"github.com/beego/beego/v2/server/web"
+	"github.com/pkg/errors"
 )
 
 // NoStatus is a placeholder when there's no valid HTTP status
@@ -19,17 +19,10 @@ const DefaultRequestTimeout = 10 * time.Second
 const DefaultMaxRead = 1024 * 1024 // 1MB
 
 var (
-	MysqlHost          string
-	MysqlPort          string
-	MysqlSchema        string
-	MysqlUser          string
-	MysqlPassword      string
-	TestMysqlHost      string
-	TestMysqlPort      string
-	TestMysqlUser      string
-	TestMysqlPassword  string
+	Root               string
 	SQLConn            string
-	SQLTestConn        string
+	SQLConnTest        string
+	AtlasTmpDevURL     string
 	CorsAllowedOrigins []string
 )
 
@@ -75,46 +68,40 @@ func Init() error {
 
 	web.BConfig.EnableGzip = true
 
-	if MysqlHost, err = web.AppConfig.String("MysqlHost"); err != nil {
+	Root, err = get("Root")
+	if err != nil {
 		return err
 	}
 
-	if MysqlPort, err = web.AppConfig.String("MysqlPort"); err != nil {
+	SQLConn, err = get("SQLConn")
+	if err != nil {
 		return err
 	}
 
-	if MysqlSchema, err = web.AppConfig.String("MysqlSchema"); err != nil {
+	SQLConnTest, err = get("SQLConnTest")
+	if err != nil {
 		return err
 	}
 
-	if MysqlUser, err = web.AppConfig.String("MysqlUser"); err != nil {
+	AtlasTmpDevURL, err = get("AtlasTmpDevURL")
+	if err != nil {
 		return err
 	}
-
-	if MysqlPassword, err = web.AppConfig.String("MysqlPassword"); err != nil {
-		return err
-	}
-
-	if TestMysqlHost, err = web.AppConfig.String("TestMysqlHost"); err != nil {
-		return err
-	}
-
-	if TestMysqlPort, err = web.AppConfig.String("TestMysqlPort"); err != nil {
-		return err
-	}
-
-	if TestMysqlUser, err = web.AppConfig.String("TestMysqlUser"); err != nil {
-		return err
-	}
-
-	if TestMysqlPassword, err = web.AppConfig.String("TestMysqlPassword"); err != nil {
-		return err
-	}
-
-	SQLConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&collation=utf8mb4_0900_ai_ci", MysqlUser, MysqlPassword, MysqlHost, MysqlPort, MysqlSchema)
-	SQLTestConn = fmt.Sprintf("%v:%v@tcp(%v:%v)/", TestMysqlUser, TestMysqlPassword, TestMysqlHost, TestMysqlPort)
 
 	CorsAllowedOrigins = web.AppConfig.DefaultStrings("CorsAllowedOrigins", []string{"*"})
 
 	return err
+}
+
+func get(name string) (string, error) {
+	v, err := web.AppConfig.String(name)
+	if err != nil {
+		return "", errors.WithMessage(err, "failed to read "+name)
+	}
+
+	if v == "" {
+		return "", errors.New("conf." + name + " is empty")
+	}
+
+	return v, nil
 }

@@ -5,7 +5,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_DB=maek_dev
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=maek
       - POSTGRES_PASSWORD=passwd
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -16,7 +16,7 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_DB=maek_test
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=maek
       - POSTGRES_PASSWORD=passwd
 
 volumes:

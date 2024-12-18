@@ -17,7 +17,3 @@ type Collection struct {
 	CreatedBy   *auth.User      `orm:"rel(fk)"`
 	UpdatedBy   *auth.User      `orm:"rel(fk)"`
 }
-
-func (c *Collection) TableEngine() string {
-	return "InnoDB"
-}

@@ -23,10 +23,6 @@ type Session struct {
 	Updated int64  `json:"updated"`
 }
 
-func (s *Session) TableEngine() string {
-	return "InnoDB"
-}
-
 func (s *Session) ExpiresTime() time.Time {
 	return time.Unix(s.Expires, 0)
 }

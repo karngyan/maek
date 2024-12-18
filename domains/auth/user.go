@@ -28,10 +28,6 @@ type User struct {
 	Updated            int64
 }
 
-func (u *User) TableEngine() string {
-	return "InnoDB"
-}
-
 func (u *User) verifyPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
