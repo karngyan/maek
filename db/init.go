@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	p *pgxpool.Pool
-	Q *Queries
+	defaultPgxPool *pgxpool.Pool
+	Q              *Queries
 )
 
 //go:embed schema/*.sql
@@ -37,24 +37,24 @@ func Init(ctx context.Context) error {
 	dbc.MaxConnIdleTime = 5 * time.Minute
 	dbc.HealthCheckPeriod = 1 * time.Minute
 
-	p, err = pgxpool.NewWithConfig(ctx, dbc)
+	defaultPgxPool, err = pgxpool.NewWithConfig(ctx, dbc)
 	if err != nil {
 		return err
 	}
 
-	Q = New(p)
+	Q = New(defaultPgxPool)
 
 	return nil
 }
 
 func Close() {
-	if p != nil {
-		p.Close()
+	if defaultPgxPool != nil {
+		defaultPgxPool.Close()
 	}
 }
 
 func Tx(ctx context.Context, f func(ctx context.Context, q *Queries) error) error {
-	tx, err := p.Begin(ctx)
+	tx, err := defaultPgxPool.Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -106,21 +106,21 @@ func InitTest(ctx context.Context) (func(), error) {
 	dbc.MaxConnIdleTime = 5 * time.Minute
 	dbc.HealthCheckPeriod = 1 * time.Minute
 
-	p, err = pgxpool.NewWithConfig(context.Background(), dbc)
+	defaultPgxPool, err = pgxpool.NewWithConfig(context.Background(), dbc)
 	if err != nil {
 		return func() {}, err
 	}
 
-	err = applySchema(ctx, p)
+	err = applySchema(ctx, defaultPgxPool)
 	if err != nil {
 		logs.Info("error applying schema: %v", err)
 		return func() {}, err
 	}
 
-	Q = New(p)
+	Q = New(defaultPgxPool)
 
 	return func() {
-		_, err = p.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
+		_, err = defaultPgxPool.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
 		if err != nil {
 			logs.Info("error dropping test schema: %v", err)
 			return
@@ -128,7 +128,7 @@ func InitTest(ctx context.Context) (func(), error) {
 
 		logs.Info("dropped test schema: %s", randSchema)
 
-		p.Close()
+		defaultPgxPool.Close()
 
 		logs.Info("closed db pool")
 	}, nil
