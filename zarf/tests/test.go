@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/bluele/go-timecop"
 	"github.com/stretchr/testify/assert"
 
@@ -30,7 +29,9 @@ var initOnce sync.Once
 type CleanupFn func()
 
 func InitApp() (CleanupFn, error) {
-	var cleanupDB CleanupFn
+	ctx := context.Background()
+
+	var cleanupSchema CleanupFn
 
 	initFn := func() error {
 		log := logs.NewLogger()
@@ -59,7 +60,7 @@ func InitApp() (CleanupFn, error) {
 			return err
 		}
 
-		cleanupDB, err = db.InitTest()
+		cleanupSchema, err = db.InitTest(ctx)
 		if err != nil {
 			panic(err)
 		}
@@ -78,7 +79,7 @@ func InitApp() (CleanupFn, error) {
 	})
 
 	return func() {
-		cleanupDB()
+		cleanupSchema()
 	}, initErr
 }
 
@@ -87,8 +88,11 @@ func FreezeTime() {
 }
 
 func CleanDBRows() {
-	// force would drop the tables and recreate them
-	_ = orm.RunSyncdb("default", true, false)
+	// truncate all tables
+	err := db.Q.TruncateAllTables(context.Background())
+	if err != nil {
+		logs.Error("error cleaning db rows: %v", err)
+	}
 }
 
 type ClientState struct {
@@ -108,14 +112,15 @@ func NewClientStateWithUser(t *testing.T) *ClientState {
 func NewClientStateWithUserEmail(t *testing.T, email string) *ClientState {
 	c := NewClientState()
 
-	user, session, err := auth.CreateDefaultWorkspaceWithUser(context.Background(), "Karn", email, "test-password", "1.2.3.4", "Mozilla/5.0")
+	bundle, err := auth.CreateDefaultWorkspaceWithUser(context.Background(), "Karn", email, "test-password", "1.2.3.4", "Mozilla/5.0")
 	assert.Nil(t, err)
-	assert.NotNil(t, user)
-	assert.NotNil(t, session)
+	assert.NotNil(t, bundle.User)
+	assert.NotNil(t, bundle.Session)
+	assert.NotNil(t, bundle.Workspaces)
 
-	c.User = user
-	c.Session = session
-	c.Workspace = user.Workspaces[0]
+	c.User = bundle.User
+	c.Session = bundle.Session
+	c.Workspace = bundle.Workspaces[0]
 
 	return c
 }

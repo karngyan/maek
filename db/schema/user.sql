@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "user"
     name                 VARCHAR(255) NOT NULL DEFAULT '',
     email                VARCHAR(255) NOT NULL DEFAULT '' UNIQUE,
     role                 VARCHAR(255) NOT NULL DEFAULT 'user',
-    password             TEXT         NOT NULL,
+    password             TEXT         NOT NULL DEFAULT '',
     verified             BOOLEAN      NOT NULL DEFAULT FALSE,
     created              BIGINT       NOT NULL DEFAULT 0,
     updated              BIGINT       NOT NULL DEFAULT 0

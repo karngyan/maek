@@ -34,8 +34,7 @@ func Login(ctx *base.WebContext) {
 		return
 	}
 
-	user, session, err := auth.Login(ctx.Request.Context(), req.Email, req.Password, req.Remember, ctx.Input.IP(), ctx.Input.UserAgent())
-
+	bundle, err := auth.Login(ctx.Request.Context(), req.Email, req.Password, req.Remember, ctx.Input.IP(), ctx.Input.UserAgent())
 	if err != nil {
 		if errors.Is(err, auth.ErrUserNotFound) {
 			base.BadRequest(ctx, mpa{
@@ -55,11 +54,11 @@ func Login(ctx *base.WebContext) {
 		return
 	}
 
-	base.RespondCookie(ctx, modelsForAuthInfo(user), http.StatusOK, &http.Cookie{
+	base.RespondCookie(ctx, modelForAuthBundle(bundle), http.StatusOK, &http.Cookie{
 		Name:     "session_token",
-		Value:    session.Token,
+		Value:    bundle.Session.Token,
 		Path:     "/",
-		MaxAge:   int(session.Age().Seconds()),
+		MaxAge:   int(bundle.Session.Age().Seconds()), // less error prone than Expires
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,

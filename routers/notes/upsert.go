@@ -50,15 +50,15 @@ func Upsert(ctx *base.WebContext) {
 		return
 	}
 
-	note, err := notes.UpsertNoteCtx(rctx, &notes.UpsertNoteRequest{
-		Uuid:           nuuid,
+	note, err := notes.UpsertNote(rctx, &notes.UpsertNoteRequest{
+		UUID:           nuuid,
 		Content:        string(contentBytes),
 		Favorite:       req.Favorite,
 		Created:        req.Created,
 		Updated:        req.Updated,
-		Workspace:      ctx.Workspace,
-		CreatedBy:      ctx.User, // only used if it's an insert, otherwise ignored
-		UpdatedBy:      ctx.User,
+		WorkspaceID:    ctx.Workspace.ID,
+		CreatedByID:    ctx.Session.UserID, // only used if it's an insert, otherwise ignored
+		UpdatedByID:    ctx.Session.UserID,
 		HasContent:     req.HasContent,
 		HasImages:      req.HasImages,
 		HasVideos:      req.HasVideos,

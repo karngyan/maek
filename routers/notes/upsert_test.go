@@ -62,7 +62,7 @@ func TestUpsert(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rr, err := cs.Put(fmt.Sprintf("/v1/workspaces/%d/notes/%s", cs.Workspace.Id, tc.uuid), tc.updates)
+			rr, err := cs.Put(fmt.Sprintf("/v1/workspaces/%d/notes/%s", cs.Workspace.ID, tc.uuid), tc.updates)
 
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedStatus, rr.Code)

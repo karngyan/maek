@@ -4,45 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"github.com/beego/beego/v2/client/orm"
+	"github.com/jackc/pgx/v5"
+
 	"github.com/karngyan/maek/db"
-	"github.com/karngyan/maek/domains/auth"
 )
 
-type UpsertOpt func(note *Note)
-
-func WithContent(content string) UpsertOpt {
-	return func(note *Note) {
-		note.Content = content
-	}
-}
-
-func WithUuid(uuid string) UpsertOpt {
-	return func(note *Note) {
-		note.Uuid = uuid
-	}
-}
-
-func WithFavorite(favorite bool) UpsertOpt {
-	return func(note *Note) {
-		note.Favorite = favorite
-	}
-}
-
-func WithWorkspace(workspace *auth.Workspace) UpsertOpt {
-	return func(note *Note) {
-		note.Workspace = workspace
-	}
-}
-
-func WithUpdatedBy(user *auth.User) UpsertOpt {
-	return func(note *Note) {
-		note.UpdatedBy = user
-	}
-}
-
 type UpsertNoteRequest struct {
-	Uuid           string
+	UUID           string
 	Content        string
 	Favorite       bool
 	Created        int64
@@ -58,13 +26,13 @@ type UpsertNoteRequest struct {
 	HasFiles       bool
 	HasQuotes      bool
 	HasTables      bool
-	Workspace      *auth.Workspace
-	CreatedBy      *auth.User
-	UpdatedBy      *auth.User
+	WorkspaceID    int64
+	CreatedByID    int64
+	UpdatedByID    int64
 }
 
-func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
-	nuuid := req.Uuid
+func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
+	nuuid := req.UUID
 	if nuuid == "" {
 		return nil, errors.New("uuid is required")
 	}
@@ -73,32 +41,35 @@ func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		return nil, errors.New("content is required")
 	}
 
-	if req.Workspace == nil {
+	if req.WorkspaceID == 0 {
 		return nil, errors.New("workspace is required")
 	}
 
-	if req.UpdatedBy == nil {
+	if req.UpdatedByID == 0 {
 		return nil, errors.New("updated by is required")
 	}
 
 	// check if note already exists
-	existingNote, err := FindNoteByUuid(ctx, nuuid, req.Workspace.Id)
+	existingDBNote, err := db.Q.GetNoteByUUIDAndWorkspace(ctx, db.GetNoteByUUIDAndWorkspaceParams{
+		UUID:        nuuid,
+		WorkspaceID: req.WorkspaceID,
+	})
 	if err != nil {
-		if !errors.Is(err, orm.ErrNoRows) {
+		if !errors.Is(err, pgx.ErrNoRows) {
 			return nil, err
 		}
 	}
 
 	note := &Note{
-		Uuid:           nuuid,
+		UUID:           nuuid,
 		Content:        req.Content,
 		Favorite:       req.Favorite,
 		Trashed:        false,
-		Workspace:      req.Workspace,
+		WorkspaceID:    req.WorkspaceID,
 		Updated:        req.Updated,
 		Created:        req.Created,
-		UpdatedBy:      req.UpdatedBy,
-		CreatedBy:      req.CreatedBy,
+		UpdatedByID:    req.UpdatedByID,
+		CreatedByID:    req.CreatedByID,
 		HasContent:     req.HasContent,
 		HasImages:      req.HasImages,
 		HasVideos:      req.HasVideos,
@@ -112,23 +83,42 @@ func UpsertNoteCtx(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		HasTables:      req.HasTables,
 	}
 
-	if existingNote != nil {
-		note.Id = existingNote.Id
-		note.Trashed = existingNote.Trashed
+	if existingDBNote.ID > 0 {
+		note.ID = existingDBNote.ID
+		note.Trashed = existingDBNote.Trashed
 		// don't let client change created and created by once created
-		note.Created = existingNote.Created
-		note.CreatedBy = existingNote.CreatedBy
+		note.Created = existingDBNote.Created
+		note.CreatedByID = existingDBNote.CreatedByID
 	}
 
-	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		_, err := ormer.InsertOrUpdateWithCtx(ctx, note)
-		if err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
+	id, err := db.Q.UpsertNote(ctx, db.UpsertNoteParams{
+		ID:             note.ID,
+		UUID:           note.UUID,
+		Content:        note.Content,
+		Favorite:       note.Favorite,
+		Deleted:        note.Deleted,
+		Trashed:        note.Trashed,
+		HasContent:     note.HasContent,
+		HasImages:      note.HasImages,
+		HasVideos:      note.HasVideos,
+		HasOpenTasks:   note.HasOpenTasks,
+		HasClosedTasks: note.HasClosedTasks,
+		HasCode:        note.HasCode,
+		HasAudios:      note.HasAudios,
+		HasLinks:       note.HasLinks,
+		HasFiles:       note.HasFiles,
+		HasQuotes:      note.HasQuotes,
+		HasTables:      note.HasTables,
+		WorkspaceID:    note.WorkspaceID,
+		Created:        note.Created,
+		Updated:        note.Updated,
+		CreatedByID:    note.CreatedByID,
+		UpdatedByID:    note.UpdatedByID,
+	})
+	if err != nil {
 		return nil, err
 	}
 
+	note.ID = id
 	return note, nil
 }

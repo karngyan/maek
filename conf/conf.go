@@ -22,7 +22,6 @@ var (
 	Root               string
 	SQLConn            string
 	SQLConnTest        string
-	AtlasTmpDevURL     string
 	CorsAllowedOrigins []string
 )
 
@@ -79,11 +78,6 @@ func Init() error {
 	}
 
 	SQLConnTest, err = get("SQLConnTest")
-	if err != nil {
-		return err
-	}
-
-	AtlasTmpDevURL, err = get("AtlasTmpDevURL")
 	if err != nil {
 		return err
 	}

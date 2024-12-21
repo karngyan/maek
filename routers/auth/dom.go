@@ -7,7 +7,7 @@ import (
 
 func modelForWorkspace(workspace *auth.Workspace) *models.Workspace {
 	return &models.Workspace{
-		Id:          workspace.Id,
+		ID:          workspace.ID,
 		Name:        workspace.Name,
 		Description: workspace.Description,
 		Created:     workspace.Created,
@@ -15,10 +15,10 @@ func modelForWorkspace(workspace *auth.Workspace) *models.Workspace {
 	}
 }
 
-func modelsForAuthInfo(user *auth.User) map[string]any {
-	u := models.ModelForUser(user)
-	wss := make([]*models.Workspace, 0, len(user.Workspaces))
-	for _, ws := range user.Workspaces {
+func modelForAuthBundle(bundle *auth.Bundle) map[string]any {
+	u := models.ModelForUser(bundle.User)
+	wss := make([]*models.Workspace, 0, len(bundle.Workspaces))
+	for _, ws := range bundle.Workspaces {
 		wss = append(wss, modelForWorkspace(ws))
 	}
 

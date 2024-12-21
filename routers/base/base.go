@@ -19,30 +19,34 @@ import (
 
 type WebContext struct {
 	*beectx.Context
-	Session   *auth.Session
-	User      *auth.User
-	Workspace *auth.Workspace
-	l         *logs.BeeLogger
-	requestId string
+
+	Session     *auth.Session
+	WorkspaceID int64
+
+	User          *auth.User
+	Workspace     *auth.Workspace
+	AllWorkspaces []*auth.Workspace
+	l             *logs.BeeLogger
+	requestID     string
 }
 
 func (c *WebContext) Info(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestID)
 	c.l.Info(prefix+msg, v...)
 }
 
 func (c *WebContext) Error(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestID)
 	c.l.Error(prefix+msg, v...)
 }
 
 func (c *WebContext) Warn(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestID)
 	c.l.Warn(prefix+msg, v...)
 }
 
 func (c *WebContext) Debug(msg string, v ...any) {
-	prefix := fmt.Sprintf("[request_id=%s] ", c.requestId)
+	prefix := fmt.Sprintf("[request_id=%s] ", c.requestID)
 	c.l.Debug(prefix+msg, v...)
 }
 
@@ -116,7 +120,19 @@ func WrapPublicRoute(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 }
 
 func WrapAuthenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
-	return Authenticated(h, l)
+	return Authenticated(h, l, false, false, false)
+}
+
+func WrapAuthenticatedWithUser(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
+	return Authenticated(h, l, true, false, false)
+}
+
+func WrapAuthenticatedWithCurrentWorkspace(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
+	return Authenticated(h, l, false, true, false)
+}
+
+func WrapAuthenticatedWithUserAllWorkspaces(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
+	return Authenticated(h, l, true, false, true)
 }
 
 func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
@@ -128,7 +144,7 @@ func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		c := &WebContext{
 			Context:   bctx,
 			l:         l,
-			requestId: rid,
+			requestID: rid,
 		}
 
 		h(c)
@@ -136,7 +152,7 @@ func Public(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 	}
 }
 
-func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
+func Authenticated(h HandleFunc, l *logs.BeeLogger, withUser, withCurrentWorkspace, withAllWorkspaces bool) web.HandleFunc {
 	return func(bctx *beectx.Context) {
 		start := timecop.Now()
 
@@ -145,7 +161,7 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		c := &WebContext{
 			Context:   bctx,
 			l:         l,
-			requestId: rid,
+			requestID: rid,
 		}
 
 		now := timecop.Now().Unix()
@@ -160,24 +176,67 @@ func Authenticated(h HandleFunc, l *logs.BeeLogger) web.HandleFunc {
 		}
 
 		c.Session = session
-		c.User = session.User
+
+		if withUser {
+			c.User, err = auth.FetchUserByID(rctx, session.UserID)
+			if err != nil {
+				if errors.Is(err, auth.ErrUserNotFound) {
+					Unauth(c)
+					return
+				}
+
+				InternalError(c, err)
+				return
+			}
+		}
+
+		if withAllWorkspaces {
+			c.AllWorkspaces, err = auth.FetchWorkspacesForUser(rctx, c.Session.UserID)
+			if err != nil {
+				InternalError(c, err)
+				return
+			}
+		}
 
 		// try checking :workspace_id param if present
 		workspaceId := bctx.Input.Param(":workspace_id")
 		if workspaceId != "" {
-			wid, err := strconv.ParseUint(workspaceId, 10, 64)
+			wid, err := strconv.ParseInt(workspaceId, 10, 64)
 			if err != nil {
 				BadRequest(c, nil)
 				return
 			}
 
+			c.WorkspaceID = wid
+
+			if !withAllWorkspaces {
+				c.AllWorkspaces, err = auth.FetchWorkspacesForUser(rctx, c.Session.UserID)
+				if err != nil {
+					InternalError(c, err)
+					return
+				}
+			}
+
 			// check if the user is part of the workspace
 			var found bool
-			for _, ws := range c.User.Workspaces {
-				if ws.Id == wid {
+			for _, ws := range c.AllWorkspaces {
+				if ws.ID == wid {
 					found = true
 					c.Workspace = ws
 					break
+				}
+			}
+
+			if withCurrentWorkspace && c.Workspace == nil {
+				c.Workspace, err = auth.FetchWorkspaceByID(rctx, wid)
+				if err != nil {
+					if errors.Is(err, auth.ErrWorkspaceNotFound) {
+						NotFound(c, err)
+						return
+					}
+
+					InternalError(c, err)
+					return
 				}
 			}
 

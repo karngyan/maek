@@ -63,7 +63,7 @@ func Register(ctx *base.WebContext) {
 
 	rctx := ctx.Request.Context()
 
-	user, session, err := auth.CreateDefaultWorkspaceWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
+	bundle, err := auth.CreateDefaultWorkspaceWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
 
 	if err != nil {
 		if errors.Is(err, auth.ErrUserAlreadyExists) {
@@ -77,11 +77,11 @@ func Register(ctx *base.WebContext) {
 		return
 	}
 
-	base.RespondCookie(ctx, modelsForAuthInfo(user), http.StatusCreated, &http.Cookie{
+	base.RespondCookie(ctx, modelForAuthBundle(bundle), http.StatusCreated, &http.Cookie{
 		Name:     "session_token",
-		Value:    session.Token,
+		Value:    bundle.Session.Token,
 		Path:     "/",
-		MaxAge:   int(session.Age().Seconds()), // less error prone than Expires
+		MaxAge:   int(bundle.Session.Age().Seconds()), // less error prone than Expires
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,

@@ -1,7 +1,6 @@
 package notes
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -29,14 +28,8 @@ func TrashBatch(ctx *base.WebContext) {
 
 	rctx := ctx.Request.Context()
 
-	err = notes.TrashNoteMultiCtx(rctx, noteUuids, ctx.Workspace.Id, ctx.User)
+	err = notes.TrashNoteMulti(rctx, noteUuids, ctx.WorkspaceID, ctx.Session.UserID)
 	if err != nil {
-		if errors.Is(err, notes.ErrNoteNotFound) {
-			base.BadRequest(ctx, map[string]interface{}{
-				"note_uuids": "Note not found",
-			})
-			return
-		}
 		base.InternalError(ctx, err)
 		return
 	}

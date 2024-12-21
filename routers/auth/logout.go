@@ -3,12 +3,15 @@ package auth
 import (
 	"net/http"
 
+	"github.com/karngyan/maek/domains/auth"
+
 	"github.com/karngyan/maek/routers/base"
 )
 
 func Logout(ctx *base.WebContext) {
 	rctx := ctx.Request.Context()
-	err := ctx.Session.Delete(rctx)
+
+	err := auth.DeleteSession(rctx, ctx.Session.Token)
 	if err != nil {
 		base.InternalError(ctx, err)
 		return

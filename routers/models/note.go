@@ -7,8 +7,8 @@ import (
 )
 
 type Note struct {
-	Id             uint64         `json:"id"`
-	Uuid           string         `json:"uuid"`
+	ID             int64          `json:"id"`
+	UUID           string         `json:"uuid"`
 	Content        map[string]any `json:"content"`
 	Favorite       bool           `json:"favorite"`
 	Trashed        bool           `json:"trashed"`
@@ -25,9 +25,9 @@ type Note struct {
 	HasTables      bool           `json:"hasTables"`
 	Created        int64          `json:"created"`
 	Updated        int64          `json:"updated"`
-	WorkspaceId    uint64         `json:"workspaceId"`
-	CreatedBy      *User          `json:"createdBy"`
-	UpdatedBy      *User          `json:"updatedBy"`
+	WorkspaceID    int64          `json:"workspaceId"`
+	CreatedBy      int64          `json:"createdById"`
+	UpdatedBy      int64          `json:"updatedById"`
 }
 
 func ModelForNote(note *notes.Note) (*Note, error) {
@@ -37,8 +37,8 @@ func ModelForNote(note *notes.Note) (*Note, error) {
 	}
 
 	return &Note{
-		Id:             note.Id,
-		Uuid:           note.Uuid,
+		ID:             note.ID,
+		UUID:           note.UUID,
 		Content:        content,
 		Favorite:       note.Favorite,
 		Trashed:        note.Trashed,
@@ -55,8 +55,8 @@ func ModelForNote(note *notes.Note) (*Note, error) {
 		HasTables:      note.HasTables,
 		Created:        note.Created,
 		Updated:        note.Updated,
-		WorkspaceId:    note.Workspace.Id,
-		CreatedBy:      ModelForUser(note.CreatedBy),
-		UpdatedBy:      ModelForUser(note.UpdatedBy),
+		WorkspaceID:    note.WorkspaceID,
+		CreatedBy:      note.CreatedByID,
+		UpdatedBy:      note.UpdatedByID,
 	}, nil
 }

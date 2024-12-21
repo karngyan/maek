@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "collection"
+CREATE TABLE IF NOT EXISTS collection
 (
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) NOT NULL DEFAULT '',
@@ -12,10 +12,8 @@ CREATE TABLE IF NOT EXISTS "collection"
     updated_by_id BIGINT       NOT NULL
 );
 
--- Index for faster workspace queries
 CREATE INDEX idx_collection_workspace
-    ON "collection" (workspace_id);
+    ON collection (workspace_id);
 
--- Composite index for filtering non-deleted items within a workspace
 CREATE INDEX idx_collection_workspace_deleted
-    ON "collection" (workspace_id, deleted);
+    ON collection (workspace_id, deleted);

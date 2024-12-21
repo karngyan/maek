@@ -3,16 +3,15 @@ package collections
 import (
 	"net/http"
 
-	"github.com/karngyan/maek/routers/models"
-
-	"github.com/karngyan/maek/domains/notes"
+	"github.com/karngyan/maek/domains/collections"
 	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/routers/models"
 )
 
 func Create(ctx *base.WebContext) {
 	rctx := ctx.Request.Context()
 
-	collection, err := notes.CreateCollection(rctx, ctx.Workspace.Id)
+	collection, err := collections.CreateCollection(rctx, ctx.WorkspaceID, ctx.Session.UserID)
 	if err != nil {
 		base.InternalError(ctx, err)
 		return

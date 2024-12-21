@@ -1,33 +1,30 @@
 package notes
 
-import (
-	"github.com/karngyan/maek/domains/auth"
-)
+import "github.com/karngyan/maek/db"
 
 type Note struct {
-	Id             uint64
-	Uuid           string          `orm:"unique"`
-	Content        string          `orm:"type(text)"`
-	Favorite       bool            `orm:"default(false)"`
-	Trashed        bool            `orm:"default(false)"`
-	Deleted        bool            `orm:"default(false)"` // soft delete
-	HasContent     bool            `orm:"default(false)"`
-	HasImages      bool            `orm:"default(false)"`
-	HasVideos      bool            `orm:"default(false)"`
-	HasOpenTasks   bool            `orm:"default(false)"`
-	HasClosedTasks bool            `orm:"default(false)"`
-	HasCode        bool            `orm:"default(false)"`
-	HasAudios      bool            `orm:"default(false)"`
-	HasLinks       bool            `orm:"default(false)"`
-	HasFiles       bool            `orm:"default(false)"`
-	HasQuotes      bool            `orm:"default(false)"`
-	HasTables      bool            `orm:"default(false)"`
-	Workspace      *auth.Workspace `orm:"rel(fk)"`
-	Collections    []*Collection   `orm:"reverse(many)"`
+	ID             int64
+	UUID           string
+	Content        string
+	Favorite       bool
+	Trashed        bool
+	Deleted        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
 	Created        int64
 	Updated        int64
-	CreatedBy      *auth.User `orm:"rel(fk)"`
-	UpdatedBy      *auth.User `orm:"rel(fk)"`
+	CreatedByID    int64
+	UpdatedByID    int64
 }
 
 func (note *Note) SortValue(sortKey SortKey) int64 {
@@ -38,5 +35,33 @@ func (note *Note) SortValue(sortKey SortKey) int64 {
 		return note.Updated
 	default:
 		return 0
+	}
+}
+
+// noteFromDB converts a db.Note to a notes.Note
+func noteFromDB(dbNote *db.Note) *Note {
+	return &Note{
+		ID:             dbNote.ID,
+		UUID:           dbNote.UUID,
+		Content:        dbNote.Content,
+		Favorite:       dbNote.Favorite,
+		Trashed:        dbNote.Trashed,
+		Deleted:        dbNote.Deleted,
+		HasContent:     dbNote.HasContent,
+		HasImages:      dbNote.HasImages,
+		HasVideos:      dbNote.HasVideos,
+		HasOpenTasks:   dbNote.HasOpenTasks,
+		HasClosedTasks: dbNote.HasClosedTasks,
+		HasCode:        dbNote.HasCode,
+		HasAudios:      dbNote.HasAudios,
+		HasLinks:       dbNote.HasLinks,
+		HasFiles:       dbNote.HasFiles,
+		HasQuotes:      dbNote.HasQuotes,
+		HasTables:      dbNote.HasTables,
+		WorkspaceID:    dbNote.WorkspaceID,
+		Created:        dbNote.Created,
+		Updated:        dbNote.Updated,
+		CreatedByID:    dbNote.CreatedByID,
+		UpdatedByID:    dbNote.UpdatedByID,
 	}
 }

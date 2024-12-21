@@ -1,0 +1,20 @@
+version: 2
+sql:
+  - engine: postgresql
+    schema:
+      - db/schema
+    queries:
+      - db/queries
+    database:
+      uri: "${SQL_CONN}"
+    gen:
+      go:
+        package: db
+        initialisms:
+          - id
+          - ip
+          - ua
+          - uuid
+        out: db
+        sql_package: pgx/v5
+        sql_driver: github.com/jackc/pgx/v5

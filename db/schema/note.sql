@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "note"
+CREATE TABLE IF NOT EXISTS note
 (
     id               BIGSERIAL PRIMARY KEY,
     uuid             VARCHAR(100) NOT NULL UNIQUE,
@@ -24,17 +24,14 @@ CREATE TABLE IF NOT EXISTS "note"
     updated_by_id    BIGINT       NOT NULL
 );
 
--- Index for UUID lookups
-CREATE INDEX idx_note_uuid ON "note" (uuid);
+CREATE INDEX idx_note_uuid ON note (uuid);
 
--- Composite index for workspace queries
-CREATE INDEX idx_note_workspace_created ON "note" (workspace_id, created DESC);
+CREATE INDEX idx_note_workspace_created ON note (workspace_id, created DESC);
 
--- Partial indexes for common filters
 CREATE INDEX idx_note_favorite
-    ON "note" (workspace_id, created DESC)
+    ON note (workspace_id, created DESC)
     WHERE favorite = TRUE AND deleted = FALSE AND trashed = FALSE;
 
 CREATE INDEX idx_note_active
-    ON "note" (workspace_id, created DESC)
+    ON note (workspace_id, created DESC)
     WHERE deleted = FALSE AND trashed = FALSE;

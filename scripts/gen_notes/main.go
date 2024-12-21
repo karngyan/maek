@@ -21,8 +21,8 @@ import (
 // the script generates a bunch of notes, you give a number in and we generate a bunch of them with random data
 func main() {
 	n := flag.Int("n", 1, "number of notes to generate")
-	w := flag.Uint64("w", 0, "workspace id")
-	u := flag.Uint64("u", 0, "user id")
+	w := flag.Int64("w", 0, "workspace id")
+	u := flag.Int64("u", 0, "user id")
 	flag.Parse()
 
 	if *n < 1 {

@@ -19,27 +19,27 @@ func TestGet(t *testing.T) {
 	cs := tests.NewClientStateWithUser(t)
 	cs2 := tests.NewClientStateWithUserEmail(t, "john@maek.ai")
 
-	n, err := notes.UpsertNoteCtx(context.Background(), &notes.UpsertNoteRequest{
-		Uuid:      "123",
-		Content:   "{ \"dom\": [] }",
-		Favorite:  true,
-		Created:   timecop.Now().Unix(),
-		Updated:   timecop.Now().Unix(),
-		Workspace: cs.Workspace,
-		CreatedBy: cs.User,
-		UpdatedBy: cs.User,
+	n, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
+		UUID:        "123",
+		Content:     "{ \"dom\": [] }",
+		Favorite:    true,
+		Created:     timecop.Now().Unix(),
+		Updated:     timecop.Now().Unix(),
+		WorkspaceID: cs.Workspace.ID,
+		CreatedByID: cs.User.ID,
+		UpdatedByID: cs.User.ID,
 	})
 	assert.Nil(t, err)
 
-	n2, err := notes.UpsertNoteCtx(context.Background(), &notes.UpsertNoteRequest{
-		Uuid:      "321",
-		Content:   "{ \"dom\": [] }",
-		Favorite:  true,
-		Created:   timecop.Now().Unix(),
-		Updated:   timecop.Now().Unix(),
-		Workspace: cs2.Workspace,
-		CreatedBy: cs2.User,
-		UpdatedBy: cs2.User,
+	n2, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
+		UUID:        "321",
+		Content:     "{ \"dom\": [] }",
+		Favorite:    true,
+		Created:     timecop.Now().Unix(),
+		Updated:     timecop.Now().Unix(),
+		WorkspaceID: cs2.Workspace.ID,
+		CreatedByID: cs2.User.ID,
+		UpdatedByID: cs2.User.ID,
 	})
 
 	assert.Nil(t, err)
@@ -47,31 +47,31 @@ func TestGet(t *testing.T) {
 	var testCases = []struct {
 		name           string
 		noteId         string
-		workspaceId    uint64
+		workspaceId    int64
 		expectedStatus int
 	}{
 		{
 			name:           "valid note id",
-			noteId:         n.Uuid,
-			workspaceId:    cs.Workspace.Id,
+			noteId:         n.UUID,
+			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 200,
 		},
 		{
 			name:           "invalid note id",
 			noteId:         "random-note-uuid",
-			workspaceId:    cs.Workspace.Id,
+			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 404,
 		},
 		{
 			name:           "note id from different workspace",
-			noteId:         n2.Uuid,
-			workspaceId:    cs.Workspace.Id,
+			noteId:         n2.UUID,
+			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 404,
 		},
 		{
 			name:           "session token used from another user to fetch note",
-			noteId:         n2.Uuid,
-			workspaceId:    cs2.Workspace.Id,
+			noteId:         n2.UUID,
+			workspaceId:    cs2.Workspace.ID,
 			expectedStatus: 401,
 		},
 	}

@@ -4,14 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/karngyan/maek/domains/notes"
+	"github.com/karngyan/maek/domains/collections"
+
 	"github.com/karngyan/maek/routers/base"
 	"github.com/karngyan/maek/routers/models"
 )
 
 func Get(ctx *base.WebContext) {
 	cids := ctx.Input.Param(":collection_id")
-	wid := ctx.Workspace.Id
+	wid := ctx.WorkspaceID
 
 	if cids == "" {
 		base.BadRequest(ctx, map[string]interface{}{
@@ -20,7 +21,7 @@ func Get(ctx *base.WebContext) {
 		return
 	}
 
-	cid, err := strconv.ParseUint(cids, 10, 64)
+	cid, err := strconv.ParseInt(cids, 10, 64)
 	if err != nil {
 		base.BadRequest(ctx, map[string]interface{}{
 			"collection_id": "collection_id is not a valid number",
@@ -29,7 +30,7 @@ func Get(ctx *base.WebContext) {
 	}
 
 	rctx := ctx.Request.Context()
-	c, err := notes.FindCollectionByID(rctx, wid, cid, true)
+	c, err := collections.FindCollectionByID(rctx, wid, cid)
 	if err != nil {
 		base.NotFound(ctx, err)
 		return

@@ -1,0 +1,159 @@
+package db
+
+import (
+	"context"
+	"embed"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/karngyan/maek/conf"
+	"github.com/karngyan/maek/libs/randstr"
+)
+
+var (
+	p *pgxpool.Pool
+	Q *Queries
+)
+
+//go:embed schema/*.sql
+var schemaFS embed.FS // only used in tests
+
+func Init(ctx context.Context) error {
+	connString := fmt.Sprintf(`%s&search_path="%s"`, conf.SQLConn, "public")
+	dbc, err := pgxpool.ParseConfig(connString)
+	if err != nil {
+		return err
+	}
+
+	dbc.MaxConns = 100
+	dbc.MinConns = 10
+	dbc.MaxConnLifetime = 30 * time.Minute
+	dbc.MaxConnLifetime = 5 * time.Minute
+	dbc.MaxConnIdleTime = 5 * time.Minute
+	dbc.HealthCheckPeriod = 1 * time.Minute
+
+	p, err = pgxpool.NewWithConfig(ctx, dbc)
+	if err != nil {
+		return err
+	}
+
+	Q = New(p)
+
+	return nil
+}
+
+func Close() {
+	if p != nil {
+		p.Close()
+	}
+}
+
+func Tx(ctx context.Context, f func(ctx context.Context, q *Queries) error) error {
+	tx, err := p.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	q := New(tx)
+
+	err = f(ctx, q)
+	if err != nil {
+		_ = tx.Rollback(ctx)
+		return err
+	}
+
+	return tx.Commit(ctx)
+}
+
+func InitTest(ctx context.Context) (func(), error) {
+	randSchema := randstr.Alpha(10)
+
+	sconn, err := pgx.Connect(context.Background(), conf.SQLConnTest)
+	if err != nil {
+		logs.Info("error connecting to test db: %v", err)
+		return func() {}, err
+	}
+
+	_, err = sconn.Exec(ctx, fmt.Sprintf(`CREATE SCHEMA IF NOT EXISTS "%s"`, randSchema))
+	if err != nil {
+		logs.Info("error creating test schema: %v", err)
+		return func() {}, err
+	}
+
+	logs.Info("created test schema %s", randSchema)
+	err = sconn.Close(ctx)
+	if err != nil {
+		return nil, err
+	} else {
+		logs.Info("closed test db connection for schema creation")
+	}
+
+	connString := fmt.Sprintf(`%s&search_path="%s"`, conf.SQLConnTest, randSchema)
+	dbc, err := pgxpool.ParseConfig(connString)
+	if err != nil {
+		return func() {}, err
+	}
+
+	dbc.MaxConns = 100
+	dbc.MinConns = 10
+	dbc.MaxConnLifetime = 30 * time.Minute
+	dbc.MaxConnLifetime = 5 * time.Minute
+	dbc.MaxConnIdleTime = 5 * time.Minute
+	dbc.HealthCheckPeriod = 1 * time.Minute
+
+	p, err = pgxpool.NewWithConfig(context.Background(), dbc)
+	if err != nil {
+		return func() {}, err
+	}
+
+	err = applySchema(ctx, p)
+	if err != nil {
+		logs.Info("error applying schema: %v", err)
+		return func() {}, err
+	}
+
+	Q = New(p)
+
+	return func() {
+		_, err = p.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
+		if err != nil {
+			logs.Info("error dropping test schema: %v", err)
+			return
+		}
+
+		logs.Info("dropped test schema: %s", randSchema)
+
+		p.Close()
+
+		logs.Info("closed db pool")
+	}, nil
+}
+
+func applySchema(ctx context.Context, pool *pgxpool.Pool) error {
+	files, err := schemaFS.ReadDir("schema")
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		sqlBytes, err := schemaFS.ReadFile("schema/" + file.Name())
+		if err != nil {
+			return err
+		}
+		sql := string(sqlBytes)
+		_, err = pool.Exec(ctx, sql)
+		if err != nil {
+			return err
+		}
+		log.Printf("Applied: %s", file.Name())
+	}
+	return nil
+}

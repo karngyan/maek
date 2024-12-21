@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/karngyan/maek/db"
 
 	"github.com/bluele/go-timecop"
@@ -13,14 +12,19 @@ import (
 
 var ErrInvalidPassword = errors.New("invalid password")
 
-func Login(ctx context.Context, email, password string, remember bool, ip, ua string) (*User, *Session, error) {
+func Login(ctx context.Context, email, password string, remember bool, ip, ua string) (*Bundle, error) {
 	user, err := FetchUserByEmail(ctx, email)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if !user.verifyPassword(password) {
-		return nil, nil, ErrInvalidPassword
+		return nil, ErrInvalidPassword
+	}
+
+	workspaces, err := FetchWorkspacesForUser(ctx, user.ID)
+	if err != nil {
+		return nil, err
 	}
 
 	now := timecop.Now()
@@ -31,21 +35,31 @@ func Login(ctx context.Context, email, password string, remember bool, ip, ua st
 	}
 
 	session := &Session{
-		Ua:      ua,
-		Ip:      ip,
-		User:    user,
+		UA:      ua,
+		IP:      ip,
+		UserID:  user.ID,
 		Token:   GenerateToken(user),
 		Expires: expires.Unix(),
 		Created: now.Unix(),
 		Updated: now.Unix(),
 	}
 
-	err = db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		if _, err := ormer.Insert(session); err != nil {
-			return err
-		}
-		return nil
+	session.ID, err = db.Q.InsertSession(ctx, db.InsertSessionParams{
+		UA:      session.UA,
+		IP:      session.IP,
+		UserID:  session.UserID,
+		Token:   session.Token,
+		Expires: session.Expires,
+		Created: session.Created,
+		Updated: session.Updated,
 	})
+	if err != nil {
+		return nil, err
+	}
 
-	return user, session, nil
+	return &Bundle{
+		User:       user,
+		Session:    session,
+		Workspaces: workspaces,
+	}, nil
 }

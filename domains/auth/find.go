@@ -5,8 +5,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/beego/beego/v2/client/cache"
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/db"
 )
@@ -20,21 +21,26 @@ func InitCache() error {
 
 	// read through cache for session
 	if sessionCache, err = cache.NewReadThroughCache(sessionCache, 10*time.Minute, func(ctx context.Context, token string) (any, error) {
-		var session Session
-		if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-			now := timecop.Now().Unix()
-			err := ormer.QueryTable("session").Filter("token", token).Filter("expires__gt", now).RelatedSel().One(&session)
-			if err != nil {
-				return err
-			}
+		now := timecop.Now().Unix()
 
-			_, err = ormer.LoadRelatedWithCtx(ctx, session.User, "workspaces")
-			return err
-		}); err != nil {
+		ds, err := db.Q.GetNonExpiredSessionByToken(ctx, db.GetNonExpiredSessionByTokenParams{
+			Token:   token,
+			Expires: now,
+		})
+		if err != nil {
 			return nil, err
 		}
 
-		return &session, nil
+		return &Session{
+			ID:      ds.ID,
+			UA:      ds.UA,
+			IP:      ds.IP,
+			UserID:  ds.UserID,
+			Token:   ds.Token,
+			Expires: ds.Expires,
+			Created: ds.Created,
+			Updated: ds.Updated,
+		}, err
 	}); err != nil {
 		return err
 	}
@@ -52,25 +58,60 @@ func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
 }
 
 func FetchUserByEmail(ctx context.Context, email string) (*User, error) {
-	var user User
-	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		err := ormer.QueryTable("user").Filter("email", email).One(&user)
-		if err != nil {
-			if errors.Is(err, orm.ErrNoRows) {
-				return ErrUserNotFound
-			}
-			return err
+	du, err := db.Q.GetUserByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserNotFound
 		}
 
-		_, err = ormer.LoadRelatedWithCtx(ctx, &user, "workspaces")
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return UserFromDBUser(&du), nil
+}
+
+func FetchUserByID(ctx context.Context, id int64) (*User, error) {
+	du, err := db.Q.GetUserByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+
+		return nil, err
+	}
+
+	return UserFromDBUser(&du), nil
+}
+
+func FetchWorkspaceByID(ctx context.Context, id int64) (*Workspace, error) {
+	dw, err := db.Q.GetWorkspaceByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrWorkspaceNotFound
+		}
+
+		return nil, err
+	}
+
+	return WorkspaceFromDB(&dw), nil
+}
+
+func FetchWorkspacesForUser(ctx context.Context, userID int64) ([]*Workspace, error) {
+	dws, err := db.Q.GetWorkspacesForUser(ctx, userID)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		return nil, err
+	}
+
+	wss := make([]*Workspace, 0, len(dws))
+	for _, dw := range dws {
+		wss = append(wss, &Workspace{
+			ID:          dw.ID,
+			Name:        dw.Name,
+			Description: dw.Description,
+			Created:     dw.Created,
+			Updated:     dw.Updated,
+		})
+	}
+
+	return wss, nil
 }

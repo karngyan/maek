@@ -8,4 +8,5 @@ import (
 
 func Configure(l *logs.BeeLogger) {
 	web.Post("/v1/workspaces/:workspace_id/collections", base.WrapAuthenticated(Create, l))
+	web.Get("/v1/workspaces/:workspace_id/collections/:collection_id", base.WrapAuthenticated(Get, l))
 }

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "session"
+CREATE TABLE IF NOT EXISTS session
 (
     id      BIGSERIAL PRIMARY KEY,
     ua      VARCHAR(255) NOT NULL DEFAULT '',
@@ -10,11 +10,9 @@ CREATE TABLE IF NOT EXISTS "session"
     updated BIGINT       NOT NULL DEFAULT 0
 );
 
--- Index for looking up sessions by token
 CREATE INDEX idx_session_token
-    ON "session" (token);
+    ON session (token);
 
--- Index for user's sessions
 CREATE INDEX idx_session_user
-    ON "session" (user_id);
+    ON session (user_id);
 

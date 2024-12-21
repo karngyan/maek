@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"runtime"
 	"time"
@@ -16,6 +17,8 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	log := logs.NewLogger(10000)
 	defer log.Flush()
 
@@ -35,9 +38,10 @@ func main() {
 		panic(err)
 	}
 
-	if err := db.Init(); err != nil {
+	if err := db.Init(ctx); err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	if err := domains.Init(); err != nil {
 		panic(err)

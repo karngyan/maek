@@ -11,12 +11,15 @@ down: ## Stop all docker services
 	docker-compose down
 
 apply: ## Applies latest schema to database
-	atlas schema apply --to file://schema --url "${SQL_CONN}" --dev-url "${ATLAS_TMP_DEV_URL}"
+	pg-schema-diff apply --dsn "${SQL_CONN}" --schema-dir ./db/schema
+
+clean: ## Drops all tables in database
+	atlas schema clean --url "${SQL_CONN}"
 
 setup: up apply ## Setup development environment
 
 diff: ## Check for schema changes
-	atlas schema diff --to file://schema --from "${SQL_CONN}" --dev-url "${ATLAS_TMP_DEV_URL}"
+	pg-schema-diff plan --dsn "${SQL_CONN}" --schema-dir ./db/schema
 
 dev: ## Start development server
 	bee run -main=cmds/api_server/main.go

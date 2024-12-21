@@ -8,8 +8,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/beego/beego/v2/client/orm"
+	mapset "github.com/deckarep/golang-set/v2"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+
 	"github.com/karngyan/maek/db"
+	"github.com/karngyan/maek/domains/auth"
 )
 
 var ErrNoteNotFound = errors.New("note not found")
@@ -24,28 +28,28 @@ const (
 type SortKey string
 
 const (
-	SortKeyCreatedAsc SortKey = "created"
-	SortKeyUpdatedAsc SortKey = "updated"
-	SortKeyCreatedDsc SortKey = "-created"
-	SortKeyUpdatedDsc SortKey = "-updated"
+	SortKeyCreatedAsc SortKey = "created_asc"
+	SortKeyUpdatedAsc SortKey = "updated_asc"
+	SortKeyCreatedDsc SortKey = "created_dsc"
+	SortKeyUpdatedDsc SortKey = "updated_dsc"
 )
 
 func FromSortString(sort string) SortKey {
 	switch sort {
-	case "created":
+	case "created_asc":
 		return SortKeyCreatedAsc
-	case "updated":
+	case "updated_asc":
 		return SortKeyUpdatedAsc
-	case "-created":
+	case "created_dsc":
 		return SortKeyCreatedDsc
-	case "-updated":
+	case "updated_dsc":
 		return SortKeyUpdatedDsc
 	default:
 		return SortKeyUpdatedDsc
 	}
 }
 
-func decodeCursor(cursor string) (int64, uint64, error) {
+func decodeCursor(cursor string) (int64, int64, error) {
 	if cursor == "" {
 		return 0, 0, nil
 	}
@@ -65,7 +69,7 @@ func decodeCursor(cursor string) (int64, uint64, error) {
 		return 0, 0, ErrFailedToDecodeCursor
 	}
 
-	id, err := strconv.ParseUint(parts[1], 10, 64)
+	id, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
 		return 0, 0, ErrFailedToDecodeCursor
 	}
@@ -73,21 +77,25 @@ func decodeCursor(cursor string) (int64, uint64, error) {
 	return sortValue, id, nil
 }
 
-func encodeCursor(sortValue int64, id uint64) string {
+func encodeCursor(sortValue int64, id int64) string {
 	rawCursor := fmt.Sprintf("%d:%d", sortValue, id)
 	return base64.StdEncoding.EncodeToString([]byte(rawCursor))
 }
 
-func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limit int, sortKey SortKey) ([]*Note, string, error) {
+type Bundle struct {
+	Notes      []*Note
+	Authors    []*auth.User
+	NextCursor string
+}
+
+func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit int, sortKey SortKey) (*Bundle, error) {
 	if limit > DefaultLimit {
-		return nil, "", ErrLimitTooHigh
+		return nil, ErrLimitTooHigh
 	}
 
 	if limit < 1 {
 		limit = DefaultLimit
 	}
-
-	var notes []*Note
 
 	lastSortValue, lastNoteId, err := decodeCursor(cursor)
 	if err != nil {
@@ -95,92 +103,79 @@ func FindNotesForWorkspace(ctx context.Context, wsId uint64, cursor string, limi
 		lastSortValue = 0
 	}
 
-	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		conds := orm.NewCondition()
-		conds = conds.And("deleted", false).And("trashed", false).And("has_content", true).And("workspace_id", wsId)
-
-		if lastSortValue > 0 {
-			switch sortKey {
-			case SortKeyCreatedAsc:
-				conds = conds.And("created__gt", lastSortValue)
-			case SortKeyCreatedDsc:
-				conds = conds.And("created__lt", lastSortValue)
-			case SortKeyUpdatedAsc:
-				conds = conds.And("updated__gt", lastSortValue)
-			case SortKeyUpdatedDsc:
-				conds = conds.And("updated__lt", lastSortValue)
-			default:
-				return fmt.Errorf("unsupported sort key: %s", sortKey)
-			}
-
-			// Tie-break with ID for stability
-			conds = conds.Or("created", lastSortValue).And("id__gt", lastNoteId)
-		}
-
-		// fetch one more than the limit to determine if there are more notes
-		_, err := ormer.QueryTable("note").OrderBy(string(sortKey), "id").SetCond(conds).Limit(limit+1).RelatedSel("CreatedBy", "UpdatedBy").All(&notes)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
-		return nil, "", err
+	dbNotes, err := db.Q.GetNotesWithSortingAndPagination(ctx, db.GetNotesWithSortingAndPaginationParams{
+		WorkspaceID:   wid,
+		Limit:         int64(limit + 1),
+		LastSortValue: lastSortValue,
+		SortKey: pgtype.Text{
+			String: string(sortKey),
+			Valid:  true,
+		},
+		LastNoteID: lastNoteId,
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	if len(notes) == 0 {
-		return notes, "", nil
+	if len(dbNotes) == 0 {
+		return &Bundle{}, nil
 	}
 
-	hasNextPage := len(notes) > limit
+	hasNextPage := len(dbNotes) > limit
 	if hasNextPage {
-		notes = notes[:limit] // Trim to the requested limit
+		dbNotes = dbNotes[:limit] // Trim to the requested limit
+	}
+
+	relatedUserIDs := mapset.NewSet[int64]()
+
+	var notes []*Note
+	for _, dbNote := range dbNotes {
+		notes = append(notes, noteFromDB(&dbNote))
+
+		relatedUserIDs.Add(dbNote.CreatedByID)
+		relatedUserIDs.Add(dbNote.UpdatedByID)
 	}
 
 	var nextCursor string
 	if hasNextPage {
 		lastNote := notes[len(notes)-1]
-		nextCursor = encodeCursor(lastNote.SortValue(sortKey), lastNote.Id)
+		nextCursor = encodeCursor(lastNote.SortValue(sortKey), lastNote.ID)
 	}
 
-	return notes, nextCursor, nil
-}
-
-func FindNoteByUuid(ctx context.Context, nuuid string, workspaceId uint64) (*Note, error) {
-	var note Note
-	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		err := ormer.QueryTable("note").Filter("deleted", false).Filter("uuid", nuuid).Filter("workspace_id", workspaceId).RelatedSel("CreatedBy", "UpdatedBy").One(&note)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}); err != nil {
+	dbUsers, err := db.Q.GetUsersByIDs(ctx, relatedUserIDs.ToSlice())
+	if err != nil {
 		return nil, err
 	}
 
-	return &note, nil
+	var users []*auth.User
+	for _, dbUser := range dbUsers {
+		users = append(users, auth.UserFromDBUser(&dbUser))
+	}
+
+	return &Bundle{
+		Notes:      notes,
+		Authors:    users,
+		NextCursor: nextCursor,
+	}, nil
 }
 
-func FindCollectionByID(ctx context.Context, wid uint64, id uint64, withNotes bool) (*Collection, error) {
-	var collection Collection
-	if err := db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		err := ormer.QueryTable("collection").Filter("workspace_id", wid).Filter("id", id).RelatedSel("CreatedBy", "UpdatedBy").One(&collection)
-		if err != nil {
-			return err
+// FindNoteByUUUID finds a note by its UUID, workspace ID and returns the note if found
+// When the note is not found or deleted, it returns ErrNoteNotFound
+func FindNoteByUUUID(ctx context.Context, nuuid string, wid int64) (*Note, error) {
+	dbNote, err := db.Q.GetNoteByUUIDAndWorkspace(ctx, db.GetNoteByUUIDAndWorkspaceParams{
+		UUID:        nuuid,
+		WorkspaceID: wid,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNoteNotFound
 		}
-
-		if withNotes {
-			_, err = ormer.LoadRelatedWithCtx(ctx, &collection, "notes")
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	}); err != nil {
 		return nil, err
 	}
 
-	return &collection, nil
+	if dbNote.Deleted {
+		return nil, ErrNoteNotFound
+	}
+
+	return noteFromDB(&dbNote), nil
 }

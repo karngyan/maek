@@ -4,55 +4,34 @@ import (
 	"context"
 	"errors"
 
-	"github.com/beego/beego/v2/client/orm"
+	"github.com/jackc/pgx/v5"
+
 	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/db"
-	"github.com/karngyan/maek/domains/auth"
 )
 
-func TrashNoteCtx(ctx context.Context, nuuid string, wid uint64, user *auth.User) error {
-	// check if note already exists
-	existingNote, err := FindNoteByUuid(ctx, nuuid, wid)
+func TrashNote(ctx context.Context, nuuid string, wid int64, userID int64) error {
+	_, err := db.Q.TrashNoteByUUID(ctx, db.TrashNoteByUUIDParams{
+		Updated:     timecop.Now().Unix(),
+		UpdatedByID: userID,
+		UUID:        nuuid,
+		WorkspaceID: wid,
+	})
 	if err != nil {
-		if errors.Is(err, orm.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNoteNotFound
 		}
 		return err
 	}
 
-	return db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		existingNote.Trashed = true
-		existingNote.Updated = timecop.Now().Unix()
-		existingNote.UpdatedBy = user
-
-		if _, err := ormer.Update(existingNote); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	return nil
 }
 
-func TrashNoteMultiCtx(ctx context.Context, noteUuids []string, wid uint64, user *auth.User) error {
-	return db.WithOrmerCtx(ctx, func(ctx context.Context, ormer orm.Ormer) error {
-		for _, nuuid := range noteUuids {
-			existingNote, err := FindNoteByUuid(ctx, nuuid, wid)
-			if err != nil {
-				if errors.Is(err, orm.ErrNoRows) {
-					return ErrNoteNotFound
-				}
-				return err
-			}
-
-			existingNote.Trashed = true
-			existingNote.Updated = timecop.Now().Unix()
-			existingNote.UpdatedBy = user
-
-			if _, err := ormer.Update(existingNote); err != nil {
-				return err
-			}
-		}
-
-		return nil
+func TrashNoteMulti(ctx context.Context, noteUuids []string, wid int64, userID int64) error {
+	return db.Q.TrashNotesByUUIDs(ctx, db.TrashNotesByUUIDsParams{
+		Updated:     timecop.Now().Unix(),
+		UpdatedByID: userID,
+		Uuids:       noteUuids,
+		WorkspaceID: wid,
 	})
 }

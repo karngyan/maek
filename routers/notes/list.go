@@ -26,7 +26,7 @@ func List(ctx *base.WebContext) {
 	}
 
 	sk := notes.FromSortString(sort)
-	mn, nextCursor, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.Id, cursor, l, sk)
+	bundle, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.ID, cursor, l, sk)
 	if err != nil {
 		if errors.Is(err, notes.ErrLimitTooHigh) {
 			base.BadRequest(ctx, err)
@@ -37,8 +37,8 @@ func List(ctx *base.WebContext) {
 		return
 	}
 
-	uiNotes := make([]*models.Note, 0, len(mn))
-	for _, n := range mn {
+	uiNotes := make([]*models.Note, 0, len(bundle.Notes))
+	for _, n := range bundle.Notes {
 		mn, err := models.ModelForNote(n)
 		if err != nil {
 			base.InternalError(ctx, err)
@@ -48,8 +48,14 @@ func List(ctx *base.WebContext) {
 		uiNotes = append(uiNotes, mn)
 	}
 
+	uiAuthors := make([]*models.User, 0, len(bundle.Authors))
+	for _, u := range bundle.Authors {
+		uiAuthors = append(uiAuthors, models.ModelForUser(u))
+	}
+
 	base.Respond(ctx, map[string]any{
 		"notes":      uiNotes,
-		"nextCursor": nextCursor,
+		"authors":    uiAuthors,
+		"nextCursor": bundle.NextCursor,
 	}, http.StatusOK)
 }

@@ -20,7 +20,7 @@ func Trash(ctx *base.WebContext) {
 
 	rctx := ctx.Request.Context()
 
-	err := notes.TrashNoteCtx(rctx, nuuid, ctx.Workspace.Id, ctx.User)
+	err := notes.TrashNote(rctx, nuuid, ctx.WorkspaceID, ctx.Session.UserID)
 	if err != nil {
 		if errors.Is(err, notes.ErrNoteNotFound) {
 			base.BadRequest(ctx, map[string]any{

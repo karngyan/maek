@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "workspace"
+CREATE TABLE IF NOT EXISTS workspace
 (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255) NOT NULL DEFAULT '',

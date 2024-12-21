@@ -1,42 +1,31 @@
 package models
 
-import "github.com/karngyan/maek/domains/notes"
+import (
+	"github.com/karngyan/maek/domains/collections"
+)
 
 type Collection struct {
-	Id          uint64  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Created     int64   `json:"created"`
-	Updated     int64   `json:"updated"`
-	Trashed     bool    `json:"trashed"`
-	Notes       []*Note `json:"notes"`
-	WorkspaceId uint64  `json:"workspaceId"`
-	CreatedBy   *User   `json:"createdBy"`
-	UpdatedBy   *User   `json:"updatedBy"`
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Created     int64  `json:"created"`
+	Updated     int64  `json:"updated"`
+	Trashed     bool   `json:"trashed"`
+	WorkspaceID int64  `json:"workspaceId"`
+	CreatedByID int64  `json:"createdById"`
+	UpdatedByID int64  `json:"updatedById"`
 }
 
-func ModelForCollection(collection *notes.Collection) *Collection {
-	notes := make([]*Note, 0, len(collection.Notes))
-	for _, note := range collection.Notes {
-		n, err := ModelForNote(note)
-		if err != nil {
-			// meh
-			continue
-		}
-
-		notes = append(notes, n)
-	}
-
+func ModelForCollection(collection *collections.Collection) *Collection {
 	return &Collection{
-		Id:          collection.Id,
+		ID:          collection.ID,
 		Name:        collection.Name,
 		Description: collection.Description,
 		Created:     collection.Created,
 		Updated:     collection.Updated,
 		Trashed:     collection.Trashed,
-		Notes:       notes,
-		WorkspaceId: collection.Workspace.Id,
-		CreatedBy:   ModelForUser(collection.CreatedBy),
-		UpdatedBy:   ModelForUser(collection.UpdatedBy),
+		WorkspaceID: collection.WorkspaceID,
+		CreatedByID: collection.CreatedByID,
+		UpdatedByID: collection.UpdatedByID,
 	}
 }
