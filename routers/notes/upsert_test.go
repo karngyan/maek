@@ -50,7 +50,7 @@ func TestUpsert(t *testing.T) {
 			uuid: "123",
 			updates: map[string]any{
 				"content": map[string]any{
-					"dom": "some text",
+					"dom": "updated stuff",
 				},
 				"favorite": true,
 				"created":  1234567890,

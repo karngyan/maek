@@ -32,7 +32,7 @@ const lastMonthStart = dayjs().subtract(1, 'month').startOf('month').unix()
 const NotesList = () => {
   const { wid } = useParams<{ wid: string }>()
   const workspaceId = +wid
-  const [sortKey, setSortKey] = React.useState('-updated')
+  const [sortKey, setSortKey] = React.useState('updated_dsc')
 
   const {
     data,
