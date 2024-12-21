@@ -4,16 +4,7 @@
       "dom": "some text"
     },
     "created": 1234567890,
-    "createdBy": {
-      "created": 1234567890,
-      "defaultWorkspaceId": 1,
-      "email": "karn@maek.ai",
-      "id": 1,
-      "name": "Karn",
-      "role": "admin",
-      "updated": 1234567890,
-      "verified": false
-    },
+    "createdById": 1,
     "favorite": true,
     "hasAudios": true,
     "hasClosedTasks": true,
@@ -29,16 +20,7 @@
     "id": 1,
     "trashed": false,
     "updated": 1234567890,
-    "updatedBy": {
-      "created": 1234567890,
-      "defaultWorkspaceId": 1,
-      "email": "karn@maek.ai",
-      "id": 1,
-      "name": "Karn",
-      "role": "admin",
-      "updated": 1234567890,
-      "verified": false
-    },
+    "updatedById": 1,
     "uuid": "123",
     "workspaceId": 1
   }
