@@ -1,4 +1,4 @@
-.PHONY: help up down apply setup diff
+.PHONY: help up down apply setup diff test
 .DEFAULT_GOAL := help
 
 help: ## Display this help
@@ -20,3 +20,6 @@ diff: ## Check for schema changes
 
 dev: ## Start development server
 	bee run -main=cmds/api_server/main.go
+
+test: ## Run go tests
+	go test -v ./...
