@@ -26,8 +26,8 @@ type Note struct {
 	Created        int64          `json:"created"`
 	Updated        int64          `json:"updated"`
 	WorkspaceID    int64          `json:"workspaceId"`
-	CreatedBy      int64          `json:"createdById"`
-	UpdatedBy      int64          `json:"updatedById"`
+	CreatedByID    int64          `json:"createdById"`
+	UpdatedByID    int64          `json:"updatedById"`
 }
 
 func ModelForNote(note *notes.Note) (*Note, error) {
@@ -56,7 +56,7 @@ func ModelForNote(note *notes.Note) (*Note, error) {
 		Created:        note.Created,
 		Updated:        note.Updated,
 		WorkspaceID:    note.WorkspaceID,
-		CreatedBy:      note.CreatedByID,
-		UpdatedBy:      note.UpdatedByID,
+		CreatedByID:    note.CreatedByID,
+		UpdatedByID:    note.UpdatedByID,
 	}, nil
 }

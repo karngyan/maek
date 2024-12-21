@@ -18,8 +18,8 @@ import { Button } from '../ui/button'
 import NotesListBatchSelectActions from './batch-select-actions'
 
 const SortOptions = [
-  { value: '-created', label: 'last created' },
-  { value: '-updated', label: 'last modified' },
+  { value: 'created_dsc', label: 'last created' },
+  { value: 'updated_dsc', label: 'last modified' },
 ]
 
 const yesterdayStart = dayjs().subtract(1, 'day').startOf('day').unix()

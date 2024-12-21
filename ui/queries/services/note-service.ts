@@ -14,8 +14,8 @@ export interface Note {
   trashed: boolean
   created: number
   updated: number
-  createdBy: User
-  updatedBy: User
+  createdById: number
+  updatedById: number
   workspaceId: number
   hasAudios: boolean
   hasClosedTasks: boolean
@@ -38,6 +38,7 @@ export interface NoteResponse {
 
 export interface ListNotesResponse {
   notes: Note[]
+  authors: User[]
   nextCursor: string
 }
 
@@ -90,7 +91,7 @@ export const deleteNoteMulti = async ({
 export const fetchAllNotes = async ({
   workspaceId,
   cursor = '',
-  sort = '-updated',
+  sort = 'updated_dsc',
   limit = 100,
 }: {
   workspaceId: number
