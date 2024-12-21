@@ -11,7 +11,7 @@ import (
 
 type UpsertNoteRequest struct {
 	UUID           string
-	Content        string
+	Content        []byte
 	Favorite       bool
 	Created        int64
 	Updated        int64
@@ -37,7 +37,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		return nil, errors.New("uuid is required")
 	}
 
-	if req.Content == "" {
+	if len(req.Content) == 0 {
 		return nil, errors.New("content is required")
 	}
 
@@ -47,17 +47,6 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 
 	if req.UpdatedByID == 0 {
 		return nil, errors.New("updated by is required")
-	}
-
-	// check if note already exists
-	existingDBNote, err := db.Q.GetNoteByUUIDAndWorkspace(ctx, db.GetNoteByUUIDAndWorkspaceParams{
-		UUID:        nuuid,
-		WorkspaceID: req.WorkspaceID,
-	})
-	if err != nil {
-		if !errors.Is(err, pgx.ErrNoRows) {
-			return nil, err
-		}
 	}
 
 	note := &Note{
@@ -83,42 +72,66 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		HasTables:      req.HasTables,
 	}
 
-	if existingDBNote.ID > 0 {
-		note.ID = existingDBNote.ID
-		note.Trashed = existingDBNote.Trashed
-		// don't let client change created and created by once created
-		note.Created = existingDBNote.Created
-		note.CreatedByID = existingDBNote.CreatedByID
-	}
+	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) (err error) {
+		note.ID, err = q.CheckNoteExists(ctx, db.CheckNoteExistsParams{
+			UUID:        nuuid,
+			WorkspaceID: req.WorkspaceID,
+		})
+		if err != nil {
+			if !errors.Is(err, pgx.ErrNoRows) {
+				return err
+			}
 
-	id, err := db.Q.UpsertNote(ctx, db.UpsertNoteParams{
-		ID:             note.ID,
-		UUID:           note.UUID,
-		Content:        note.Content,
-		Favorite:       note.Favorite,
-		Deleted:        note.Deleted,
-		Trashed:        note.Trashed,
-		HasContent:     note.HasContent,
-		HasImages:      note.HasImages,
-		HasVideos:      note.HasVideos,
-		HasOpenTasks:   note.HasOpenTasks,
-		HasClosedTasks: note.HasClosedTasks,
-		HasCode:        note.HasCode,
-		HasAudios:      note.HasAudios,
-		HasLinks:       note.HasLinks,
-		HasFiles:       note.HasFiles,
-		HasQuotes:      note.HasQuotes,
-		HasTables:      note.HasTables,
-		WorkspaceID:    note.WorkspaceID,
-		Created:        note.Created,
-		Updated:        note.Updated,
-		CreatedByID:    note.CreatedByID,
-		UpdatedByID:    note.UpdatedByID,
+			note.ID, err = q.InsertNote(ctx, db.InsertNoteParams{
+				UUID:           nuuid,
+				Content:        string(note.Content),
+				Favorite:       note.Favorite,
+				Deleted:        false,
+				Trashed:        false,
+				HasContent:     note.HasContent,
+				HasImages:      note.HasImages,
+				HasVideos:      note.HasVideos,
+				HasOpenTasks:   note.HasOpenTasks,
+				HasClosedTasks: note.HasClosedTasks,
+				HasCode:        note.HasCode,
+				HasAudios:      note.HasAudios,
+				HasLinks:       note.HasLinks,
+				HasFiles:       note.HasFiles,
+				HasQuotes:      note.HasQuotes,
+				HasTables:      note.HasTables,
+				WorkspaceID:    note.WorkspaceID,
+				Created:        note.Created,
+				Updated:        note.Updated,
+				CreatedByID:    note.CreatedByID,
+				UpdatedByID:    note.UpdatedByID,
+			})
+
+			return err
+		}
+
+		// exists; time to do an update
+		return q.UpdateNote(ctx, db.UpdateNoteParams{
+			Content:        string(req.Content),
+			Favorite:       note.Favorite,
+			HasContent:     note.HasContent,
+			HasImages:      note.HasImages,
+			HasVideos:      note.HasVideos,
+			HasOpenTasks:   note.HasOpenTasks,
+			UpdatedByID:    note.UpdatedByID,
+			HasClosedTasks: note.HasClosedTasks,
+			HasCode:        note.HasCode,
+			HasAudios:      note.HasAudios,
+			HasLinks:       note.HasLinks,
+			HasFiles:       note.HasFiles,
+			HasQuotes:      note.HasQuotes,
+			HasTables:      note.HasTables,
+			WorkspaceID:    note.WorkspaceID,
+			Updated:        note.Updated,
+		})
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	note.ID = id
 	return note, nil
 }

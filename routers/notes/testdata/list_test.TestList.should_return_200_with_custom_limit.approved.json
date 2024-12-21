@@ -1,21 +1,24 @@
 {
-  "nextCursor": "NQ==",
+  "authors": [
+    {
+      "created": 1234567890,
+      "defaultWorkspaceId": 1,
+      "email": "karn@maek.ai",
+      "id": 1,
+      "name": "Karn",
+      "role": "admin",
+      "updated": 1234567890,
+      "verified": false
+    }
+  ],
+  "nextCursor": "MTA6NQ==",
   "notes": [
     {
       "content": {
-        "foo": "bar"
+        "dom": []
       },
-      "created": 1234567890,
-      "createdBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "created": 9,
+      "createdById": 1,
       "favorite": true,
       "hasAudios": false,
       "hasClosedTasks": false,
@@ -28,37 +31,19 @@
       "hasQuotes": false,
       "hasTables": false,
       "hasVideos": false,
-      "id": 1,
+      "id": 9,
       "trashed": false,
-      "updated": 1234567890,
-      "updatedBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
-      "uuid": "rand-uuid-1",
+      "updated": 18,
+      "updatedById": 1,
+      "uuid": "rand-uuid-9",
       "workspaceId": 1
     },
     {
       "content": {
-        "foo": "bar"
+        "dom": []
       },
-      "created": 1234567890,
-      "createdBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "created": 8,
+      "createdById": 1,
       "favorite": true,
       "hasAudios": false,
       "hasClosedTasks": false,
@@ -71,37 +56,19 @@
       "hasQuotes": false,
       "hasTables": false,
       "hasVideos": false,
-      "id": 2,
+      "id": 8,
       "trashed": false,
-      "updated": 1234567890,
-      "updatedBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
-      "uuid": "rand-uuid-2",
+      "updated": 16,
+      "updatedById": 1,
+      "uuid": "rand-uuid-8",
       "workspaceId": 1
     },
     {
       "content": {
-        "foo": "bar"
+        "dom": []
       },
-      "created": 1234567890,
-      "createdBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "created": 7,
+      "createdById": 1,
       "favorite": true,
       "hasAudios": false,
       "hasClosedTasks": false,
@@ -114,37 +81,19 @@
       "hasQuotes": false,
       "hasTables": false,
       "hasVideos": false,
-      "id": 3,
+      "id": 7,
       "trashed": false,
-      "updated": 1234567890,
-      "updatedBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
-      "uuid": "rand-uuid-3",
+      "updated": 14,
+      "updatedById": 1,
+      "uuid": "rand-uuid-7",
       "workspaceId": 1
     },
     {
       "content": {
-        "foo": "bar"
+        "dom": []
       },
-      "created": 1234567890,
-      "createdBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "created": 6,
+      "createdById": 1,
       "favorite": true,
       "hasAudios": false,
       "hasClosedTasks": false,
@@ -157,37 +106,19 @@
       "hasQuotes": false,
       "hasTables": false,
       "hasVideos": false,
-      "id": 4,
+      "id": 6,
       "trashed": false,
-      "updated": 1234567890,
-      "updatedBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
-      "uuid": "rand-uuid-4",
+      "updated": 12,
+      "updatedById": 1,
+      "uuid": "rand-uuid-6",
       "workspaceId": 1
     },
     {
       "content": {
-        "foo": "bar"
+        "dom": []
       },
-      "created": 1234567890,
-      "createdBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "created": 5,
+      "createdById": 1,
       "favorite": true,
       "hasAudios": false,
       "hasClosedTasks": false,
@@ -202,17 +133,8 @@
       "hasVideos": false,
       "id": 5,
       "trashed": false,
-      "updated": 1234567890,
-      "updatedBy": {
-        "created": 1234567890,
-        "defaultWorkspaceId": 1,
-        "email": "karn@maek.ai",
-        "id": 1,
-        "name": "Karn",
-        "role": "admin",
-        "updated": 1234567890,
-        "verified": false
-      },
+      "updated": 10,
+      "updatedById": 1,
       "uuid": "rand-uuid-5",
       "workspaceId": 1
     }

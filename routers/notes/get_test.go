@@ -2,6 +2,7 @@ package notes_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -19,9 +20,14 @@ func TestGet(t *testing.T) {
 	cs := tests.NewClientStateWithUser(t)
 	cs2 := tests.NewClientStateWithUserEmail(t, "john@maek.ai")
 
+	cbytes, err := json.Marshal(map[string]any{
+		"dom": []any{},
+	})
+	assert.Nil(t, err)
+
 	n, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 		UUID:        "123",
-		Content:     "{ \"dom\": [] }",
+		Content:     cbytes,
 		Favorite:    true,
 		Created:     timecop.Now().Unix(),
 		Updated:     timecop.Now().Unix(),
@@ -33,7 +39,7 @@ func TestGet(t *testing.T) {
 
 	n2, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 		UUID:        "321",
-		Content:     "{ \"dom\": [] }",
+		Content:     cbytes,
 		Favorite:    true,
 		Created:     timecop.Now().Unix(),
 		Updated:     timecop.Now().Unix(),
@@ -46,31 +52,31 @@ func TestGet(t *testing.T) {
 
 	var testCases = []struct {
 		name           string
-		noteId         string
+		uuid           string
 		workspaceId    int64
 		expectedStatus int
 	}{
 		{
 			name:           "valid note id",
-			noteId:         n.UUID,
+			uuid:           n.UUID,
 			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 200,
 		},
 		{
 			name:           "invalid note id",
-			noteId:         "random-note-uuid",
+			uuid:           "random-note-uuid",
 			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 404,
 		},
 		{
 			name:           "note id from different workspace",
-			noteId:         n2.UUID,
+			uuid:           n2.UUID,
 			workspaceId:    cs.Workspace.ID,
 			expectedStatus: 404,
 		},
 		{
 			name:           "session token used from another user to fetch note",
-			noteId:         n2.UUID,
+			uuid:           n2.UUID,
 			workspaceId:    cs2.Workspace.ID,
 			expectedStatus: 401,
 		},
@@ -78,7 +84,7 @@ func TestGet(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rr, err := cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes/%s", tc.workspaceId, tc.noteId))
+			rr, err := cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes/%s", tc.workspaceId, tc.uuid))
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedStatus, rr.Code)
 

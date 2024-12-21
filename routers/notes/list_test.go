@@ -2,6 +2,7 @@ package notes_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -17,14 +18,19 @@ func TestList(t *testing.T) {
 
 	cs := tests.NewClientStateWithUser(t)
 
+	cbytes, err := json.Marshal(map[string]any{
+		"dom": []any{},
+	})
+	assert.Nil(t, err)
+
 	i := 1
 	for i < 10 {
 		_, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 			UUID:        fmt.Sprintf("rand-uuid-%d", i),
-			Content:     "{ \"foo\": \"bar\" }",
+			Content:     cbytes,
 			Favorite:    true,
-			Created:     1234567890,
-			Updated:     1234567890,
+			Created:     int64(i),
+			Updated:     int64(2 * i),
 			WorkspaceID: cs.Workspace.ID,
 			CreatedByID: cs.User.ID,
 			UpdatedByID: cs.User.ID,
@@ -62,7 +68,7 @@ func TestList(t *testing.T) {
 		},
 		{
 			name:               "should return 200 with cursor",
-			cursor:             "NQ==", // base64 encoded 5
+			cursor:             "MTA6NQ==", // base64 encoded 10:5
 			limit:              "",
 			expectedStatusCode: 200,
 		},

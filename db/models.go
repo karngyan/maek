@@ -26,7 +26,7 @@ type CollectionNote struct {
 type Note struct {
 	ID             int64
 	UUID           string
-	Content        string
+	Content        []byte
 	Favorite       bool
 	Deleted        bool
 	Trashed        bool

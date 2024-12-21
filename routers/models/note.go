@@ -32,7 +32,7 @@ type Note struct {
 
 func ModelForNote(note *notes.Note) (*Note, error) {
 	var content map[string]any
-	if err := json.Unmarshal([]byte(note.Content), &content); err != nil {
+	if err := json.Unmarshal(note.Content, &content); err != nil {
 		return nil, err
 	}
 

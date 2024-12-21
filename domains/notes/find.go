@@ -10,8 +10,6 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
-
 	"github.com/karngyan/maek/db"
 	"github.com/karngyan/maek/domains/auth"
 )
@@ -103,16 +101,62 @@ func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit 
 		lastSortValue = 0
 	}
 
-	dbNotes, err := db.Q.GetNotesWithSortingAndPagination(ctx, db.GetNotesWithSortingAndPaginationParams{
-		WorkspaceID:   wid,
-		Limit:         int64(limit + 1),
-		LastSortValue: lastSortValue,
-		SortKey: pgtype.Text{
-			String: string(sortKey),
-			Valid:  true,
-		},
-		LastNoteID: lastNoteId,
-	})
+	var dbNotes []db.Note
+	if lastSortValue > 0 {
+		switch sortKey {
+		case SortKeyCreatedAsc:
+			dbNotes, err = db.Q.GetNotesCreatedAsc(ctx, db.GetNotesCreatedAscParams{
+				WorkspaceID:   wid,
+				Limit:         int64(limit + 1),
+				LastSortValue: lastSortValue,
+				LastNoteID:    lastNoteId,
+			})
+		case SortKeyUpdatedAsc:
+			dbNotes, err = db.Q.GetNotesUpdatedAsc(ctx, db.GetNotesUpdatedAscParams{
+				WorkspaceID:   wid,
+				Limit:         int64(limit + 1),
+				LastSortValue: lastSortValue,
+				LastNoteID:    lastNoteId,
+			})
+		case SortKeyCreatedDsc:
+			dbNotes, err = db.Q.GetNotesCreatedDesc(ctx, db.GetNotesCreatedDescParams{
+				WorkspaceID:   wid,
+				Limit:         int64(limit + 1),
+				LastSortValue: lastSortValue,
+				LastNoteID:    lastNoteId,
+			})
+		case SortKeyUpdatedDsc:
+			dbNotes, err = db.Q.GetNotesUpdatedDesc(ctx, db.GetNotesUpdatedDescParams{
+				WorkspaceID:   wid,
+				Limit:         int64(limit + 1),
+				LastSortValue: lastSortValue,
+				LastNoteID:    lastNoteId,
+			})
+		}
+	} else {
+		switch sortKey {
+		case SortKeyCreatedAsc:
+			dbNotes, err = db.Q.GetInitialNotesCreatedAsc(ctx, db.GetInitialNotesCreatedAscParams{
+				WorkspaceID: wid,
+				Limit:       int64(limit + 1),
+			})
+		case SortKeyUpdatedAsc:
+			dbNotes, err = db.Q.GetInitialNotesUpdatedAsc(ctx, db.GetInitialNotesUpdatedAscParams{
+				WorkspaceID: wid,
+				Limit:       int64(limit + 1),
+			})
+		case SortKeyCreatedDsc:
+			dbNotes, err = db.Q.GetInitialNotesCreatedDesc(ctx, db.GetInitialNotesCreatedDescParams{
+				WorkspaceID: wid,
+				Limit:       int64(limit + 1),
+			})
+		case SortKeyUpdatedDsc:
+			dbNotes, err = db.Q.GetInitialNotesUpdatedDesc(ctx, db.GetInitialNotesUpdatedDescParams{
+				WorkspaceID: wid,
+				Limit:       int64(limit + 1),
+			})
+		}
+	}
 	if err != nil {
 		return nil, err
 	}

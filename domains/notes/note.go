@@ -5,7 +5,7 @@ import "github.com/karngyan/maek/db"
 type Note struct {
 	ID             int64
 	UUID           string
-	Content        string
+	Content        []byte
 	Favorite       bool
 	Trashed        bool
 	Deleted        bool

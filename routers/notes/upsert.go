@@ -52,12 +52,12 @@ func Upsert(ctx *base.WebContext) {
 
 	note, err := notes.UpsertNote(rctx, &notes.UpsertNoteRequest{
 		UUID:           nuuid,
-		Content:        string(contentBytes),
+		Content:        contentBytes,
 		Favorite:       req.Favorite,
 		Created:        req.Created,
 		Updated:        req.Updated,
 		WorkspaceID:    ctx.Workspace.ID,
-		CreatedByID:    ctx.Session.UserID, // only used if it's an insert, otherwise ignored
+		CreatedByID:    ctx.Session.UserID,
 		UpdatedByID:    ctx.Session.UserID,
 		HasContent:     req.HasContent,
 		HasImages:      req.HasImages,

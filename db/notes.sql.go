@@ -7,14 +7,374 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const checkNoteExists = `-- name: CheckNoteExists :one
+SELECT id
+FROM note
+WHERE uuid = $1
+  AND workspace_id = $2
+`
+
+type CheckNoteExistsParams struct {
+	UUID        string
+	WorkspaceID int64
+}
+
+func (q *Queries) CheckNoteExists(ctx context.Context, arg CheckNoteExistsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, checkNoteExists, arg.UUID, arg.WorkspaceID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const getInitialNotesCreatedAsc = `-- name: GetInitialNotesCreatedAsc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+ORDER BY created ASC,
+         id ASC
+LIMIT $2
+`
+
+type GetInitialNotesCreatedAscParams struct {
+	WorkspaceID int64
+	Limit       int64
+}
+
+func (q *Queries) GetInitialNotesCreatedAsc(ctx context.Context, arg GetInitialNotesCreatedAscParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getInitialNotesCreatedAsc, arg.WorkspaceID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialNotesCreatedDesc = `-- name: GetInitialNotesCreatedDesc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+ORDER BY created DESC,
+         id DESC
+LIMIT $2
+`
+
+type GetInitialNotesCreatedDescParams struct {
+	WorkspaceID int64
+	Limit       int64
+}
+
+func (q *Queries) GetInitialNotesCreatedDesc(ctx context.Context, arg GetInitialNotesCreatedDescParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getInitialNotesCreatedDesc, arg.WorkspaceID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialNotesUpdatedAsc = `-- name: GetInitialNotesUpdatedAsc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+ORDER BY updated ASC,
+         id ASC
+LIMIT $2
+`
+
+type GetInitialNotesUpdatedAscParams struct {
+	WorkspaceID int64
+	Limit       int64
+}
+
+func (q *Queries) GetInitialNotesUpdatedAsc(ctx context.Context, arg GetInitialNotesUpdatedAscParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getInitialNotesUpdatedAsc, arg.WorkspaceID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialNotesUpdatedDesc = `-- name: GetInitialNotesUpdatedDesc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+ORDER BY updated DESC,
+         id DESC
+LIMIT $2
+`
+
+type GetInitialNotesUpdatedDescParams struct {
+	WorkspaceID int64
+	Limit       int64
+}
+
+func (q *Queries) GetInitialNotesUpdatedDesc(ctx context.Context, arg GetInitialNotesUpdatedDescParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getInitialNotesUpdatedDesc, arg.WorkspaceID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getNoteByUUIDAndWorkspace = `-- name: GetNoteByUUIDAndWorkspace :one
-SELECT id, uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
-       has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
-       has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
 FROM note
 WHERE uuid = $1
   AND workspace_id = $2
@@ -55,47 +415,55 @@ func (q *Queries) GetNoteByUUIDAndWorkspace(ctx context.Context, arg GetNoteByUU
 	return i, err
 }
 
-const getNotesWithSortingAndPagination = `-- name: GetNotesWithSortingAndPagination :many
-SELECT id, uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
-       has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
-       has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id
+const getNotesCreatedAsc = `-- name: GetNotesCreatedAsc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
 FROM note
 WHERE workspace_id = $1
   AND deleted = FALSE
   AND trashed = FALSE
   AND has_content = TRUE
   AND (
-    (created > $3 AND $4 = 'created_asc')
-    OR (created < $3 AND $4 = 'created_dsc')
-    OR (updated > $3 AND $4 = 'updated_asc')
-    OR (updated < $3 AND $4 = 'updated_dsc')
-    OR (created = $3 AND id > $5) -- Tie-breaker for stability
-  )
-ORDER BY
-  CASE
-    WHEN $4 = 'created_asc' THEN created
-    WHEN $4 = 'created_dsc' THEN created
-    WHEN $4 = 'updated_asc' THEN updated
-    WHEN $4 = 'updated_dsc' THEN updated
-  END ASC,
-  id ASC
+    created > $3
+        OR (created = $3 AND id > $4) -- tie-break
+    )
+ORDER BY created ASC,
+         id ASC
 LIMIT $2
 `
 
-type GetNotesWithSortingAndPaginationParams struct {
+type GetNotesCreatedAscParams struct {
 	WorkspaceID   int64
 	Limit         int64
 	LastSortValue int64
-	SortKey       pgtype.Text
 	LastNoteID    int64
 }
 
-func (q *Queries) GetNotesWithSortingAndPagination(ctx context.Context, arg GetNotesWithSortingAndPaginationParams) ([]Note, error) {
-	rows, err := q.db.Query(ctx, getNotesWithSortingAndPagination,
+func (q *Queries) GetNotesCreatedAsc(ctx context.Context, arg GetNotesCreatedAscParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getNotesCreatedAsc,
 		arg.WorkspaceID,
 		arg.Limit,
 		arg.LastSortValue,
-		arg.SortKey,
 		arg.LastNoteID,
 	)
 	if err != nil {
@@ -139,11 +507,347 @@ func (q *Queries) GetNotesWithSortingAndPagination(ctx context.Context, arg GetN
 	return items, nil
 }
 
+const getNotesCreatedDesc = `-- name: GetNotesCreatedDesc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+  AND (
+    created < $3
+        OR (created = $3 AND id < $4) -- tie-break
+    )
+ORDER BY created DESC,
+         id DESC
+LIMIT $2
+`
+
+type GetNotesCreatedDescParams struct {
+	WorkspaceID   int64
+	Limit         int64
+	LastSortValue int64
+	LastNoteID    int64
+}
+
+func (q *Queries) GetNotesCreatedDesc(ctx context.Context, arg GetNotesCreatedDescParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getNotesCreatedDesc,
+		arg.WorkspaceID,
+		arg.Limit,
+		arg.LastSortValue,
+		arg.LastNoteID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getNotesUpdatedAsc = `-- name: GetNotesUpdatedAsc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+  AND (
+    updated > $3
+        OR (updated = $3 AND id > $4)
+    )
+ORDER BY updated ASC,
+         id ASC
+LIMIT $2
+`
+
+type GetNotesUpdatedAscParams struct {
+	WorkspaceID   int64
+	Limit         int64
+	LastSortValue int64
+	LastNoteID    int64
+}
+
+func (q *Queries) GetNotesUpdatedAsc(ctx context.Context, arg GetNotesUpdatedAscParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getNotesUpdatedAsc,
+		arg.WorkspaceID,
+		arg.Limit,
+		arg.LastSortValue,
+		arg.LastNoteID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getNotesUpdatedDesc = `-- name: GetNotesUpdatedDesc :many
+SELECT id,
+       uuid,
+       content,
+       favorite,
+       deleted,
+       trashed,
+       has_content,
+       has_images,
+       has_videos,
+       has_open_tasks,
+       has_closed_tasks,
+       has_code,
+       has_audios,
+       has_links,
+       has_files,
+       has_quotes,
+       has_tables,
+       workspace_id,
+       created,
+       updated,
+       created_by_id,
+       updated_by_id
+FROM note
+WHERE workspace_id = $1
+  AND deleted = FALSE
+  AND trashed = FALSE
+  AND has_content = TRUE
+  AND (
+    updated < $3
+        OR (updated = $3 AND id < $4)
+    )
+ORDER BY updated DESC,
+         id DESC
+LIMIT $2
+`
+
+type GetNotesUpdatedDescParams struct {
+	WorkspaceID   int64
+	Limit         int64
+	LastSortValue int64
+	LastNoteID    int64
+}
+
+func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDescParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getNotesUpdatedDesc,
+		arg.WorkspaceID,
+		arg.Limit,
+		arg.LastSortValue,
+		arg.LastNoteID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const insertNote = `-- name: InsertNote :one
+INSERT INTO note (uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
+                  has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
+                  has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+RETURNING id
+`
+
+type InsertNoteParams struct {
+	UUID           string
+	Content        string
+	Favorite       bool
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) InsertNote(ctx context.Context, arg InsertNoteParams) (int64, error) {
+	row := q.db.QueryRow(ctx, insertNote,
+		arg.UUID,
+		arg.Content,
+		arg.Favorite,
+		arg.Deleted,
+		arg.Trashed,
+		arg.HasContent,
+		arg.HasImages,
+		arg.HasVideos,
+		arg.HasOpenTasks,
+		arg.HasClosedTasks,
+		arg.HasCode,
+		arg.HasAudios,
+		arg.HasLinks,
+		arg.HasFiles,
+		arg.HasQuotes,
+		arg.HasTables,
+		arg.WorkspaceID,
+		arg.Created,
+		arg.Updated,
+		arg.CreatedByID,
+		arg.UpdatedByID,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const trashNoteByUUID = `-- name: TrashNoteByUUID :one
 UPDATE note
-SET
-    trashed = TRUE,
-    updated = $1,
+SET trashed       = TRUE,
+    updated       = $1,
     updated_by_id = $2
 WHERE uuid = $3
   AND workspace_id = $4
@@ -171,11 +875,10 @@ func (q *Queries) TrashNoteByUUID(ctx context.Context, arg TrashNoteByUUIDParams
 
 const trashNotesByUUIDs = `-- name: TrashNotesByUUIDs :exec
 UPDATE note
-SET
-    trashed = TRUE,
-    updated = $1,
+SET trashed       = TRUE,
+    updated       = $1,
     updated_by_id = $2
-WHERE uuid = ANY($3)
+WHERE uuid = ANY ($3)
   AND workspace_id = $4
 `
 
@@ -196,54 +899,35 @@ func (q *Queries) TrashNotesByUUIDs(ctx context.Context, arg TrashNotesByUUIDsPa
 	return err
 }
 
-const upsertNote = `-- name: UpsertNote :one
-INSERT INTO note (
-    id, uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
-    has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
-    has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id
-)
-VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9,
-    $10, $11, $12, $13, $14, $15,
-    $16, $17, $18, $19, $20, $21, $22
-)
-ON CONFLICT (id) DO UPDATE
-SET
-    uuid = EXCLUDED.uuid,
-    content = EXCLUDED.content,
-    favorite = EXCLUDED.favorite,
-    deleted = EXCLUDED.deleted,
-    trashed = EXCLUDED.trashed,
-    has_content = EXCLUDED.has_content,
-    has_images = EXCLUDED.has_images,
-    has_videos = EXCLUDED.has_videos,
-    has_open_tasks = EXCLUDED.has_open_tasks,
-    has_closed_tasks = EXCLUDED.has_closed_tasks,
-    has_code = EXCLUDED.has_code,
-    has_audios = EXCLUDED.has_audios,
-    has_links = EXCLUDED.has_links,
-    has_files = EXCLUDED.has_files,
-    has_quotes = EXCLUDED.has_quotes,
-    has_tables = EXCLUDED.has_tables,
-    workspace_id = EXCLUDED.workspace_id,
-    created = EXCLUDED.created,
-    updated = EXCLUDED.updated,
-    created_by_id = EXCLUDED.created_by_id,
-    updated_by_id = EXCLUDED.updated_by_id
-RETURNING id
+const updateNote = `-- name: UpdateNote :exec
+UPDATE note
+SET content          = $1,
+    favorite         = $2,
+    has_content      = $3,
+    has_images       = $4,
+    has_videos       = $5,
+    has_open_tasks   = $6,
+    updated_by_id    = $7,
+    has_closed_tasks = $8,
+    has_code         = $9,
+    has_audios       = $10,
+    has_links        = $11,
+    has_files        = $12,
+    has_quotes       = $13,
+    has_tables       = $14,
+    workspace_id     = $15,
+    updated          = $16
+WHERE uuid = $17
 `
 
-type UpsertNoteParams struct {
-	ID             int64
-	UUID           string
+type UpdateNoteParams struct {
 	Content        string
 	Favorite       bool
-	Deleted        bool
-	Trashed        bool
 	HasContent     bool
 	HasImages      bool
 	HasVideos      bool
 	HasOpenTasks   bool
+	UpdatedByID    int64
 	HasClosedTasks bool
 	HasCode        bool
 	HasAudios      bool
@@ -252,24 +936,19 @@ type UpsertNoteParams struct {
 	HasQuotes      bool
 	HasTables      bool
 	WorkspaceID    int64
-	Created        int64
 	Updated        int64
-	CreatedByID    int64
-	UpdatedByID    int64
+	UUID           string
 }
 
-func (q *Queries) UpsertNote(ctx context.Context, arg UpsertNoteParams) (int64, error) {
-	row := q.db.QueryRow(ctx, upsertNote,
-		arg.ID,
-		arg.UUID,
+func (q *Queries) UpdateNote(ctx context.Context, arg UpdateNoteParams) error {
+	_, err := q.db.Exec(ctx, updateNote,
 		arg.Content,
 		arg.Favorite,
-		arg.Deleted,
-		arg.Trashed,
 		arg.HasContent,
 		arg.HasImages,
 		arg.HasVideos,
 		arg.HasOpenTasks,
+		arg.UpdatedByID,
 		arg.HasClosedTasks,
 		arg.HasCode,
 		arg.HasAudios,
@@ -278,12 +957,8 @@ func (q *Queries) UpsertNote(ctx context.Context, arg UpsertNoteParams) (int64, 
 		arg.HasQuotes,
 		arg.HasTables,
 		arg.WorkspaceID,
-		arg.Created,
 		arg.Updated,
-		arg.CreatedByID,
-		arg.UpdatedByID,
+		arg.UUID,
 	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	return err
 }

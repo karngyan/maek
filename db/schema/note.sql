@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS note
 (
     id               BIGSERIAL PRIMARY KEY,
     uuid             VARCHAR(100) NOT NULL UNIQUE,
-    content          TEXT         NOT NULL,
+    content          JSONB        NOT NULL,
     favorite         BOOLEAN      NOT NULL DEFAULT FALSE,
     deleted          BOOLEAN      NOT NULL DEFAULT FALSE,
     trashed          BOOLEAN      NOT NULL DEFAULT FALSE,
