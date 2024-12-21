@@ -13,9 +13,6 @@ down: ## Stop all docker services
 apply: ## Applies latest schema to database
 	pg-schema-diff apply --dsn "${SQL_CONN}" --schema-dir ./db/schema
 
-clean: ## Drops all tables in database
-	atlas schema clean --url "${SQL_CONN}"
-
 setup: up apply ## Setup development environment
 
 diff: ## Check for schema changes
