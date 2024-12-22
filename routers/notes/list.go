@@ -26,7 +26,7 @@ func List(ctx *base.WebContext) {
 	}
 
 	sk := notes.FromSortString(sort)
-	bundle, err := notes.FindNotesForWorkspace(rctx, ctx.Workspace.ID, cursor, l, sk)
+	bundle, err := notes.FindNotesForWorkspace(rctx, ctx.WorkspaceID, cursor, l, sk)
 	if err != nil {
 		if errors.Is(err, notes.ErrLimitTooHigh) {
 			base.BadRequest(ctx, err)

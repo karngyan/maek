@@ -174,7 +174,7 @@ func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit 
 
 	var notes []*Note
 	for _, dbNote := range dbNotes {
-		notes = append(notes, noteFromDB(&dbNote))
+		notes = append(notes, noteFromDB(dbNote))
 
 		relatedUserIDs.Add(dbNote.CreatedByID)
 		relatedUserIDs.Add(dbNote.UpdatedByID)
@@ -203,9 +203,9 @@ func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit 
 	}, nil
 }
 
-// FindNoteByUUUID finds a note by its UUID, workspace ID and returns the note if found
+// FindNoteByUUID finds a note by its UUID, workspace ID and returns the note if found
 // When the note is not found or deleted, it returns ErrNoteNotFound
-func FindNoteByUUUID(ctx context.Context, nuuid string, wid int64) (*Note, error) {
+func FindNoteByUUID(ctx context.Context, nuuid string, wid int64) (*Note, error) {
 	dbNote, err := db.Q.GetNoteByUUIDAndWorkspace(ctx, db.GetNoteByUUIDAndWorkspaceParams{
 		UUID:        nuuid,
 		WorkspaceID: wid,
@@ -221,5 +221,5 @@ func FindNoteByUUUID(ctx context.Context, nuuid string, wid int64) (*Note, error
 		return nil, ErrNoteNotFound
 	}
 
-	return noteFromDB(&dbNote), nil
+	return noteFromDB(dbNote), nil
 }

@@ -1,6 +1,7 @@
 package notes
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/karngyan/maek/routers/models"
@@ -11,7 +12,7 @@ import (
 
 func Get(ctx *base.WebContext) {
 	nuuid := ctx.Input.Param(":note_uuid")
-	wid := ctx.Workspace.ID
+	wid := ctx.WorkspaceID
 
 	if nuuid == "" {
 		base.BadRequest(ctx, map[string]any{
@@ -21,9 +22,14 @@ func Get(ctx *base.WebContext) {
 	}
 
 	rctx := ctx.Request.Context()
-	n, err := notes.FindNoteByUUUID(rctx, nuuid, wid)
+	n, err := notes.FindNoteByUUID(rctx, nuuid, wid)
 	if err != nil {
-		base.NotFound(ctx, err)
+		if errors.Is(err, notes.ErrNoteNotFound) {
+			base.NotFound(ctx, err)
+			return
+		}
+
+		base.InternalError(ctx, err)
 		return
 	}
 

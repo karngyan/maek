@@ -56,7 +56,7 @@ func Upsert(ctx *base.WebContext) {
 		Favorite:       req.Favorite,
 		Created:        req.Created,
 		Updated:        req.Updated,
-		WorkspaceID:    ctx.Workspace.ID,
+		WorkspaceID:    ctx.WorkspaceID,
 		CreatedByID:    ctx.Session.UserID,
 		UpdatedByID:    ctx.Session.UserID,
 		HasContent:     req.HasContent,

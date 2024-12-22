@@ -72,8 +72,8 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		HasTables:      req.HasTables,
 	}
 
-	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) (err error) {
-		note.ID, err = q.CheckNoteExists(ctx, db.CheckNoteExistsParams{
+	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) error {
+		id, err := q.CheckNoteExists(ctx, db.CheckNoteExistsParams{
 			UUID:        nuuid,
 			WorkspaceID: req.WorkspaceID,
 		})
@@ -84,7 +84,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 
 			note.ID, err = q.InsertNote(ctx, db.InsertNoteParams{
 				UUID:           nuuid,
-				Content:        string(note.Content),
+				Content:        note.Content,
 				Favorite:       note.Favorite,
 				Deleted:        false,
 				Trashed:        false,
@@ -109,9 +109,11 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			return err
 		}
 
+		note.ID = id
 		// exists; time to do an update
 		return q.UpdateNote(ctx, db.UpdateNoteParams{
-			Content:        string(req.Content),
+			UUID:           nuuid,
+			Content:        req.Content,
 			Favorite:       note.Favorite,
 			HasContent:     note.HasContent,
 			HasImages:      note.HasImages,

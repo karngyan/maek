@@ -793,7 +793,7 @@ RETURNING id
 
 type InsertNoteParams struct {
 	UUID           string
-	Content        string
+	Content        []byte
 	Favorite       bool
 	Deleted        bool
 	Trashed        bool
@@ -915,13 +915,13 @@ SET content          = $1,
     has_files        = $12,
     has_quotes       = $13,
     has_tables       = $14,
-    workspace_id     = $15,
-    updated          = $16
-WHERE uuid = $17
+    updated          = $15
+WHERE uuid = $16
+  AND workspace_id = $17
 `
 
 type UpdateNoteParams struct {
-	Content        string
+	Content        []byte
 	Favorite       bool
 	HasContent     bool
 	HasImages      bool
@@ -935,9 +935,9 @@ type UpdateNoteParams struct {
 	HasFiles       bool
 	HasQuotes      bool
 	HasTables      bool
-	WorkspaceID    int64
 	Updated        int64
 	UUID           string
+	WorkspaceID    int64
 }
 
 func (q *Queries) UpdateNote(ctx context.Context, arg UpdateNoteParams) error {
@@ -956,9 +956,9 @@ func (q *Queries) UpdateNote(ctx context.Context, arg UpdateNoteParams) error {
 		arg.HasFiles,
 		arg.HasQuotes,
 		arg.HasTables,
-		arg.WorkspaceID,
 		arg.Updated,
 		arg.UUID,
+		arg.WorkspaceID,
 	)
 	return err
 }

@@ -39,7 +39,7 @@ func (note *Note) SortValue(sortKey SortKey) int64 {
 }
 
 // noteFromDB converts a db.Note to a notes.Note
-func noteFromDB(dbNote *db.Note) *Note {
+func noteFromDB(dbNote db.Note) *Note {
 	return &Note{
 		ID:             dbNote.ID,
 		UUID:           dbNote.UUID,

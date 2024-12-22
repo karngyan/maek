@@ -67,6 +67,11 @@ func TestUpsert(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Equal(t, tc.expectedStatus, rr.Code)
 
+			// do an individual get call to verify the upsert
+			rr, err = cs.Get(fmt.Sprintf("/v1/workspaces/%d/notes/%s", cs.Workspace.ID, tc.uuid))
+			assert.Nil(t, err)
+			assert.Equal(t, 200, rr.Code)
+
 			approvals.VerifyJSONBytes(t, rr.Body.Bytes())
 		})
 	}

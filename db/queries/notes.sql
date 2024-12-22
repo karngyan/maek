@@ -47,9 +47,9 @@ SET content          = $1,
     has_files        = $12,
     has_quotes       = $13,
     has_tables       = $14,
-    workspace_id     = $15,
-    updated          = $16
-WHERE uuid = $17;
+    updated          = $15
+WHERE uuid = $16
+  AND workspace_id = $17;
 
 -- name: InsertNote :one
 INSERT INTO note (uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
