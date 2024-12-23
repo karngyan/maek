@@ -1,0 +1,117 @@
+{
+  "authors": [
+    {
+      "created": 1234567890,
+      "defaultWorkspaceId": 1,
+      "email": "karn@maek.ai",
+      "id": 1,
+      "name": "Karn",
+      "role": "admin",
+      "updated": 1234567890,
+      "verified": false
+    }
+  ],
+  "nextCursor": "",
+  "notes": [
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 4,
+      "createdById": 1,
+      "favorite": true,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": true,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 4,
+      "trashed": false,
+      "updated": 8,
+      "updatedById": 1,
+      "uuid": "rand-uuid-4",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 3,
+      "createdById": 1,
+      "favorite": true,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": true,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 3,
+      "trashed": false,
+      "updated": 6,
+      "updatedById": 1,
+      "uuid": "rand-uuid-3",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 2,
+      "createdById": 1,
+      "favorite": true,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": true,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 2,
+      "trashed": false,
+      "updated": 4,
+      "updatedById": 1,
+      "uuid": "rand-uuid-2",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 1,
+      "createdById": 1,
+      "favorite": true,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": true,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 1,
+      "trashed": false,
+      "updated": 2,
+      "updatedById": 1,
+      "uuid": "rand-uuid-1",
+      "workspaceId": 1
+    }
+  ]
+}

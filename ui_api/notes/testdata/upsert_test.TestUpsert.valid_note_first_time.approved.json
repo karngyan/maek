@@ -1,0 +1,27 @@
+{
+  "note": {
+    "content": {
+      "dom": "some text"
+    },
+    "created": 1234567890,
+    "createdById": 1,
+    "favorite": true,
+    "hasAudios": true,
+    "hasClosedTasks": true,
+    "hasCode": true,
+    "hasContent": true,
+    "hasFiles": true,
+    "hasImages": true,
+    "hasLinks": true,
+    "hasOpenTasks": true,
+    "hasQuotes": true,
+    "hasTables": true,
+    "hasVideos": true,
+    "id": 1,
+    "trashed": false,
+    "updated": 1234567890,
+    "updatedById": 1,
+    "uuid": "123",
+    "workspaceId": 1
+  }
+}

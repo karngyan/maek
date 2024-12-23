@@ -137,7 +137,9 @@ func authenticated(h HandlerFunc, l *zap.Logger, withUser, withCurrentWorkspace,
 		if wid > 0 {
 			ctx.WorkspaceID = wid
 
-			if withAllWorkspaces {
+			if !withAllWorkspaces {
+				// fetching all is necessary, so fetch only if
+				// withAllWorkspaces is false i.e. not already fetched above
 				ctx.AllWorkspaces, err = auth.FetchWorkspacesForUser(rctx, ctx.Session.UserID)
 				if err != nil {
 					return ctx.InternalError(err)

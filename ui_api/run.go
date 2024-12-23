@@ -14,6 +14,7 @@ import (
 
 	"github.com/karngyan/maek/config"
 	"github.com/karngyan/maek/ui_api/auth"
+	"github.com/karngyan/maek/ui_api/notes"
 )
 
 func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
@@ -104,4 +105,5 @@ func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 
 func ConfigureRoutes(e *echo.Echo, l *zap.Logger) {
 	auth.Configure(e, l)
+	notes.Configure(e, l)
 }
