@@ -5,3 +5,4 @@ api_server
 main
 .DS_Store
 *.local.*
+tmp
