@@ -3,58 +3,55 @@ package auth
 import (
 	"context"
 	"errors"
-	"time"
 
+	"github.com/bluele/go-timecop"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/beego/beego/v2/client/cache"
-	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/db"
 )
 
-var (
-	sessionCache = cache.NewMemoryCache()
-)
+func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
+	var session Session
+	if entry, err := sessionCache.Get(token); err == nil {
+		if err := session.UnmarshalGOB(entry); err == nil {
+			return &session, nil
+		}
+	}
 
-func InitCache() error {
-	var err error
-
-	// read through cache for session
-	if sessionCache, err = cache.NewReadThroughCache(sessionCache, 10*time.Minute, func(ctx context.Context, token string) (any, error) {
-		now := timecop.Now().Unix()
-
-		ds, err := db.Q.GetNonExpiredSessionByToken(ctx, db.GetNonExpiredSessionByTokenParams{
-			Token:   token,
-			Expires: now,
-		})
-		if err != nil {
-			return nil, err
+	now := timecop.Now().Unix()
+	ds, err := db.Q.GetNonExpiredSessionByToken(ctx, db.GetNonExpiredSessionByTokenParams{
+		Token:   token,
+		Expires: now,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrSessionNotFound
 		}
 
-		return &Session{
-			ID:      ds.ID,
-			UA:      ds.UA,
-			IP:      ds.IP,
-			UserID:  ds.UserID,
-			Token:   ds.Token,
-			Expires: ds.Expires,
-			Created: ds.Created,
-			Updated: ds.Updated,
-		}, err
-	}); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
-}
-
-func FetchSessionByToken(ctx context.Context, token string) (*Session, error) {
-	if session, err := sessionCache.Get(ctx, token); err == nil {
-		return session.(*Session), nil
+	session = Session{
+		ID:      ds.ID,
+		UA:      ds.UA,
+		IP:      ds.IP,
+		UserID:  ds.UserID,
+		Token:   ds.Token,
+		Expires: ds.Expires,
+		Created: ds.Created,
+		Updated: ds.Updated,
 	}
 
-	// cache is read through so if Get failed session doesn't exist in db
-	return nil, ErrSessionNotFound
+	sessionBytes, err := session.MarshalGOB()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := sessionCache.Set(token, sessionBytes); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
 }
 
 func FetchUserByEmail(ctx context.Context, email string) (*User, error) {

@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"time"
 
@@ -26,4 +28,18 @@ func (s *Session) ExpiresTime() time.Time {
 
 func (s *Session) Age() time.Duration {
 	return time.Unix(s.Expires, 0).Sub(timecop.Now())
+}
+
+func (s *Session) MarshalGOB() ([]byte, error) {
+	var buf bytes.Buffer
+	err := gob.NewEncoder(&buf).Encode(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func (s *Session) UnmarshalGOB(data []byte) error {
+	return gob.NewDecoder(bytes.NewReader(data)).Decode(s)
 }
