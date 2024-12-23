@@ -42,5 +42,11 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Run Tests with coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: karngyan/maek

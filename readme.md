@@ -1,5 +1,7 @@
 ### maek: open source note-taking app
 
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+
 maek is an open source, self-hostable alternative to apps like mem.ai. it’s designed to help you take notes, organize your thoughts, and access them seamlessly. whether you’re jotting down quick ideas or managing a detailed knowledge base, maek aims to simplify the process.
 
 ![maek](.github/assets/hero.jpeg)
