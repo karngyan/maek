@@ -10,7 +10,7 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 
 	cs := tests.NewClientStateWithUser(t)
 	rr, err := cs.Post("/v1/auth/login", map[string]any{
@@ -25,7 +25,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLoginErrors(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 	cs := tests.NewClientStateWithUser(t)
 
 	type testCase struct {

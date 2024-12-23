@@ -16,7 +16,7 @@ type Config struct {
 	*koanf.Koanf
 }
 
-func NewFx() (*Config, error) {
+func New() (*Config, error) {
 	k := koanf.New(".")
 
 	configFile := os.Getenv("CONFIG_FILE")
@@ -50,16 +50,4 @@ func NewFx() (*Config, error) {
 
 func (c *Config) IsDev() bool {
 	return c.String("environment") == "development"
-}
-
-type ServiceMeta struct {
-	Name string
-}
-
-func NewServiceMetaProvider(name string) func() *ServiceMeta {
-	return func() *ServiceMeta {
-		return &ServiceMeta{
-			Name: name,
-		}
-	}
 }

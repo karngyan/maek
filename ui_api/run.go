@@ -69,7 +69,7 @@ func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 		e.IPExtractor = echo.ExtractIPDirect()
 	}
 
-	auth.Configure(e, l)
+	ConfigureRoutes(e, l)
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf("0.0.0.0:%s", c.String("api_server.port")),
@@ -100,4 +100,8 @@ func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	l.Info("ui_api server started", zap.String("addr", server.Addr))
 
 	return nil
+}
+
+func ConfigureRoutes(e *echo.Echo, l *zap.Logger) {
+	auth.Configure(e, l)
 }

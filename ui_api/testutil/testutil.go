@@ -1,4 +1,4 @@
-package tests
+package testutil
 
 import (
 	"bytes"
@@ -6,72 +6,58 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"sync"
 	"testing"
 	"time"
 
+	"github.com/bluele/go-timecop"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
 
-	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
-	"github.com/bluele/go-timecop"
-	"github.com/stretchr/testify/assert"
-
-	"github.com/karngyan/maek/conf"
+	"github.com/karngyan/maek/config"
 	"github.com/karngyan/maek/db"
+	"github.com/karngyan/maek/domains"
 	"github.com/karngyan/maek/domains/auth"
-	"github.com/karngyan/maek/routers"
+	"github.com/karngyan/maek/libs/logger"
+	"github.com/karngyan/maek/ui_api"
 )
 
 var frozenTime = time.Unix(1234567890, 0)
-var initOnce sync.Once
 
-type CleanupFn func()
+type TestApp struct {
+	Stop func() error
+}
 
-func InitApp() (CleanupFn, error) {
+func StartTestApp() (*TestApp, error) {
+	ta := &TestApp{}
 
-	var cleanupSchema CleanupFn
+	fxApp := fx.New(
+		fx.Provide(
+			config.New,
+			logger.NewNop,
+		),
+		fx.Invoke(
+			db.InitTest,
+			domains.Init,
+		),
+		fx.WithLogger(func(l *zap.Logger) fxevent.Logger {
+			return &fxevent.ZapLogger{Logger: l}
+		}),
+	)
 
-	initFn := func() error {
-		log := logs.NewLogger()
-		defer log.Flush()
-
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-
-		root := os.Getenv("ROOT")
-		web.TestBeegoInit(root)
-
-		// beego changes dir internally after TestBeegoInit
-		// we'd like it back for approvals to work
-		err = os.Chdir(cwd)
-		if err != nil {
-			return err
-		}
-
-		if err := routers.Init(log); err != nil {
-			return err
-		}
-
-		if err := conf.Init(); err != nil {
-			return err
-		}
-
-		return nil
+	if err := fxApp.Start(context.Background()); err != nil {
+		return nil, err
 	}
 
-	var initErr error
+	ta.Stop = func() error {
+		ctx, cancel := context.WithTimeout(context.Background(), fx.DefaultTimeout)
+		defer cancel()
+		return fxApp.Stop(ctx)
+	}
 
-	initOnce.Do(func() {
-		initErr = initFn()
-	})
-
-	return func() {
-		cleanupSchema()
-	}, initErr
+	return ta, nil
 }
 
 func FreezeTime() {
@@ -86,13 +72,20 @@ func TruncateTables() {
 }
 
 type ClientState struct {
+	e *echo.Echo
+
 	User      *auth.User
 	Session   *auth.Session
 	Workspace *auth.Workspace
 }
 
 func NewClientState() *ClientState {
-	return &ClientState{}
+	e := echo.New()
+	l := logger.NewNop()
+
+	ui_api.ConfigureRoutes(e, l)
+
+	return &ClientState{e: e}
 }
 
 func NewClientStateWithUser(t *testing.T) *ClientState {
@@ -165,7 +158,7 @@ func (c *ClientState) request(method string, path string, body any) (*httptest.R
 
 	rr := httptest.NewRecorder()
 
-	web.BeeApp.Handlers.ServeHTTP(rr, req)
+	c.e.ServeHTTP(rr, req)
 
 	return rr, nil
 }

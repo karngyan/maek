@@ -13,7 +13,7 @@ import (
 )
 
 func TestLogout(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 
 	cs := tests.NewClientStateWithUser(t)
 	sessionToken := cs.Session.Token

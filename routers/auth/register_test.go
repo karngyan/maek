@@ -10,7 +10,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 	cs := tests.NewClientState()
 
 	rr, err := cs.Post("/v1/auth/register", map[string]any{

@@ -12,7 +12,7 @@ import (
 	"github.com/karngyan/maek/config"
 )
 
-func NewFx(lc fx.Lifecycle, c *config.Config) (*zap.Logger, error) {
+func New(lc fx.Lifecycle, c *config.Config) (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
 	if c.IsDev() {
 		cfg = zap.NewDevelopmentConfig()
@@ -40,4 +40,8 @@ func NewFx(lc fx.Lifecycle, c *config.Config) (*zap.Logger, error) {
 	})
 
 	return l, nil
+}
+
+func NewNop() *zap.Logger {
+	return zap.NewNop()
 }

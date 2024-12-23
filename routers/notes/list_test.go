@@ -14,7 +14,7 @@ import (
 )
 
 func TestList(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 
 	cs := tests.NewClientStateWithUser(t)
 

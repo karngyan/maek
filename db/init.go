@@ -4,16 +4,13 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"log"
 	"time"
 
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
-	"github.com/karngyan/maek/conf"
 	"github.com/karngyan/maek/config"
 	"github.com/karngyan/maek/libs/randstr"
 )
@@ -61,39 +58,36 @@ func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	return nil
 }
 
-func Close() {
-	if defaultPgxPool != nil {
-		defaultPgxPool.Close()
-	}
-}
+func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
+	ctx := context.Background()
 
-func InitTest(ctx context.Context) (func(), error) {
 	randSchema := randstr.Alpha(10)
+	dsnTest := c.String("database.dsn_test")
 
-	sconn, err := pgx.Connect(context.Background(), conf.SQLConnTest)
+	sconn, err := pgx.Connect(ctx, dsnTest)
 	if err != nil {
-		logs.Info("error connecting to test db: %v", err)
-		return func() {}, err
+		l.Error("error connecting to test db", zap.Error(err))
+		return err
 	}
 
 	_, err = sconn.Exec(ctx, fmt.Sprintf(`CREATE SCHEMA IF NOT EXISTS "%s"`, randSchema))
 	if err != nil {
-		logs.Info("error creating test schema: %v", err)
-		return func() {}, err
+		l.Error("error creating test schema", zap.Error(err))
+		return err
 	}
 
-	logs.Info("created test schema %s", randSchema)
+	l.Info("created test schema", zap.String("schema", randSchema))
 	err = sconn.Close(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	} else {
-		logs.Info("closed test db connection for schema creation")
+		l.Info("closed test db connection for schema creation", zap.String("schema", randSchema))
 	}
 
-	connString := fmt.Sprintf(`%s&search_path="%s"`, conf.SQLConnTest, randSchema)
+	connString := fmt.Sprintf(`%s&search_path="%s"`, dsnTest, randSchema)
 	dbc, err := pgxpool.ParseConfig(connString)
 	if err != nil {
-		return func() {}, err
+		return err
 	}
 
 	dbc.MaxConns = 100
@@ -103,32 +97,37 @@ func InitTest(ctx context.Context) (func(), error) {
 	dbc.MaxConnIdleTime = 5 * time.Minute
 	dbc.HealthCheckPeriod = 1 * time.Minute
 
-	defaultPgxPool, err = pgxpool.NewWithConfig(context.Background(), dbc)
+	defaultPgxPool, err = pgxpool.NewWithConfig(ctx, dbc)
 	if err != nil {
-		return func() {}, err
+		return err
 	}
 
 	err = applySchema(ctx, defaultPgxPool)
 	if err != nil {
-		logs.Info("error applying schema: %v", err)
-		return func() {}, err
+		l.Error("error applying schema", zap.Error(err))
+		return err
 	}
 
 	Q = New(defaultPgxPool)
 
-	return func() {
-		_, err = defaultPgxPool.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
-		if err != nil {
-			logs.Info("error dropping test schema: %v", err)
-			return
-		}
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			_, err = defaultPgxPool.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
+			if err != nil {
+				l.Error("error dropping test schema", zap.Error(err))
+				return err
+			}
 
-		logs.Info("dropped test schema: %s", randSchema)
+			l.Info("dropped test schema", zap.String("schema", randSchema))
 
-		defaultPgxPool.Close()
+			defaultPgxPool.Close()
 
-		logs.Info("closed db pool")
-	}, nil
+			l.Info("closed db pool")
+			return nil
+		},
+	})
+
+	return nil
 }
 
 func applySchema(ctx context.Context, pool *pgxpool.Pool) error {
@@ -150,7 +149,6 @@ func applySchema(ctx context.Context, pool *pgxpool.Pool) error {
 		if err != nil {
 			return err
 		}
-		log.Printf("Applied: %s", file.Name())
 	}
 	return nil
 }

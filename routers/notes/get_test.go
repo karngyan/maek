@@ -15,7 +15,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	defer tests.CleanDBRows()
+	defer tests.TruncateTables()
 
 	cs := tests.NewClientStateWithUser(t)
 	cs2 := tests.NewClientStateWithUserEmail(t, "john@maek.ai")
