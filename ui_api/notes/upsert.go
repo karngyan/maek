@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/karngyan/maek/ui_api/web"
 	"github.com/labstack/echo/v4"
 
 	"github.com/karngyan/maek/domains/notes"
-	"github.com/karngyan/maek/routers/models"
+	"github.com/karngyan/maek/ui_api/models"
+	"github.com/karngyan/maek/ui_api/web"
 )
 
 func upsert(ctx web.Context) error {

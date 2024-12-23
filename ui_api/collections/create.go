@@ -4,20 +4,19 @@ import (
 	"net/http"
 
 	"github.com/karngyan/maek/domains/collections"
-	"github.com/karngyan/maek/routers/base"
-	"github.com/karngyan/maek/routers/models"
+	"github.com/karngyan/maek/ui_api/models"
+	"github.com/karngyan/maek/ui_api/web"
 )
 
-func Create(ctx *base.WebContext) {
-	rctx := ctx.Request.Context()
+func create(ctx web.Context) error {
+	rctx := ctx.Request().Context()
 
 	collection, err := collections.CreateCollection(rctx, ctx.WorkspaceID, ctx.Session.UserID)
 	if err != nil {
-		base.InternalError(ctx, err)
-		return
+		return ctx.InternalError(err)
 	}
 
-	base.Respond(ctx, map[string]any{
+	return ctx.JSON(http.StatusCreated, map[string]any{
 		"collection": models.ModelForCollection(collection),
-	}, http.StatusCreated)
+	})
 }
