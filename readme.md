@@ -3,6 +3,7 @@
 maek is an open source, self-hostable alternative to apps like mem.ai. it’s designed to help you take notes, organize your thoughts, and access them seamlessly. whether you’re jotting down quick ideas or managing a detailed knowledge base, maek aims to simplify the process.
 
 ![maek](.github/assets/hero.jpeg)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkarngyan%2Fmaek.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkarngyan%2Fmaek?ref=badge_shield)
 
 #### current status
 
@@ -25,3 +26,6 @@ while maek is currently a solo project, contributions are welcome! if you’re i
 
 maek is open source and available under the [MIT license](https://github.com/karngyan/maek/blob/main/license).
 
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkarngyan%2Fmaek.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkarngyan%2Fmaek?ref=badge_large)
