@@ -7,7 +7,8 @@ import (
 	"strings"
 
 	"github.com/karngyan/maek/domains/auth"
-	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/ui_api/models"
+	"github.com/karngyan/maek/ui_api/web"
 )
 
 const (
@@ -16,16 +17,17 @@ const (
 	maxNameLength     = 200
 )
 
-func Register(ctx *base.WebContext) {
+func register(ctx web.Context) error {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 		Name     string `json:"name"`
 	}
 
-	if err := ctx.DecodeJSON(&req); err != nil {
-		base.UnprocessableEntity(ctx, err)
-		return
+	if err := ctx.Bind(&req); err != nil {
+		return ctx.JSON(http.StatusUnprocessableEntity, mpa{
+			"error": err.Error(),
+		})
 	}
 
 	req.Email = strings.TrimSpace(req.Email)
@@ -34,50 +36,44 @@ func Register(ctx *base.WebContext) {
 
 	_, err := mail.ParseAddress(req.Email)
 	if err != nil {
-		base.BadRequest(ctx, mpa{
+		return ctx.JSON(http.StatusBadRequest, mpa{
 			"email": "Invalid email address",
 		})
-		return
 	}
 
 	if len(req.Password) < minPasswordLength {
-		base.BadRequest(ctx, mpa{
+		return ctx.JSON(http.StatusBadRequest, mpa{
 			"password": "Must be at least 6 characters long",
 		})
-		return
 	}
 
 	if len(req.Password) > maxPasswordLength {
-		base.BadRequest(ctx, mpa{
+		return ctx.JSON(http.StatusBadRequest, mpa{
 			"password": "Must be at most 64 characters long",
 		})
-		return
 	}
 
 	if len(req.Name) > maxNameLength {
-		base.BadRequest(ctx, mpa{
+		return ctx.JSON(http.StatusBadRequest, mpa{
 			"name": "Must be at most 200 characters long",
 		})
-		return
 	}
 
-	rctx := ctx.Request.Context()
+	rctx := ctx.Request().Context()
 
-	bundle, err := auth.CreateDefaultWorkspaceWithUser(rctx, req.Name, req.Email, req.Password, ctx.Input.IP(), ctx.Input.UserAgent())
+	bundle, err := auth.CreateDefaultWorkspaceWithUser(rctx, req.Name, req.Email, req.Password, ctx.RealIP(), ctx.Request().Header.Get("User-Agent"))
 
 	if err != nil {
 		if errors.Is(err, auth.ErrUserAlreadyExists) {
-			base.BadRequest(ctx, mpa{
+			return ctx.JSON(http.StatusBadRequest, mpa{
 				"email": "User already exists with this email",
 			})
-			return
 		}
 
-		base.InternalError(ctx, err)
-		return
+		return ctx.InternalError(err)
 	}
 
-	base.RespondCookie(ctx, modelForAuthBundle(bundle), http.StatusCreated, &http.Cookie{
+	ctx.SetCookie(&http.Cookie{
 		Name:     "session_token",
 		Value:    bundle.Session.Token,
 		Path:     "/",
@@ -86,4 +82,6 @@ func Register(ctx *base.WebContext) {
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	})
+
+	return ctx.JSON(http.StatusCreated, models.ModelForAuthBundle(bundle))
 }

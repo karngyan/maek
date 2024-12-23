@@ -5,17 +5,16 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/karngyan/maek/domains/auth"
-
 	"github.com/stretchr/testify/assert"
 
-	"github.com/karngyan/maek/zarf/tests"
+	"github.com/karngyan/maek/domains/auth"
+	"github.com/karngyan/maek/ui_api/testutil"
 )
 
 func TestLogout(t *testing.T) {
-	defer tests.TruncateTables()
+	defer testutil.TruncateTables()
 
-	cs := tests.NewClientStateWithUser(t)
+	cs := testutil.NewClientStateWithUser(t)
 	sessionToken := cs.Session.Token
 
 	rr, err := cs.Get("/v1/auth/logout")

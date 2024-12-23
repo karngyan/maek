@@ -7,5 +7,8 @@ import (
 )
 
 func Configure(e *echo.Echo, l *zap.Logger) {
+	e.POST("/v1/auth/register", web.WrapPublicRoute(register, l))
 	e.POST("/v1/auth/login", web.WrapPublicRoute(login, l))
+	e.GET("/v1/auth/logout", web.WrapAuthenticated(logout, l))
+	e.GET("/v1/auth/info", web.WrapAuthenticatedWithUserAllWorkspaces(info, l))
 }

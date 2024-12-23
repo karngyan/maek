@@ -4,20 +4,18 @@ import (
 	"net/http"
 
 	"github.com/karngyan/maek/domains/auth"
-
-	"github.com/karngyan/maek/routers/base"
+	"github.com/karngyan/maek/ui_api/web"
 )
 
-func Logout(ctx *base.WebContext) {
-	rctx := ctx.Request.Context()
+func logout(ctx web.Context) error {
+	rctx := ctx.Request().Context()
 
 	err := auth.DeleteSession(rctx, ctx.Session.Token)
 	if err != nil {
-		base.InternalError(ctx, err)
-		return
+		return ctx.InternalError(err)
 	}
 
-	base.RespondCookie(ctx, nil, http.StatusOK, &http.Cookie{
+	ctx.SetCookie(&http.Cookie{
 		Name:     "session_token",
 		Value:    "",
 		Path:     "/",
@@ -26,4 +24,6 @@ func Logout(ctx *base.WebContext) {
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	})
+
+	return ctx.NoContent(http.StatusOK)
 }

@@ -96,6 +96,9 @@ func FetchWorkspaceByID(ctx context.Context, id int64) (*Workspace, error) {
 	return WorkspaceFromDB(&dw), nil
 }
 
+// FetchWorkspacesForUser fetches all workspaces for a user
+// if no workspaces are found, it returns an empty slice
+// if an error occurs with db query, it returns the error
 func FetchWorkspacesForUser(ctx context.Context, userID int64) ([]*Workspace, error) {
 	dws, err := db.Q.GetWorkspacesForUser(ctx, userID)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {

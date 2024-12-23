@@ -28,6 +28,14 @@ func ModelForUser(user *auth.User) *User {
 	}
 }
 
+type Workspace struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Created     int64  `json:"created"`
+	Updated     int64  `json:"updated"`
+}
+
 func ModelForWorkspace(workspace *auth.Workspace) *Workspace {
 	return &Workspace{
 		ID:          workspace.ID,

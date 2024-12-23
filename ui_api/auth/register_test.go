@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	approvals "github.com/approvals/go-approval-tests"
+
 	"github.com/karngyan/maek/libs/randstr"
-	"github.com/karngyan/maek/zarf/tests"
+	"github.com/karngyan/maek/ui_api/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRegister(t *testing.T) {
-	defer tests.TruncateTables()
-	cs := tests.NewClientState()
+	defer testutil.TruncateTables()
+	cs := testutil.NewClientState()
 
 	rr, err := cs.Post("/v1/auth/register", map[string]any{
 		"name":     "Karn",
@@ -27,7 +28,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestRegisterErrors(t *testing.T) {
-	cs := tests.NewClientState()
+	cs := testutil.NewClientState()
 
 	type testCase struct {
 		name         string
