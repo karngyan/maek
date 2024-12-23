@@ -2,18 +2,7 @@
 experimental = true
 
 [env]
-ROOT = '{{env.HOME}}/code/karngyan/maek'
 CONFIG_FILE = '{{env.HOME}}/code/karngyan/maek/config/config.toml'
-RUN_MODE = 'dev'
-SERVER_PORT = '8080'
-
-SQL_CONN = 'postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable'
-SQL_CONN_TEST = 'postgres://maek:passwd@localhost:5433/maek_test?sslmode=disable'
-
-# Basically the domains on which the app is hosted separated by semicolons
-CORS_ALLOWED_ORIGINS = 'http://localhost:3000'
-
-# CGO_ENABLED is set to 0 to disable cgo
 CGO_ENABLED = '0'
 
 [tools]

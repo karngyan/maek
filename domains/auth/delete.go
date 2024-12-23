@@ -7,7 +7,7 @@ import (
 )
 
 func DeleteSession(ctx context.Context, token string) error {
-	err := sessionCache.Delete(ctx, token)
+	err := sessionCache.Delete(token)
 	if err != nil {
 		return err
 	}
