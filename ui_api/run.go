@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/karngyan/maek/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
+
+	"github.com/karngyan/maek/config"
+	"github.com/karngyan/maek/ui_api/auth"
 )
 
 func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
@@ -59,6 +61,15 @@ func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 		ExposeHeaders:    []string{"Content-Length"},
 		MaxAge:           int((24 * time.Hour).Seconds()),
 	}))
+
+	e.Use(middleware.RequestID())
+
+	e.IPExtractor = echo.ExtractIPFromXFFHeader()
+	if c.IsDev() {
+		e.IPExtractor = echo.ExtractIPDirect()
+	}
+
+	auth.Configure(e, l)
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf("0.0.0.0:%s", c.String("api_server.port")),

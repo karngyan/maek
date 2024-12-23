@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/karngyan/maek/config"
-	"github.com/karngyan/maek/libs/logger"
-	"github.com/karngyan/maek/ui_api"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
+
+	"github.com/karngyan/maek/config"
+	"github.com/karngyan/maek/libs/logger"
+	"github.com/karngyan/maek/ui_api"
 )
 
 func main() {
