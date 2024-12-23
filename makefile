@@ -19,7 +19,7 @@ diff: ## Check for schema changes
 	pg-schema-diff plan --dsn "${SQL_CONN}" --schema-dir ./db/schema
 
 dev: ## Start development server
-	bee run -main=cmds/api_server/main.go
+	go run cmds/ui_api/main.go
 
 test: ## Run go tests
 	go test -v ./...

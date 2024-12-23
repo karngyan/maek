@@ -16,7 +16,7 @@ type Config struct {
 	*koanf.Koanf
 }
 
-func New() (*Config, error) {
+func NewFx() (*Config, error) {
 	k := koanf.New(".")
 
 	configFile := os.Getenv("CONFIG_FILE")

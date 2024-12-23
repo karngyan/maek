@@ -5,5 +5,5 @@ port = 8080
 cors_allowed_origins = ["http://localhost:3000"]
 
 [database]
-dsn = "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable"
+dsn = "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable&search_path=public"
 dsn_test = "postgres://maek:passwd@localhost:5433/maek_test?sslmode=disable"

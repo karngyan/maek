@@ -10,8 +10,11 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 
 	"github.com/karngyan/maek/conf"
+	"github.com/karngyan/maek/config"
 	"github.com/karngyan/maek/libs/randstr"
 )
 
@@ -23,9 +26,8 @@ var (
 //go:embed schema/*.sql
 var schemaFS embed.FS // only used in tests
 
-func Init(ctx context.Context) error {
-	connString := fmt.Sprintf(`%s&search_path="%s"`, conf.SQLConn, "public")
-	dbc, err := pgxpool.ParseConfig(connString)
+func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
+	dbc, err := pgxpool.ParseConfig(c.String("database.dsn"))
 	if err != nil {
 		return err
 	}
@@ -37,12 +39,24 @@ func Init(ctx context.Context) error {
 	dbc.MaxConnIdleTime = 5 * time.Minute
 	dbc.HealthCheckPeriod = 1 * time.Minute
 
-	defaultPgxPool, err = pgxpool.NewWithConfig(ctx, dbc)
+	defaultPgxPool, err = pgxpool.NewWithConfig(context.Background(), dbc)
 	if err != nil {
 		return err
 	}
 
 	Q = New(defaultPgxPool)
+
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			l.Info("closing db pool")
+			if defaultPgxPool != nil {
+				defaultPgxPool.Close()
+			}
+			return nil
+		},
+	})
+
+	l.Info("db pool initialized")
 
 	return nil
 }

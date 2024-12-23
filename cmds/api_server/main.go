@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net/http"
 	"runtime"
 	"time"
@@ -10,14 +9,11 @@ import (
 	"github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/filter/cors"
 	"github.com/karngyan/maek/conf"
-	"github.com/karngyan/maek/db"
 	"github.com/karngyan/maek/domains"
 	"github.com/karngyan/maek/routers"
 )
 
 func main() {
-	ctx := context.Background()
-
 	log := logs.NewLogger(10000)
 	defer log.Flush()
 
@@ -36,11 +32,6 @@ func main() {
 	if err := conf.Init(); err != nil {
 		panic(err)
 	}
-
-	if err := db.Init(ctx); err != nil {
-		panic(err)
-	}
-	defer db.Close()
 
 	if err := domains.Init(); err != nil {
 		panic(err)
