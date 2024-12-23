@@ -3,6 +3,7 @@ experimental = true
 
 [env]
 ROOT = '{{env.HOME}}/code/karngyan/maek'
+CONFIG_FILE = '{{env.HOME}}/code/karngyan/maek/config/config.toml'
 RUN_MODE = 'dev'
 SERVER_PORT = '8080'
 

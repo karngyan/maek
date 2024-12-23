@@ -9,7 +9,6 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/filter/cors"
-
 	"github.com/karngyan/maek/conf"
 	"github.com/karngyan/maek/db"
 	"github.com/karngyan/maek/domains"

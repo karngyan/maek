@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/server/web"
 	"github.com/bluele/go-timecop"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 	"github.com/karngyan/maek/conf"
 	"github.com/karngyan/maek/db"
 	"github.com/karngyan/maek/domains"

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/server/web"
+	_ "github.com/karngyan/maek/config"
 	"github.com/pkg/errors"
 )
 
