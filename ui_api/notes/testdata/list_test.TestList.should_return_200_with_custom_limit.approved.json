@@ -1,16 +1,4 @@
 {
-  "authors": [
-    {
-      "created": 1234567890,
-      "defaultWorkspaceId": 1,
-      "email": "karn@maek.ai",
-      "id": 1,
-      "name": "Karn",
-      "role": "admin",
-      "updated": 1234567890,
-      "verified": false
-    }
-  ],
   "nextCursor": "MTA6NQ==",
   "notes": [
     {

@@ -50,14 +50,8 @@ func list(ctx web.Context) error {
 		uiCollections = append(uiCollections, models.ModelForCollection(c))
 	}
 
-	uiAuthors := make([]*models.User, 0, len(bundle.Authors))
-	for _, u := range bundle.Authors {
-		uiAuthors = append(uiAuthors, models.ModelForUser(u))
-	}
-
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"collections": uiCollections,
-		"authors":     uiAuthors,
 		"nextCursor":  bundle.NextCursor,
 	})
 

@@ -4,10 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/labstack/echo/v4"
 
-	"github.com/karngyan/maek/domains/auth"
 	"github.com/karngyan/maek/domains/collections"
 	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/ui_api/models"
@@ -58,28 +56,8 @@ func get(ctx web.Context) error {
 		uiNotes = append(uiNotes, uiN)
 	}
 
-	authorIDs := mapset.NewSet[int64]()
-	authorIDs.Add(c.CreatedByID)
-	authorIDs.Add(c.UpdatedByID)
-
-	for _, n := range ns {
-		authorIDs.Add(n.CreatedByID)
-		authorIDs.Add(n.UpdatedByID)
-	}
-
-	authors, err := auth.FindUsersByIDs(rctx, authorIDs.ToSlice())
-	if err != nil {
-		return ctx.InternalError(err)
-	}
-
-	uiAuthors := make([]*models.User, 0, len(authors))
-	for _, a := range authors {
-		uiAuthors = append(uiAuthors, models.ModelForUser(a))
-	}
-
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"collection": uiC,
 		"notes":      uiNotes,
-		"authors":    uiAuthors,
 	})
 }

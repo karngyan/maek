@@ -6,10 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jackc/pgx/v5"
 	"github.com/karngyan/maek/db"
-	"github.com/karngyan/maek/domains/auth"
 )
 
 var ErrNoteNotFound = errors.New("note not found")
@@ -75,7 +73,6 @@ func encodeCursor(sortValue int64, id int64) string {
 
 type Bundle struct {
 	Notes      []*Note
-	Authors    []*auth.User
 	NextCursor string
 }
 
@@ -163,14 +160,9 @@ func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit 
 		dbNotes = dbNotes[:limit] // Trim to the requested limit
 	}
 
-	relatedUserIDs := mapset.NewSet[int64]()
-
 	var notes []*Note
 	for _, dbNote := range dbNotes {
 		notes = append(notes, noteFromDB(dbNote))
-
-		relatedUserIDs.Add(dbNote.CreatedByID)
-		relatedUserIDs.Add(dbNote.UpdatedByID)
 	}
 
 	var nextCursor string
@@ -179,19 +171,8 @@ func FindNotesForWorkspace(ctx context.Context, wid int64, cursor string, limit 
 		nextCursor = encodeCursor(lastNote.SortValue(sortKey), lastNote.ID)
 	}
 
-	dbUsers, err := db.Q.GetUsersByIDs(ctx, relatedUserIDs.ToSlice())
-	if err != nil {
-		return nil, err
-	}
-
-	var users []*auth.User
-	for _, dbUser := range dbUsers {
-		users = append(users, auth.UserFromDBUser(&dbUser))
-	}
-
 	return &Bundle{
 		Notes:      notes,
-		Authors:    users,
 		NextCursor: nextCursor,
 	}, nil
 }
