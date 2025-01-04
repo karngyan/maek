@@ -3,9 +3,9 @@ INSERT INTO collection (name, description, created, updated, trashed, deleted, w
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id;
 
--- name: AddNoteToCollection :exec
+-- name: AddNotesToCollection :exec
 INSERT INTO collection_notes (collection_id, note_id)
-VALUES ($1, $2);
+SELECT UNNEST(@collection_ids::BIGINT[]), UNNEST(@note_ids::BIGINT[]);
 
 -- name: GetCollectionByIDAndWorkspace :one
 SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id

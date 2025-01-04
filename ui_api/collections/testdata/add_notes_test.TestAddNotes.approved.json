@@ -1,0 +1,65 @@
+{
+  "collection": {
+    "created": 1234567890,
+    "createdById": 1,
+    "description": "",
+    "id": 1,
+    "name": "",
+    "trashed": false,
+    "updated": 1234567890,
+    "updatedById": 1,
+    "workspaceId": 1
+  },
+  "notes": [
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 12345,
+      "createdById": 1,
+      "favorite": false,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 1,
+      "trashed": false,
+      "updated": 12345,
+      "updatedById": 1,
+      "uuid": "uuid-1",
+      "workspaceId": 1
+    },
+    {
+      "content": {
+        "dom": []
+      },
+      "created": 12345,
+      "createdById": 1,
+      "favorite": false,
+      "hasAudios": false,
+      "hasClosedTasks": false,
+      "hasCode": false,
+      "hasContent": false,
+      "hasFiles": false,
+      "hasImages": false,
+      "hasLinks": false,
+      "hasOpenTasks": false,
+      "hasQuotes": false,
+      "hasTables": false,
+      "hasVideos": false,
+      "id": 2,
+      "trashed": false,
+      "updated": 12345,
+      "updatedById": 1,
+      "uuid": "uuid-2",
+      "workspaceId": 1
+    }
+  ]
+}

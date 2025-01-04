@@ -79,14 +79,14 @@ export const listCollections = async (
 export const addNotesToCollection = async ({
   wid,
   cid,
-  nids,
+  nids = [],
 }: {
   wid: number
   cid: number
   nids: number[]
 }): Promise<CollectionResponse> => {
-  const response = await authApiClient.put<CollectionResponse>(
-    `/v1/workspaces/${wid}/collections/${cid}/add-notes`,
+  const response = await authApiClient.post<CollectionResponse>(
+    `/v1/workspaces/${wid}/collections/${cid}/notes`,
     {
       noteIds: nids,
     }

@@ -12,4 +12,5 @@ func Configure(e *echo.Echo, l *zap.Logger) {
 	e.GET("/v1/workspaces/:workspace_id/collections/:collection_id", web.WrapAuthenticated(get, l))
 	e.GET("/v1/workspaces/:workspace_id/collections", web.WrapAuthenticated(list, l))
 	e.PUT("/v1/workspaces/:workspace_id/collections/:collection_id", web.WrapAuthenticated(update, l))
+	e.POST("/v1/workspaces/:workspace_id/collections/:collection_id/notes", web.WrapAuthenticated(addNotes, l))
 }

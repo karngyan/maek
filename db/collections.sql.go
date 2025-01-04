@@ -11,18 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addNoteToCollection = `-- name: AddNoteToCollection :exec
+const addNotesToCollection = `-- name: AddNotesToCollection :exec
 INSERT INTO collection_notes (collection_id, note_id)
-VALUES ($1, $2)
+SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[])
 `
 
-type AddNoteToCollectionParams struct {
-	CollectionID int64
-	NoteID       int64
+type AddNotesToCollectionParams struct {
+	CollectionIds []int64
+	NoteIds       []int64
 }
 
-func (q *Queries) AddNoteToCollection(ctx context.Context, arg AddNoteToCollectionParams) error {
-	_, err := q.db.Exec(ctx, addNoteToCollection, arg.CollectionID, arg.NoteID)
+func (q *Queries) AddNotesToCollection(ctx context.Context, arg AddNotesToCollectionParams) error {
+	_, err := q.db.Exec(ctx, addNotesToCollection, arg.CollectionIds, arg.NoteIds)
 	return err
 }
 
