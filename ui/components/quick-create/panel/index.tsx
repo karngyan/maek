@@ -3,7 +3,7 @@
 import { Block } from '@blocknote/core'
 import { useMemo } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
-import { useAuthInfo } from '@/queries/hooks/use-auth-info'
+import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import {
   QuickCreateOption,
   useQuickCreateOptions,

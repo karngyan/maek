@@ -13,18 +13,7 @@ import {
   deleteNoteMulti,
 } from '@/queries/services/note-service'
 import { useToast } from '@/components/ui/hooks/use-toast'
-
-const keys = {
-  allNotes: () => ['notes'],
-  note: (workspaceId: number, noteUuid: string) => [
-    ...keys.allNotes(),
-    { wid: workspaceId, uuid: noteUuid },
-  ],
-  notesByWorkspace: (workspaceId: number) => [
-    ...keys.allNotes(),
-    { wid: workspaceId },
-  ],
-}
+import { keys } from './keys'
 
 export const useFetchNote = (workspaceId: number, noteUuid: string) => {
   return useQuery({

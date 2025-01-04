@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/hooks/use-toast'
 import { useNoteMeta } from '@/libs/providers/note-meta'
-import { useCurrentWorkspaceId } from '@/queries/hooks/use-current-workspace-id'
+import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
 import { useDeleteNoteMulti } from '@/queries/hooks/notes'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'

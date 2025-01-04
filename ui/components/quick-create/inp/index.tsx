@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import { defaultNewNote } from '@/libs/utils/note'
 import { useQueryClient } from '@tanstack/react-query'
-import { useAuthInfo } from '@/queries/hooks/use-auth-info'
+import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import QuickCreatePanel from '../panel'
 import { Block } from '@blocknote/core'
 

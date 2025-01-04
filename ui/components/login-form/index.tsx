@@ -14,7 +14,7 @@ import { Switch } from '@/components/ui/switch'
 import * as Headless from '@headlessui/react'
 import { FormEvent, useMemo, useState } from 'react'
 import { Link } from '@/components/ui/link'
-import { useLogin } from '@/queries/hooks/use-login'
+import { useLogin } from '@/queries/hooks/auth/use-login'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 
