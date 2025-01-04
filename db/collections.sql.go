@@ -24,6 +24,34 @@ func (q *Queries) AddNoteToCollection(ctx context.Context, arg AddNoteToCollecti
 	return err
 }
 
+const deleteCollection = `-- name: DeleteCollection :exec
+UPDATE collection
+SET deleted = $1,
+    updated_by_id = $2,
+    updated = $3
+WHERE id = $4
+  AND workspace_id = $5
+`
+
+type DeleteCollectionParams struct {
+	Deleted     bool
+	UpdatedByID int64
+	Updated     int64
+	ID          int64
+	WorkspaceID int64
+}
+
+func (q *Queries) DeleteCollection(ctx context.Context, arg DeleteCollectionParams) error {
+	_, err := q.db.Exec(ctx, deleteCollection,
+		arg.Deleted,
+		arg.UpdatedByID,
+		arg.Updated,
+		arg.ID,
+		arg.WorkspaceID,
+	)
+	return err
+}
+
 const getCollectionByIDAndWorkspace = `-- name: GetCollectionByIDAndWorkspace :one
 SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
 FROM collection
@@ -52,6 +80,198 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 		&i.UpdatedByID,
 	)
 	return i, err
+}
+
+const getInitialCollectionsAlphabeticalAsc = `-- name: GetInitialCollectionsAlphabeticalAsc :many
+SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+FROM collection
+WHERE workspace_id = $1
+  AND trashed = $2
+  AND deleted = FALSE
+ORDER BY name ASC,
+         id ASC 
+LIMIT $3
+`
+
+type GetInitialCollectionsAlphabeticalAscParams struct {
+	WorkspaceID int64
+	Trashed     bool
+	Limit       int64
+}
+
+func (q *Queries) GetInitialCollectionsAlphabeticalAsc(ctx context.Context, arg GetInitialCollectionsAlphabeticalAscParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getInitialCollectionsAlphabeticalAsc, arg.WorkspaceID, arg.Trashed, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialCollectionsAlphabeticalDesc = `-- name: GetInitialCollectionsAlphabeticalDesc :many
+SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+FROM collection
+WHERE workspace_id = $1
+  AND trashed = $2
+  AND deleted = FALSE
+ORDER BY name DESC,
+         id DESC
+LIMIT $3
+`
+
+type GetInitialCollectionsAlphabeticalDescParams struct {
+	WorkspaceID int64
+	Trashed     bool
+	Limit       int64
+}
+
+func (q *Queries) GetInitialCollectionsAlphabeticalDesc(ctx context.Context, arg GetInitialCollectionsAlphabeticalDescParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getInitialCollectionsAlphabeticalDesc, arg.WorkspaceID, arg.Trashed, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialCollectionsUpdatedAsc = `-- name: GetInitialCollectionsUpdatedAsc :many
+SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+FROM collection
+WHERE workspace_id = $1
+  AND trashed = $2
+  AND deleted = FALSE
+ORDER BY updated ASC,
+         id ASC
+LIMIT $3
+`
+
+type GetInitialCollectionsUpdatedAscParams struct {
+	WorkspaceID int64
+	Trashed     bool
+	Limit       int64
+}
+
+func (q *Queries) GetInitialCollectionsUpdatedAsc(ctx context.Context, arg GetInitialCollectionsUpdatedAscParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getInitialCollectionsUpdatedAsc, arg.WorkspaceID, arg.Trashed, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getInitialCollectionsUpdatedDesc = `-- name: GetInitialCollectionsUpdatedDesc :many
+SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+FROM collection
+WHERE workspace_id = $1
+  AND trashed = $2
+  AND deleted = FALSE
+ORDER BY updated DESC,
+         id DESC
+LIMIT $3
+`
+
+type GetInitialCollectionsUpdatedDescParams struct {
+	WorkspaceID int64
+	Trashed     bool
+	Limit       int64
+}
+
+func (q *Queries) GetInitialCollectionsUpdatedDesc(ctx context.Context, arg GetInitialCollectionsUpdatedDescParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getInitialCollectionsUpdatedDesc, arg.WorkspaceID, arg.Trashed, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertCollection = `-- name: InsertCollection :one
@@ -87,4 +307,63 @@ func (q *Queries) InsertCollection(ctx context.Context, arg InsertCollectionPara
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const trashCollection = `-- name: TrashCollection :exec
+UPDATE collection
+SET trashed = $1,
+    updated_by_id = $2,
+    updated = $3
+WHERE id = $4
+  AND workspace_id = $5
+`
+
+type TrashCollectionParams struct {
+	Trashed     bool
+	UpdatedByID int64
+	Updated     int64
+	ID          int64
+	WorkspaceID int64
+}
+
+func (q *Queries) TrashCollection(ctx context.Context, arg TrashCollectionParams) error {
+	_, err := q.db.Exec(ctx, trashCollection,
+		arg.Trashed,
+		arg.UpdatedByID,
+		arg.Updated,
+		arg.ID,
+		arg.WorkspaceID,
+	)
+	return err
+}
+
+const updateCollection = `-- name: UpdateCollection :exec
+UPDATE collection
+SET name          = $1,
+    description   = $2,
+    updated_by_id = $3,
+    updated       = $4
+WHERE id = $5
+  AND workspace_id = $6
+`
+
+type UpdateCollectionParams struct {
+	Name        string
+	Description string
+	UpdatedByID int64
+	Updated     int64
+	ID          int64
+	WorkspaceID int64
+}
+
+func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionParams) error {
+	_, err := q.db.Exec(ctx, updateCollection,
+		arg.Name,
+		arg.Description,
+		arg.UpdatedByID,
+		arg.Updated,
+		arg.ID,
+		arg.WorkspaceID,
+	)
+	return err
 }

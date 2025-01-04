@@ -6,7 +6,7 @@ sql:
     queries:
       - db/queries
     database:
-      uri: "${SQL_CONN}"
+      uri: "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable"
     gen:
       go:
         package: db

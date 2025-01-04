@@ -8,9 +8,8 @@ export const metadata: Metadata = {
 }
 
 export default function CollectionsPage() {
-  
   return (
-    <div>
+    <div className='max-w-4xl mx-auto'>
       <div className='flex items-center justify-between'>
         <div className='min-w-0 flex-1'>
           <h2 className='text-lg/6 font-bold text-zinc-300 sm:truncate sm:text-3xl sm:tracking-tight'>
