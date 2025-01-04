@@ -115,3 +115,17 @@ func FetchWorkspacesForUser(ctx context.Context, userID int64) ([]*Workspace, er
 
 	return wss, nil
 }
+
+func FindUsersByIDs(ctx context.Context, ids []int64) ([]*User, error) {
+	dbUsers, err := db.Q.GetUsersByIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]*User, 0, len(dbUsers))
+	for _, dbUser := range dbUsers {
+		users = append(users, UserFromDBUser(&dbUser))
+	}
+
+	return users, nil
+}

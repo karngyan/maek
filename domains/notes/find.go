@@ -217,16 +217,16 @@ func FindNoteByUUID(ctx context.Context, nuuid string, wid int64) (*Note, error)
 	return noteFromDB(dbNote), nil
 }
 
-func FindNotesForCollection(ctx context.Context, wid, cid int64) ([]*Note, []*auth.User, error) {
+func FindNotesForCollection(ctx context.Context, wid, cid int64) ([]*Note, error) {
 	dbNotes, err := db.Q.GetNotesByCollectionID(ctx, db.GetNotesByCollectionIDParams{
 		CollectionID: cid,
 		WorkspaceID:  wid,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return []*Note{}, []*auth.User{}, nil
+			return []*Note{}, nil
 		}
-		return nil, nil, err
+		return nil, err
 	}
 
 	var notes []*Note
@@ -234,21 +234,5 @@ func FindNotesForCollection(ctx context.Context, wid, cid int64) ([]*Note, []*au
 		notes = append(notes, noteFromDB(dbNote))
 	}
 
-	relatedUserIDs := mapset.NewSet[int64]()
-	for _, dbNote := range dbNotes {
-		relatedUserIDs.Add(dbNote.CreatedByID)
-		relatedUserIDs.Add(dbNote.UpdatedByID)
-	}
-
-	dbUsers, err := db.Q.GetUsersByIDs(ctx, relatedUserIDs.ToSlice())
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var users []*auth.User
-	for _, dbUser := range dbUsers {
-		users = append(users, auth.UserFromDBUser(&dbUser))
-	}
-
-	return notes, users, nil
+	return notes, nil
 }

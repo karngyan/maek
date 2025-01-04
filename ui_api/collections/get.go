@@ -4,11 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/karngyan/maek/domains/notes"
-
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/labstack/echo/v4"
 
+	"github.com/karngyan/maek/domains/auth"
 	"github.com/karngyan/maek/domains/collections"
+	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/ui_api/models"
 	"github.com/karngyan/maek/ui_api/web"
 )
@@ -42,7 +43,7 @@ func get(ctx web.Context) error {
 
 	uiC := models.ModelForCollection(c)
 
-	ns, authors, err := notes.FindNotesForCollection(rctx, wid, cid)
+	ns, err := notes.FindNotesForCollection(rctx, wid, cid)
 	if err != nil {
 		return ctx.InternalError(err)
 	}
@@ -55,6 +56,20 @@ func get(ctx web.Context) error {
 		}
 
 		uiNotes = append(uiNotes, uiN)
+	}
+
+	authorIDs := mapset.NewSet[int64]()
+	authorIDs.Add(c.CreatedByID)
+	authorIDs.Add(c.UpdatedByID)
+
+	for _, n := range ns {
+		authorIDs.Add(n.CreatedByID)
+		authorIDs.Add(n.UpdatedByID)
+	}
+
+	authors, err := auth.FindUsersByIDs(rctx, authorIDs.ToSlice())
+	if err != nil {
+		return ctx.InternalError(err)
 	}
 
 	uiAuthors := make([]*models.User, 0, len(authors))
