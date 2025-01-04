@@ -13,14 +13,16 @@ FROM collection
 WHERE id = $1
   AND workspace_id = $2;
 
--- name: UpdateCollection :exec
+-- name: UpdateCollection :one
 UPDATE collection
 SET name          = $1,
     description   = $2,
     updated_by_id = $3,
     updated       = $4
 WHERE id = $5
-  AND workspace_id = $6;
+  AND workspace_id = $6
+RETURNING id, name, description, created, updated, trashed, deleted,
+          workspace_id, created_by_id, updated_by_id;
 
 -- name: TrashCollection :exec
 UPDATE collection

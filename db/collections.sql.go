@@ -241,7 +241,7 @@ func (q *Queries) TrashCollection(ctx context.Context, arg TrashCollectionParams
 	return err
 }
 
-const updateCollection = `-- name: UpdateCollection :exec
+const updateCollection = `-- name: UpdateCollection :one
 UPDATE collection
 SET name          = $1,
     description   = $2,
@@ -249,6 +249,8 @@ SET name          = $1,
     updated       = $4
 WHERE id = $5
   AND workspace_id = $6
+RETURNING id, name, description, created, updated, trashed, deleted,
+          workspace_id, created_by_id, updated_by_id
 `
 
 type UpdateCollectionParams struct {
@@ -260,8 +262,8 @@ type UpdateCollectionParams struct {
 	WorkspaceID int64
 }
 
-func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionParams) error {
-	_, err := q.db.Exec(ctx, updateCollection,
+func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionParams) (Collection, error) {
+	row := q.db.QueryRow(ctx, updateCollection,
 		arg.Name,
 		arg.Description,
 		arg.UpdatedByID,
@@ -269,5 +271,18 @@ func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionPara
 		arg.ID,
 		arg.WorkspaceID,
 	)
-	return err
+	var i Collection
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Created,
+		&i.Updated,
+		&i.Trashed,
+		&i.Deleted,
+		&i.WorkspaceID,
+		&i.CreatedByID,
+		&i.UpdatedByID,
+	)
+	return i, err
 }

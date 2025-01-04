@@ -5,6 +5,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/bluele/go-timecop"
 	"github.com/karngyan/maek/db"
 )
@@ -17,23 +19,23 @@ type UpdateCollectionRequest struct {
 	UpdatedByID int64
 }
 
-func UpdateCollection(ctx context.Context, req *UpdateCollectionRequest) error {
+func UpdateCollection(ctx context.Context, req *UpdateCollectionRequest) (*Collection, error) {
 	if req.ID == 0 {
-		return errors.New("id is required")
+		return nil, errors.New("id is required")
 	}
 
 	if req.WorkspaceID == 0 {
-		return errors.New("workspace is required")
+		return nil, errors.New("workspace is required")
 	}
 
 	if req.UpdatedByID == 0 {
-		return errors.New("updated by is required")
+		return nil, errors.New("updated by is required")
 	}
 
 	req.Name = strings.TrimSpace(req.Name)
 	req.Description = strings.TrimSpace(req.Description)
 
-	return db.Q.UpdateCollection(ctx, db.UpdateCollectionParams{
+	dbCollection, err := db.Q.UpdateCollection(ctx, db.UpdateCollectionParams{
 		Name:        req.Name,
 		Description: req.Description,
 		UpdatedByID: req.UpdatedByID,
@@ -41,4 +43,12 @@ func UpdateCollection(ctx context.Context, req *UpdateCollectionRequest) error {
 		ID:          req.ID,
 		WorkspaceID: req.WorkspaceID,
 	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrCollectionNotFound
+		}
+		return nil, err
+	}
+
+	return CollectionFromDB(dbCollection), nil
 }
