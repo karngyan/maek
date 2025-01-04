@@ -1,7 +1,7 @@
 'use client'
 
 import { getNoteTitle } from '@/libs/utils/note'
-import { Note } from '@/queries/services/note-service'
+import { Note } from '@/queries/services/note'
 import Link from 'next/link'
 import React, { useMemo, useState } from 'react'
 import ScribbleIcon from '@/components/ui/icons/scribble'

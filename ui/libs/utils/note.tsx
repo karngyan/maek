@@ -1,5 +1,5 @@
-import { Note } from '@/queries/services/note-service'
-import { User } from '@/queries/services/auth-service'
+import { Note } from '@/queries/services/note'
+import { User } from '@/queries/services/auth'
 import { type Block } from '@blocknote/core'
 
 export const defaultNewNote = (

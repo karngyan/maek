@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchAuthInfo } from '@/queries/services/auth-service'
+import { fetchAuthInfo } from '@/queries/services/auth'
 import axios from 'axios'
 
 export const useAuthInfo = () => {

@@ -1,6 +1,5 @@
 import { authApiClient } from '@/queries/services/base'
-import { User } from '@/queries/services/auth-service'
-import { Note } from '@/queries/services/note-service'
+import { Note } from '@/queries/services/note'
 
 interface Collection {
   id: number
@@ -14,15 +13,13 @@ interface Collection {
   trashed: boolean
 }
 
-interface CollectionResponse {
+export interface CollectionResponse {
   collection: Collection
-  notes?: Note[] // optional for updateCollection
-  authors?: User[] // optional for updateCollection
+  notes: Note[]
 }
 
 interface ListCollectionsResponse {
   collections: Collection[]
-  authors: User[]
   nextCursor: string
 }
 
@@ -47,22 +44,17 @@ export const fetchCollection = async (
   return response.data
 }
 
-export const listCollections = async (
+export const updateCollection = async ({
+  cid,
+  wid,
+  name,
+  description,
+}: {
+  cid: number
   wid: number
-): Promise<ListCollectionsResponse> => {
-  const response = await authApiClient.get<ListCollectionsResponse>(
-    `/v1/workspaces/${wid}/collections`
-  )
-
-  return response.data
-}
-
-export const updateCollection = async (
-  wid: number,
-  cid: number,
-  name: string,
+  name: string
   description: string
-): Promise<CollectionResponse> => {
+}): Promise<CollectionResponse> => {
   const response = await authApiClient.put<CollectionResponse>(
     `/v1/workspaces/${wid}/collections/${cid}`,
     {
@@ -74,11 +66,25 @@ export const updateCollection = async (
   return response.data
 }
 
-export const addNotesToCollection = async (
-  wid: number,
-  cid: number,
+export const listCollections = async (
+  wid: number
+): Promise<ListCollectionsResponse> => {
+  const response = await authApiClient.get<ListCollectionsResponse>(
+    `/v1/workspaces/${wid}/collections`
+  )
+
+  return response.data
+}
+
+export const addNotesToCollection = async ({
+  wid,
+  cid,
+  nids,
+}: {
+  wid: number
+  cid: number
   nids: number[]
-): Promise<CollectionResponse> => {
+}): Promise<CollectionResponse> => {
   const response = await authApiClient.put<CollectionResponse>(
     `/v1/workspaces/${wid}/collections/${cid}/add-notes`,
     {

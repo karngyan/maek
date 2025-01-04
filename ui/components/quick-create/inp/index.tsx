@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import QuickCreatePanel from '../panel'
 import { Block } from '@blocknote/core'
-import { NOTES_KEYS } from '@/queries/hooks/notes'
+import { notesKeys } from '@/queries/hooks/notes'
 
 const QuickCreateInp = () => {
   const router = useRouter()
@@ -23,7 +23,7 @@ const QuickCreateInp = () => {
       return
     }
 
-    qc.setQueryData(NOTES_KEYS.one(+params.wid, noteUuid), {
+    qc.setQueryData(notesKeys.one(+params.wid, noteUuid), {
       note: defaultNewNote(noteUuid, +params.wid, val, data!.user),
     })
     router.push(`/workspaces/${params.wid}/notes/${noteUuid}`)
@@ -34,7 +34,7 @@ const QuickCreateInp = () => {
     fid?: string,
     fplace?: 'end' | 'start'
   ) => {
-    qc.setQueryData(NOTES_KEYS.one(+params.wid, noteUuid), {
+    qc.setQueryData(notesKeys.one(+params.wid, noteUuid), {
       note: defaultNewNote(noteUuid, +params.wid, '', data!.user, dom),
     })
 

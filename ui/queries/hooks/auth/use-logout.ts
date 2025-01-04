@@ -1,4 +1,4 @@
-import { logout } from '@/queries/services/auth-service'
+import { logout } from '@/queries/services/auth'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useLogout = () => {

@@ -1,4 +1,4 @@
-import { User } from '@/queries/services/auth-service'
+import { User } from '@/queries/services/auth'
 import { authApiClient } from '@/queries/services/base'
 import { Block } from '@blocknote/core'
 
@@ -38,7 +38,6 @@ export interface NoteResponse {
 
 export interface ListNotesResponse {
   notes: Note[]
-  authors: User[]
   nextCursor: string
 }
 

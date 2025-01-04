@@ -1,4 +1,4 @@
-import { Note } from '@/queries/services/note-service'
+import { Note } from '@/queries/services/note'
 import NotesListSectionItem from './item'
 
 type NotesListSectionProps = {
