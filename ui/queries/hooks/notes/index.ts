@@ -13,12 +13,23 @@ import {
   deleteNoteMulti,
 } from '@/queries/services/note-service'
 import { useToast } from '@/components/ui/hooks/use-toast'
-import { keys } from './keys'
+
+export const NOTES_KEYS = {
+  all: () => ['notes'],
+  one: (workspaceId: number, noteUuid: string) => [
+    ...NOTES_KEYS.all(),
+    { wid: workspaceId, uuid: noteUuid },
+  ],
+  allByWorkspace: (workspaceId: number) => [
+    ...NOTES_KEYS.all(),
+    { wid: workspaceId },
+  ],
+}
 
 export const useFetchNote = (workspaceId: number, noteUuid: string) => {
   return useQuery({
     queryFn: () => fetchNote({ workspaceId, noteUuid }),
-    queryKey: keys.note(workspaceId, noteUuid),
+    queryKey: NOTES_KEYS.one(workspaceId, noteUuid),
     staleTime: 10 * 1000,
     refetchOnWindowFocus: 'always',
   })
@@ -28,7 +39,7 @@ export const useFetchAllNotes = (workspaceId: number, sort: string) => {
   return useInfiniteQuery({
     queryFn: ({ pageParam }) =>
       fetchAllNotes({ workspaceId, sort, cursor: pageParam }),
-    queryKey: [...keys.notesByWorkspace(workspaceId), { sort }],
+    queryKey: [...NOTES_KEYS.allByWorkspace(workspaceId), { sort }],
     initialPageParam: '',
     getNextPageParam: (lastPage) => {
       if (lastPage.nextCursor === '') {
@@ -46,7 +57,7 @@ export const useUpsertNote = () => {
   return useMutation({
     mutationFn: upsertNote,
     onMutate: async (newNote) => {
-      const queryKey = keys.note(newNote.workspaceId, newNote.uuid)
+      const queryKey = NOTES_KEYS.one(newNote.workspaceId, newNote.uuid)
 
       // Cancel any outgoing re-fetches (so they don't overwrite our optimistic update)
       await qc.cancelQueries({
@@ -63,12 +74,12 @@ export const useUpsertNote = () => {
     },
     onError: (err, newNote, context) => {
       // Roll back to the previous value
-      const queryKey = keys.note(newNote.workspaceId, newNote.uuid)
+      const queryKey = NOTES_KEYS.one(newNote.workspaceId, newNote.uuid)
       qc.setQueryData(queryKey, { note: context?.previousNote })
     },
     onSettled: (resp) => {
       if (!resp) return
-      const queryKey = keys.note(resp.note.workspaceId, resp.note.uuid)
+      const queryKey = NOTES_KEYS.one(resp.note.workspaceId, resp.note.uuid)
       void qc.invalidateQueries({ queryKey })
     },
   })
@@ -90,7 +101,7 @@ export const useDeleteNote = ({ onSuccess }: { onSuccess?: () => unknown }) => {
       })
     },
     onSettled: () => {
-      void qc.invalidateQueries({ queryKey: keys.allNotes() })
+      void qc.invalidateQueries({ queryKey: NOTES_KEYS.all() })
     },
   })
 }
@@ -115,7 +126,7 @@ export const useDeleteNoteMulti = ({
       })
     },
     onSettled: () => {
-      void qc.invalidateQueries({ queryKey: keys.allNotes() })
+      void qc.invalidateQueries({ queryKey: NOTES_KEYS.all() })
     },
   })
 }
