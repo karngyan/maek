@@ -1,6 +1,6 @@
 'use client'
 
-import { useFetchAllNotes } from '@/queries/hooks/use-fetch-all-notes'
+import { useFetchAllNotes } from '@/queries/hooks/notes'
 import { useParams } from 'next/navigation'
 import React, { useMemo } from 'react'
 import {

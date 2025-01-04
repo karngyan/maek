@@ -33,7 +33,7 @@ import {
   AlertActions,
 } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useDeleteNote } from '@/queries/hooks/use-delete-note'
+import { useDeleteNote } from '@/queries/hooks/notes'
 
 type NotesListSectionItemProps = {
   note: Note

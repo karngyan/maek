@@ -20,8 +20,7 @@ import {
   DropdownMenu,
 } from '@/components/ui/dropdown'
 import { useToast } from '@/components/ui/hooks/use-toast'
-import { useFetchNote } from '@/queries/hooks/use-fetch-note'
-import { useUpsertNote } from '@/queries/hooks/use-upsert-note'
+import { useFetchNote, useUpsertNote } from '@/queries/hooks/notes'
 import { useDebounceCallback } from '@react-hook/debounce'
 import dayjs from 'dayjs'
 import { Text } from '@/components/ui/text'
@@ -31,7 +30,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert'
-import { useDeleteNote } from '@/queries/hooks/use-delete-note'
+import { useDeleteNote } from '@/queries/hooks/notes'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { getHasMeta } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
