@@ -1,0 +1,61 @@
+{
+  "authors": [
+    {
+      "created": 1234567890,
+      "defaultWorkspaceId": 1,
+      "email": "karn@maek.ai",
+      "id": 1,
+      "name": "Karn",
+      "role": "admin",
+      "updated": 1234567890,
+      "verified": false
+    }
+  ],
+  "collections": [
+    {
+      "created": 1234567890,
+      "createdById": 1,
+      "description": "Description 9",
+      "id": 9,
+      "name": "Name 9",
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedById": 1,
+      "workspaceId": 1
+    },
+    {
+      "created": 1234567890,
+      "createdById": 1,
+      "description": "Description 8",
+      "id": 8,
+      "name": "Name 8",
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedById": 1,
+      "workspaceId": 1
+    },
+    {
+      "created": 1234567890,
+      "createdById": 1,
+      "description": "Description 7",
+      "id": 7,
+      "name": "Name 7",
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedById": 1,
+      "workspaceId": 1
+    },
+    {
+      "created": 1234567890,
+      "createdById": 1,
+      "description": "Description 6",
+      "id": 6,
+      "name": "Name 6",
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedById": 1,
+      "workspaceId": 1
+    }
+  ],
+  "nextCursor": ""
+}

@@ -1,12 +1,8 @@
 package collections
 
 import (
-	"errors"
-
 	"github.com/karngyan/maek/db"
 )
-
-var ErrCollectionNotFound = errors.New("collection not found")
 
 type Collection struct {
 	ID          int64

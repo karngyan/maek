@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jackc/pgx/v5"
@@ -57,18 +55,13 @@ func decodeCursor(cursor string) (int64, int64, error) {
 		return 0, 0, ErrInvalidCursor
 	}
 
-	parts := strings.Split(string(decodedBytes), ":")
-	if len(parts) != 2 {
-		return 0, 0, ErrInvalidCursor
-	}
-
-	sortValue, err := strconv.ParseInt(parts[0], 10, 64)
+	var sortValue, id int64
+	n, err := fmt.Sscanf(string(decodedBytes), "%d:%d", &sortValue, &id)
 	if err != nil {
 		return 0, 0, ErrFailedToDecodeCursor
 	}
 
-	id, err := strconv.ParseInt(parts[1], 10, 64)
-	if err != nil {
+	if n != 2 {
 		return 0, 0, ErrFailedToDecodeCursor
 	}
 
