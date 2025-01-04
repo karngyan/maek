@@ -25,6 +25,37 @@ FROM note
 WHERE uuid = $1
   AND workspace_id = $2;
 
+-- name: GetNotesByCollectionID :many
+SELECT n.id,
+       n.uuid,
+       n.content,
+       n.favorite,
+       n.deleted,
+       n.trashed,
+       n.has_content,
+       n.has_images,
+       n.has_videos,
+       n.has_open_tasks,
+       n.has_closed_tasks,
+       n.has_code,
+       n.has_audios,
+       n.has_links,
+       n.has_files,
+       n.has_quotes,
+       n.has_tables,
+       n.workspace_id,
+       n.created,
+       n.updated,
+       n.created_by_id,
+       n.updated_by_id
+FROM collection_notes cn
+         JOIN note n ON cn.note_id = n.id
+WHERE cn.collection_id = $1
+  AND n.deleted = FALSE
+  AND n.trashed = FALSE
+  AND n.workspace_id = $2
+ORDER BY n.updated DESC;
+
 -- name: CheckNoteExists :one
 SELECT id
 FROM note

@@ -18,5 +18,6 @@ func create(ctx web.Context) error {
 
 	return ctx.JSON(http.StatusCreated, map[string]any{
 		"collection": models.ModelForCollection(collection),
+		"notes":      []any{},
 	})
 }

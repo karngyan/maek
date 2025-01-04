@@ -1,4 +1,5 @@
 {
+  "authors": [],
   "collection": {
     "created": 1234567890,
     "createdById": 1,
@@ -9,5 +10,6 @@
     "updated": 1234567890,
     "updatedById": 1,
     "workspaceId": 1
-  }
+  },
+  "notes": []
 }

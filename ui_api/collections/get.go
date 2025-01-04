@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/karngyan/maek/domains/notes"
+
 	"github.com/labstack/echo/v4"
 
 	"github.com/karngyan/maek/domains/collections"
@@ -40,7 +42,29 @@ func get(ctx web.Context) error {
 
 	uiC := models.ModelForCollection(c)
 
+	ns, authors, err := notes.FindNotesForCollection(rctx, wid, cid)
+	if err != nil {
+		return ctx.InternalError(err)
+	}
+
+	uiNotes := make([]*models.Note, 0, len(ns))
+	for _, n := range ns {
+		uiN, err := models.ModelForNote(n)
+		if err != nil {
+			continue
+		}
+
+		uiNotes = append(uiNotes, uiN)
+	}
+
+	uiAuthors := make([]*models.User, 0, len(authors))
+	for _, a := range authors {
+		uiAuthors = append(uiAuthors, models.ModelForUser(a))
+	}
+
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"collection": uiC,
+		"notes":      uiNotes,
+		"authors":    uiAuthors,
 	})
 }

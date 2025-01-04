@@ -415,6 +415,86 @@ func (q *Queries) GetNoteByUUIDAndWorkspace(ctx context.Context, arg GetNoteByUU
 	return i, err
 }
 
+const getNotesByCollectionID = `-- name: GetNotesByCollectionID :many
+SELECT n.id,
+       n.uuid,
+       n.content,
+       n.favorite,
+       n.deleted,
+       n.trashed,
+       n.has_content,
+       n.has_images,
+       n.has_videos,
+       n.has_open_tasks,
+       n.has_closed_tasks,
+       n.has_code,
+       n.has_audios,
+       n.has_links,
+       n.has_files,
+       n.has_quotes,
+       n.has_tables,
+       n.workspace_id,
+       n.created,
+       n.updated,
+       n.created_by_id,
+       n.updated_by_id
+FROM collection_notes cn
+         JOIN note n ON cn.note_id = n.id
+WHERE cn.collection_id = $1
+  AND n.deleted = FALSE
+  AND n.trashed = FALSE
+  AND n.workspace_id = $2
+ORDER BY n.updated DESC
+`
+
+type GetNotesByCollectionIDParams struct {
+	CollectionID int64
+	WorkspaceID  int64
+}
+
+func (q *Queries) GetNotesByCollectionID(ctx context.Context, arg GetNotesByCollectionIDParams) ([]Note, error) {
+	rows, err := q.db.Query(ctx, getNotesByCollectionID, arg.CollectionID, arg.WorkspaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.UUID,
+			&i.Content,
+			&i.Favorite,
+			&i.Deleted,
+			&i.Trashed,
+			&i.HasContent,
+			&i.HasImages,
+			&i.HasVideos,
+			&i.HasOpenTasks,
+			&i.HasClosedTasks,
+			&i.HasCode,
+			&i.HasAudios,
+			&i.HasLinks,
+			&i.HasFiles,
+			&i.HasQuotes,
+			&i.HasTables,
+			&i.WorkspaceID,
+			&i.Created,
+			&i.Updated,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getNotesCreatedAsc = `-- name: GetNotesCreatedAsc :many
 SELECT id,
        uuid,
