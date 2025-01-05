@@ -8,6 +8,7 @@ import {
   CollectionSortKeys,
   trashCollection,
   trashCollectionMulti,
+  removeNotesFromCollection,
 } from '@/queries/services/collection'
 import {
   useInfiniteQuery,
@@ -100,6 +101,17 @@ export const useAddNotesToCollection = () => {
       notes.forEach((note) => {
         qc.setQueryData(notesKeys.one(note.workspaceId, note.uuid), { note })
       })
+    },
+  })
+}
+
+export const useRemoveNotesFromCollection = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: removeNotesFromCollection,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: collectionKeys.all })
     },
   })
 }

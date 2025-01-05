@@ -213,17 +213,33 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 	return items, nil
 }
 
+const removeNotesFromCollection = `-- name: RemoveNotesFromCollection :exec
+UPDATE collection_notes
+SET trashed = TRUE
+WHERE collection_id = $1
+  AND note_id = ANY($2)
+`
+
+type RemoveNotesFromCollectionParams struct {
+	CollectionID int64
+	NoteIds      []int64
+}
+
+func (q *Queries) RemoveNotesFromCollection(ctx context.Context, arg RemoveNotesFromCollectionParams) error {
+	_, err := q.db.Exec(ctx, removeNotesFromCollection, arg.CollectionID, arg.NoteIds)
+	return err
+}
+
 const trashCollection = `-- name: TrashCollection :exec
 UPDATE collection
-SET trashed = $1,
-    updated_by_id = $2,
-    updated = $3
-WHERE id = $4
-  AND workspace_id = $5
+SET trashed = TRUE,
+    updated_by_id = $1,
+    updated = $2
+WHERE id = $3
+  AND workspace_id = $4
 `
 
 type TrashCollectionParams struct {
-	Trashed     bool
 	UpdatedByID int64
 	Updated     int64
 	ID          int64
@@ -232,11 +248,36 @@ type TrashCollectionParams struct {
 
 func (q *Queries) TrashCollection(ctx context.Context, arg TrashCollectionParams) error {
 	_, err := q.db.Exec(ctx, trashCollection,
-		arg.Trashed,
 		arg.UpdatedByID,
 		arg.Updated,
 		arg.ID,
 		arg.WorkspaceID,
+	)
+	return err
+}
+
+const trashCollectionsByIDs = `-- name: TrashCollectionsByIDs :exec
+UPDATE collection
+SET trashed = TRUE,
+    updated_by_id = $1,
+    updated = $2
+WHERE id = ANY($4)
+  AND workspace_id = $3
+`
+
+type TrashCollectionsByIDsParams struct {
+	UpdatedByID int64
+	Updated     int64
+	WorkspaceID int64
+	Ids         []int64
+}
+
+func (q *Queries) TrashCollectionsByIDs(ctx context.Context, arg TrashCollectionsByIDsParams) error {
+	_, err := q.db.Exec(ctx, trashCollectionsByIDs,
+		arg.UpdatedByID,
+		arg.Updated,
+		arg.WorkspaceID,
+		arg.Ids,
 	)
 	return err
 }

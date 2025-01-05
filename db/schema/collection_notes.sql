@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS collection_notes
 (
     id            BIGSERIAL PRIMARY KEY,
     collection_id BIGINT NOT NULL,
-    note_id       BIGINT NOT NULL
+    note_id       BIGINT NOT NULL,
+    trashed       BOOLEAN DEFAULT FALSE
 );
 
 CREATE INDEX idx_collection_notes_collection

@@ -4,6 +4,10 @@
 
 package db
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
 type Collection struct {
 	ID          int64
 	Name        string
@@ -21,6 +25,7 @@ type CollectionNote struct {
 	ID           int64
 	CollectionID int64
 	NoteID       int64
+	Trashed      pgtype.Bool
 }
 
 type Note struct {

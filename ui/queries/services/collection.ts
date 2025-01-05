@@ -117,6 +117,25 @@ export const addNotesToCollection = async ({
   return response.data
 }
 
+export const removeNotesFromCollection = async ({
+  wid,
+  cid,
+  nids = [],
+}: {
+  wid: number
+  cid: number
+  nids: number[]
+}): Promise<void> => {
+  await authApiClient.delete<CollectionResponse>(
+    `/v1/workspaces/${wid}/collections/${cid}/notes`,
+    {
+      data: {
+        noteIds: nids,
+      },
+    }
+  )
+}
+
 export const trashCollection = async ({
   wid,
   cid,
@@ -143,7 +162,7 @@ export const trashCollectionMulti = async ({
     `/v1/workspaces/${wid}/collections`,
     {
       params: {
-        collectionsIds: cids,
+        cids,
       },
     }
   )

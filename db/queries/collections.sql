@@ -7,6 +7,12 @@ RETURNING id;
 INSERT INTO collection_notes (collection_id, note_id)
 SELECT UNNEST(@collection_ids::BIGINT[]), UNNEST(@note_ids::BIGINT[]);
 
+-- name: RemoveNotesFromCollection :exec
+UPDATE collection_notes
+SET trashed = TRUE
+WHERE collection_id = $1
+  AND note_id = ANY(@note_ids);
+
 -- name: GetCollectionByIDAndWorkspace :one
 SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
 FROM collection
@@ -26,11 +32,19 @@ RETURNING id, name, description, created, updated, trashed, deleted,
 
 -- name: TrashCollection :exec
 UPDATE collection
-SET trashed = $1,
-    updated_by_id = $2,
-    updated = $3
-WHERE id = $4
-  AND workspace_id = $5;
+SET trashed = TRUE,
+    updated_by_id = $1,
+    updated = $2
+WHERE id = $3
+  AND workspace_id = $4;
+
+-- name: TrashCollectionsByIDs :exec
+UPDATE collection
+SET trashed = TRUE,
+    updated_by_id = $1,
+    updated = $2
+WHERE id = ANY(@ids)
+  AND workspace_id = $3;
 
 -- name: DeleteCollection :exec
 UPDATE collection

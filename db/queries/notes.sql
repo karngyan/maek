@@ -51,6 +51,7 @@ SELECT n.id,
 FROM collection_notes cn
          JOIN note n ON cn.note_id = n.id
 WHERE cn.collection_id = $1
+  AND cn.trashed = FALSE
   AND n.deleted = FALSE
   AND n.trashed = FALSE
   AND n.workspace_id = $2
