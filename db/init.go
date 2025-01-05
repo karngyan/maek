@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5/tracelog"
+	"github.com/karngyan/maek/libs/logger"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/fx"
@@ -35,6 +38,14 @@ func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	dbc.MaxConnLifetime = 5 * time.Minute
 	dbc.MaxConnIdleTime = 5 * time.Minute
 	dbc.HealthCheckPeriod = 1 * time.Minute
+
+	if c.IsDev() {
+		dbc.ConnConfig.Tracer = &tracelog.TraceLog{
+			Logger:   logger.NewPgxLogger(l),
+			LogLevel: tracelog.LogLevelTrace,
+			Config:   tracelog.DefaultTraceLogConfig(),
+		}
+	}
 
 	defaultPgxPool, err = pgxpool.NewWithConfig(context.Background(), dbc)
 	if err != nil {

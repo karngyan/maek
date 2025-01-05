@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"syscall"
 
+	"github.com/jackc/pgx/v5/tracelog"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -52,11 +53,43 @@ type BigCacheLogger struct {
 }
 
 func NewBigCacheLogger(l *zap.Logger) *BigCacheLogger {
-	return &BigCacheLogger{l}
+	return &BigCacheLogger{l.WithOptions(zap.AddCallerSkip(1))}
 }
 
 // Printf is a convenience method to log a message using Printf-style formatting.
 // bigcache.Logger interface implementation
 func (z *BigCacheLogger) Printf(format string, v ...interface{}) {
 	z.Info(fmt.Sprintf(format, v...))
+}
+
+type PgxLogger struct {
+	l *zap.Logger
+}
+
+func NewPgxLogger(l *zap.Logger) *PgxLogger {
+	return &PgxLogger{l: l.WithOptions(zap.AddCallerSkip(1))}
+}
+
+func (pl *PgxLogger) Log(ctx context.Context, level tracelog.LogLevel, msg string, data map[string]any) {
+	fields := make([]zapcore.Field, len(data))
+	i := 0
+	for k, v := range data {
+		fields[i] = zap.Any(k, v)
+		i++
+	}
+
+	switch level {
+	case tracelog.LogLevelTrace:
+		pl.l.Debug(msg, append(fields, zap.Stringer("PGX_LOG_LEVEL", level))...)
+	case tracelog.LogLevelDebug:
+		pl.l.Debug(msg, fields...)
+	case tracelog.LogLevelInfo:
+		pl.l.Info(msg, fields...)
+	case tracelog.LogLevelWarn:
+		pl.l.Warn(msg, fields...)
+	case tracelog.LogLevelError:
+		pl.l.Error(msg, fields...)
+	default:
+		pl.l.Error(msg, append(fields, zap.Stringer("PGX_LOG_LEVEL", level))...)
+	}
 }
