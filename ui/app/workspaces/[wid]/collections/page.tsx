@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button'
 import { Metadata } from 'next'
-import { EllipsisHorizontalIcon, PlusIcon } from '@heroicons/react/16/solid'
 import { Text } from '@/components/ui/text'
+import CollectionsCreateButton from '@/components/collections/create-button'
+import CollectionsList from '@/components/collections/list'
 
 export const metadata: Metadata = {
   title: 'collections - maek.ai',
@@ -17,19 +17,10 @@ export default function CollectionsPage() {
           </h2>
           <Text>create collections to organize your notes</Text>
         </div>
-        <Button className='hidden sm:flex'>
-          <PlusIcon />
-          new collection
-        </Button>
-        <Button className='flex sm:hidden'>
-          <PlusIcon />
-        </Button>
+        <CollectionsCreateButton />
       </div>
 
-      <div className='py-64 flex items-center justify-center flex-col'>
-        <EllipsisHorizontalIcon className='h-6 text-zinc-500' />
-        <Text>no items here yet</Text>
-      </div>
+      <CollectionsList />
     </div>
   )
 }

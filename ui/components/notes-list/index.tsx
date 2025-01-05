@@ -158,7 +158,7 @@ const NotesList = () => {
             {SortOptions.find((option) => option.value === sortKey)?.label}
             <ChevronDownIcon />
           </DropdownButton>
-          <DropdownMenu anchor='bottom'>
+          <DropdownMenu anchor='bottom end'>
             {SortOptions.map((option) => (
               <DropdownItem
                 key={option.value}

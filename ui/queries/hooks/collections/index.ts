@@ -5,9 +5,18 @@ import {
   updateCollection,
   addNotesToCollection,
   CollectionResponse,
+  CollectionSortKeys,
+  trashCollection,
+  trashCollectionMulti,
 } from '@/queries/services/collection'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { notesKeys } from '@/queries/hooks/notes'
+import { useToast } from '@/components/ui/hooks/use-toast'
 
 const collectionKeys = {
   all: ['collections'] as const,
@@ -26,10 +35,22 @@ export const useFetchCollection = (wid: number, id: number) => {
   })
 }
 
-export const useFetchAllCollections = (wid: number) => {
-  return useQuery({
-    queryFn: () => listCollections(wid),
-    queryKey: collectionKeys.allByWorkspace(wid),
+export const useFetchAllCollections = (
+  wid: number,
+  sort: CollectionSortKeys
+) => {
+  return useInfiniteQuery({
+    queryFn: ({ pageParam }) =>
+      listCollections({ wid, sort, cursor: pageParam }),
+    queryKey: [...collectionKeys.allByWorkspace(wid), { sort }],
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => {
+      if (lastPage.nextCursor === '') {
+        return undefined
+      }
+
+      return lastPage.nextCursor
+    },
   })
 }
 
@@ -79,6 +100,56 @@ export const useAddNotesToCollection = () => {
       notes.forEach((note) => {
         qc.setQueryData(notesKeys.one(note.workspaceId, note.uuid), { note })
       })
+    },
+  })
+}
+
+export const useTrashCollection = ({
+  onSuccess,
+}: {
+  onSuccess?: () => unknown
+}) => {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: trashCollection,
+    onSuccess: () => {
+      if (onSuccess) onSuccess()
+    },
+    onError: (error) => {
+      toast({
+        title: 'failed to delete note',
+        description: error.toString(),
+      })
+    },
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: collectionKeys.all })
+    },
+  })
+}
+
+export const useTrashCollectionMulti = ({
+  onSuccess,
+}: {
+  onSuccess?: () => unknown
+}) => {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: trashCollectionMulti,
+    onSuccess: () => {
+      if (onSuccess) onSuccess()
+    },
+    onError: (error) => {
+      toast({
+        title: 'failed to delete notes',
+        description: error.toString(),
+      })
+    },
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: collectionKeys.all })
     },
   })
 }

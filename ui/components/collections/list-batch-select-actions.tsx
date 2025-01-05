@@ -8,66 +8,70 @@ import {
 } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/hooks/use-toast'
-import { useNoteMeta } from '@/libs/providers/note-meta'
+import { useCollectionMeta } from '@/libs/providers/collection-meta'
 import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
-import { useDeleteNoteMulti } from '@/queries/hooks/notes'
+import { useTrashCollectionMulti } from '@/queries/hooks/collections'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 
-const NotesListBatchSelectActions = () => {
-  const { noteMeta, setNoteMeta } = useNoteMeta()
+const CollectionsListBatchSelectActions = () => {
+  const { collectionMeta, setCollectionMeta } = useCollectionMeta()
   const { toast } = useToast()
-  const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
-    useState(false)
-  const { mutate: deleteNoteMulti } = useDeleteNoteMulti({
+  const [isTrashConfirmAlertOpen, setIsTrashConfirmAlertOpen] = useState(false)
+  const { mutate: deleteCollectionMulti } = useTrashCollectionMulti({
     onSuccess: () => {
-      setIsDeleteConfirmAlertOpen(false)
+      setIsTrashConfirmAlertOpen(false)
       toast({
         title:
-          `trashed ${selectedNotesLen} note` +
-          (selectedNotesLen > 1 ? 's' : ''),
+          `trashed ${selectedCollectionsLen} collection` +
+          (selectedCollectionsLen > 1 ? 's' : ''),
         description:
           'you can restore them from trash, or delete them permanently',
       })
 
-      // clear note meta for selected notes
-      const newMeta = { ...noteMeta }
-      Object.keys(newMeta).forEach((uuid) => {
-        if (newMeta[uuid].isSelected) {
-          delete newMeta[uuid]
-        }
-      })
-      setNoteMeta(newMeta)
+      // clear collection meta for selected collections
+      const newMeta = { ...collectionMeta }
+      Object.keys(newMeta)
+        .map(Number)
+        .forEach((id) => {
+          if (newMeta[id].isSelected) {
+            delete newMeta[id]
+          }
+        })
+      setCollectionMeta(newMeta)
     },
   })
 
   const wid = useCurrentWorkspaceId()
 
   const showActions = useMemo(() => {
-    return Object.values(noteMeta).some((meta) => meta.isSelected)
-  }, [noteMeta])
+    return Object.values(collectionMeta).some((meta) => meta.isSelected)
+  }, [collectionMeta])
 
-  const selectedNotesLen = useMemo(() => {
-    return Object.values(noteMeta).filter((meta) => meta.isSelected).length
-  }, [noteMeta])
+  const selectedCollectionsLen = useMemo(() => {
+    return Object.values(collectionMeta).filter((meta) => meta.isSelected)
+      .length
+  }, [collectionMeta])
 
   const deselectAll = () => {
-    const newMeta = { ...noteMeta }
-    Object.keys(newMeta).forEach((uuid) => {
-      newMeta[uuid].isSelected = false
-    })
-    setNoteMeta(newMeta)
+    const newMeta = { ...collectionMeta }
+    Object.keys(newMeta)
+      .map(Number)
+      .forEach((id: number) => {
+        newMeta[id].isSelected = false
+      })
+    setCollectionMeta(newMeta)
   }
 
   const deleteAllConfirm = () => {
-    const selectedUuids = Object.keys(noteMeta).filter(
-      (uuid) => noteMeta[uuid].isSelected
-    )
-    deleteNoteMulti({ workspaceId: wid, noteUuids: selectedUuids })
+    const cids = Object.keys(collectionMeta)
+      .map(Number)
+      .filter((id) => collectionMeta[id].isSelected)
+    deleteCollectionMulti({ wid, cids })
   }
 
   const deleteAll = () => {
-    setIsDeleteConfirmAlertOpen(true)
+    setIsTrashConfirmAlertOpen(true)
   }
 
   if (!showActions) {
@@ -81,7 +85,7 @@ const NotesListBatchSelectActions = () => {
           <div className='bg-zinc-900 flex space-x-4 flex-row items-center justify-center shadow-lg border border-zinc-800 rounded-lg px-4 py-2'>
             <p className='text-zinc-400 text-sm'>
               {' '}
-              {selectedNotesLen} selected{' '}
+              {selectedCollectionsLen} selected{' '}
             </p>
             <Button plain onClick={deselectAll} className='text-sm h-7'>
               deselect
@@ -93,18 +97,19 @@ const NotesListBatchSelectActions = () => {
         </div>
       </div>
       <Alert
-        open={isDeleteConfirmAlertOpen}
-        onClose={setIsDeleteConfirmAlertOpen}
+        open={isTrashConfirmAlertOpen}
+        onClose={setIsTrashConfirmAlertOpen}
       >
         <AlertTitle>
-          are you sure you want to delete {selectedNotesLen} note(s)?
+          are you sure you want to delete {selectedCollectionsLen}{' '}
+          collection(s)?
         </AlertTitle>
         <AlertDescription>
           they will be moved to trash and will be there for 30 days. you can
           restore it within that period.
         </AlertDescription>
         <AlertActions>
-          <Button plain onClick={() => setIsDeleteConfirmAlertOpen(false)}>
+          <Button plain onClick={() => setIsTrashConfirmAlertOpen(false)}>
             cancel
           </Button>
           <Button color='red' onClick={deleteAllConfirm}>
@@ -116,4 +121,4 @@ const NotesListBatchSelectActions = () => {
   )
 }
 
-export default NotesListBatchSelectActions
+export default CollectionsListBatchSelectActions

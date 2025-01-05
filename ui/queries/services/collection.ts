@@ -1,7 +1,7 @@
 import { authApiClient } from '@/queries/services/base'
 import { Note } from '@/queries/services/note'
 
-interface Collection {
+export interface Collection {
   id: number
   workspaceId: number
   name: string
@@ -11,6 +11,13 @@ interface Collection {
   createdById: number
   updatedById: number
   trashed: boolean
+}
+
+export enum CollectionSortKeys {
+  UpdatedAsc = 'updated_asc',
+  UpdatedDsc = 'updated_dsc',
+  NameAsc = 'name_asc',
+  NameDsc = 'name_dsc',
 }
 
 export interface CollectionResponse {
@@ -66,11 +73,26 @@ export const updateCollection = async ({
   return response.data
 }
 
-export const listCollections = async (
+export const listCollections = async ({
+  wid,
+  cursor = '',
+  limit = 200,
+  sort = CollectionSortKeys.UpdatedDsc,
+}: {
   wid: number
-): Promise<ListCollectionsResponse> => {
+  cursor?: string
+  limit?: number
+  sort?: CollectionSortKeys
+}): Promise<ListCollectionsResponse> => {
   const response = await authApiClient.get<ListCollectionsResponse>(
-    `/v1/workspaces/${wid}/collections`
+    `/v1/workspaces/${wid}/collections`,
+    {
+      params: {
+        cursor,
+        limit,
+        sort,
+      },
+    }
   )
 
   return response.data
@@ -93,4 +115,36 @@ export const addNotesToCollection = async ({
   )
 
   return response.data
+}
+
+export const trashCollection = async ({
+  wid,
+  cid,
+}: {
+  wid: number
+  cid: number
+}): Promise<CollectionResponse> => {
+  const response = await authApiClient.delete<CollectionResponse>(
+    `/v1/workspaces/${wid}/collections/${cid}`
+  )
+
+  return response.data
+}
+
+export const trashCollectionMulti = async ({
+  wid,
+  cids,
+}: {
+  wid: number
+  cids: number[]
+}): Promise<void> => {
+  // DELETE /collections with query params cids=1&cids=2...
+  await authApiClient.delete<CollectionResponse>(
+    `/v1/workspaces/${wid}/collections`,
+    {
+      params: {
+        collectionsIds: cids,
+      },
+    }
+  )
 }
