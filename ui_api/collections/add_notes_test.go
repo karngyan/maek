@@ -59,5 +59,4 @@ func TestAddNotes(t *testing.T) {
 	assert.Equal(t, 200, rr.Code)
 
 	approvals.VerifyJSONBytes(t, rr.Body.Bytes())
-
 }

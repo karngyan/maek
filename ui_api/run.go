@@ -30,7 +30,7 @@ func Run(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 				zap.String("remote_ip", v.RemoteIP),
 				zap.String("method", v.Method),
 				zap.String("request_id", v.RequestID),
-				zap.String("ua", v.UserAgent),
+				// zap.String("ua", v.UserAgent),
 				zap.String("content_length", v.ContentLength),
 				zap.Int64("response_size", v.ResponseSize),
 			)
