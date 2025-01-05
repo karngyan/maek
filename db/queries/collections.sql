@@ -76,12 +76,12 @@ WHERE workspace_id = $1
     -- Sort by name (string)
     WHEN @sort_by = 'name' THEN
       CASE WHEN @sort_order = 'desc' THEN
-        CASE WHEN @cursor_name::TEXT != '' THEN
-          (name, id) < (@cursor_name::TEXT, @cursor_id::BIGINT)
+        CASE WHEN @cursor_name::VARCHAR != '' THEN
+          (name, id) < (@cursor_name::VARCHAR, @cursor_id::BIGINT)
         ELSE TRUE END
       ELSE
-        CASE WHEN @cursor_name::TEXT != '' THEN
-          (name, id) > (@cursor_name::TEXT, @cursor_id::BIGINT)
+        CASE WHEN @cursor_name::VARCHAR != '' THEN
+          (name, id) > (@cursor_name::VARCHAR, @cursor_id::BIGINT)
         ELSE TRUE END
       END
     ELSE TRUE
@@ -89,13 +89,12 @@ WHERE workspace_id = $1
   )
 ORDER BY
   CASE
-    WHEN @sort_by = 'updated' AND @sort_order = 'DESC' THEN updated END DESC,
+    WHEN @sort_by = 'updated' AND @sort_order = 'desc' THEN updated END DESC,
   CASE
-    WHEN @sort_by = 'updated' AND @sort_order = 'ASC' THEN updated END ASC,
+    WHEN @sort_by = 'updated' AND @sort_order = 'asc' THEN updated END ASC,
   CASE
-    WHEN @sort_by = 'name' AND @sort_order = 'DESC' THEN name END DESC,
+    WHEN @sort_by = 'name' AND @sort_order = 'desc' THEN name END DESC,
   CASE
-    WHEN @sort_by = 'name' AND @sort_order = 'ASC' THEN name END ASC,
+    WHEN @sort_by = 'name' AND @sort_order = 'asc' THEN name END ASC,
   id DESC -- Secondary sort by ID ensures stable ordering
 LIMIT $2;
-

@@ -141,12 +141,12 @@ WHERE workspace_id = $1
     -- Sort by name (string)
     WHEN $3 = 'name' THEN
       CASE WHEN $4 = 'desc' THEN
-        CASE WHEN $7::TEXT != '' THEN
-          (name, id) < ($7::TEXT, $6::BIGINT)
+        CASE WHEN $7::VARCHAR != '' THEN
+          (name, id) < ($7::VARCHAR, $6::BIGINT)
         ELSE TRUE END
       ELSE
-        CASE WHEN $7::TEXT != '' THEN
-          (name, id) > ($7::TEXT, $6::BIGINT)
+        CASE WHEN $7::VARCHAR != '' THEN
+          (name, id) > ($7::VARCHAR, $6::BIGINT)
         ELSE TRUE END
       END
     ELSE TRUE
@@ -154,13 +154,13 @@ WHERE workspace_id = $1
   )
 ORDER BY
   CASE
-    WHEN $3 = 'updated' AND $4 = 'DESC' THEN updated END DESC,
+    WHEN $3 = 'updated' AND $4 = 'desc' THEN updated END DESC,
   CASE
-    WHEN $3 = 'updated' AND $4 = 'ASC' THEN updated END ASC,
+    WHEN $3 = 'updated' AND $4 = 'asc' THEN updated END ASC,
   CASE
-    WHEN $3 = 'name' AND $4 = 'DESC' THEN name END DESC,
+    WHEN $3 = 'name' AND $4 = 'desc' THEN name END DESC,
   CASE
-    WHEN $3 = 'name' AND $4 = 'ASC' THEN name END ASC,
+    WHEN $3 = 'name' AND $4 = 'asc' THEN name END ASC,
   id DESC -- Secondary sort by ID ensures stable ordering
 LIMIT $2
 `
