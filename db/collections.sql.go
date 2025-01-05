@@ -125,6 +125,7 @@ SELECT id, name, description, created, updated, trashed, deleted,
 FROM collection
 WHERE workspace_id = $1
   AND deleted = false
+  AND trashed = false
   AND (
     -- Sort by updated timestamp
     CASE WHEN $3 = 'updated' THEN

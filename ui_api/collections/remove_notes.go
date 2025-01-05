@@ -34,5 +34,12 @@ func removeNotes(ctx web.Context) error {
 	}
 
 	rctx := ctx.Request().Context()
-	err := collections.
+	err := collections.RemoveNotesToCollection(rctx, wid, cid, req.NoteIDs)
+	if err != nil {
+		return ctx.InternalError(err)
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]any{
+		"message": "Notes removed from collection successfully",
+	})
 }

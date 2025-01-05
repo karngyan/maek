@@ -12,7 +12,7 @@ import (
 func trashBatch(ctx web.Context) error {
 
 	cids := make([]int64, 0)
-	echo.QueryParamsBinder(ctx).Int64s("cids", &cids)
+	echo.QueryParamsBinder(ctx).Int64s("cids[]", &cids)
 
 	if len(cids) == 0 {
 		return ctx.JSON(http.StatusBadRequest, map[string]any{
