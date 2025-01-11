@@ -7,10 +7,9 @@ import { Toaster } from '@/components/ui/toaster'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
-  title:
-    'maek.ai - note taking for the minimalist developer, entrepreneur, and creator',
+  title: 'maek',
   description:
-    'maek.ai is an open source note taking app for the minimalist. it is a simple, fast, and secure note taking app that is designed to help you focus on what matters most.',
+    'maek is an open source note taking app for the minimalist. it is a simple, fast, and secure note taking app that is designed to help you focus on what matters most.',
 }
 
 export default function RootLayout({

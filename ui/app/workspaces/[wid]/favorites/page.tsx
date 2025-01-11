@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'favorites - maek.ai',
+  title: 'maek',
 }
 
 export default function FavoritesPage() {

@@ -119,7 +119,7 @@ export default function WorkspacesHomeLayout({
           You&#39;ve been logged out. Please{' '}
           <Link
             href='/login'
-            className='dark:text-cyan-600 dark:hover:text-cyan-500'
+            className='dark:text-primary-600 dark:hover:text-primary-500'
           >
             login
           </Link>{' '}

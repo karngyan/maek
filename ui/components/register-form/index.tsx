@@ -158,7 +158,7 @@ export default function RegisterForm() {
                     accept: checked,
                   }))
                 }}
-                color='cyan'
+                color='primary'
                 name='accept'
               />
               <Label>accept terms of service + privacy policy</Label>
@@ -178,7 +178,7 @@ export default function RegisterForm() {
             already have an account?{' '}
             <Link
               href='/login'
-              className='font-semibold leading-6 text-cyan-400 hover:text-cyan-300'
+              className='font-semibold leading-6 text-primary-400 hover:text-cyan-300'
             >
               login here
             </Link>

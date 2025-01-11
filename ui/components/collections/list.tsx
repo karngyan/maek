@@ -212,7 +212,7 @@ function Row({ collection }: RowProps) {
               'transition-opacity duration-200 ease-in-out h-4 w-4 mb-0.5',
               isSelected ? 'block' : 'hidden group-hover:block'
             )}
-            color='cyan'
+            color='primary'
             defaultChecked={false}
             checked={isSelected}
             onChange={(checked: boolean) =>

@@ -16,7 +16,7 @@ export default function NotFound({ embed, statusCode }: NotFoundProps) {
         )}
       >
         <div className='text-center'>
-          <p className='text-base font-semibold text-cyan-600'>
+          <p className='text-base font-semibold text-primary-600'>
             {statusCode ?? 404}
           </p>
           <h1 className='mt-4 text-3xl font-bold tracking-tight text-zinc-400 sm:text-5xl'>

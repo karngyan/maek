@@ -115,7 +115,7 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
               'mr-3 transition-opacity duration-200 ease-in-out h-3 w-3 mb-0.5',
               isNoteSelected ? 'block' : 'hidden group-hover:block'
             )}
-            color='cyan'
+            color='primary'
             defaultChecked={false}
             checked={isNoteSelected}
             onChange={(checked: boolean) => onCheckboxClick(checked, note.uuid)}

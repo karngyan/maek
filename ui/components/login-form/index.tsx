@@ -136,7 +136,7 @@ export default function LoginForm() {
                     remember: checked,
                   }))
                 }}
-                color='cyan'
+                color='primary'
                 name='remember_me'
               />
               <Label>remember me</Label>
@@ -156,7 +156,7 @@ export default function LoginForm() {
             not a member?{' '}
             <Link
               href='/register'
-              className='font-semibold leading-6 text-cyan-400 hover:text-cyan-300'
+              className='font-semibold leading-6 text-primary-400 hover:text-cyan-300'
             >
               create a new account
             </Link>

@@ -18,7 +18,7 @@ export default function HomePage() {
         >
           <div className='flex lg:flex-1'>
             <Link href='/' className='-m-1.5 p-1.5'>
-              <span className='sr-only'>maek.ai</span>
+              <span className='sr-only'>maek</span>
               <LogoMaek className='h-6 w-auto' type='full' />
             </Link>
           </div>
@@ -32,7 +32,7 @@ export default function HomePage() {
           <div className='text-center'>
             <h1 className='text-4xl font-bold tracking-tight text-zinc-100 sm:text-6xl'>
               Effortless notes. Smarter{' '}
-              <span className='text-cyan-500'>AI search</span> for instant
+              <span className='text-primary-500'>AI search</span> for instant
               insights.
             </h1>
             <p className='mt-6 text-lg leading-8 text-zinc-400'>

@@ -2,10 +2,13 @@ import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import type React from 'react'
 
-export function CheckboxGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function CheckboxGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -24,7 +27,7 @@ export function CheckboxField({
 }: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
-      data-slot="field"
+      data-slot='field'
       {...props}
       className={clsx(
         className,
@@ -98,6 +101,8 @@ const colors = {
     '[--checkbox-check:theme(colors.white)] [--checkbox-checked-bg:theme(colors.emerald.600)] [--checkbox-checked-border:theme(colors.emerald.700/90%)]',
   teal: '[--checkbox-check:theme(colors.white)] [--checkbox-checked-bg:theme(colors.teal.600)] [--checkbox-checked-border:theme(colors.teal.700/90%)]',
   cyan: '[--checkbox-check:theme(colors.cyan.950)] [--checkbox-checked-bg:theme(colors.cyan.300)] [--checkbox-checked-border:theme(colors.cyan.400/80%)]',
+  primary:
+    '[--checkbox-check:theme(colors.primary.950)] [--checkbox-checked-bg:theme(colors.primary.300)] [--checkbox-checked-border:theme(colors.primary.400/80%)]',
   sky: '[--checkbox-check:theme(colors.white)] [--checkbox-checked-bg:theme(colors.sky.500)] [--checkbox-checked-border:theme(colors.sky.600/80%)]',
   blue: '[--checkbox-check:theme(colors.white)] [--checkbox-checked-bg:theme(colors.blue.600)] [--checkbox-checked-border:theme(colors.blue.700/90%)]',
   indigo:
@@ -124,31 +129,31 @@ export function Checkbox({
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   return (
     <Headless.Checkbox
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(className, 'group inline-flex focus:outline-none')}
     >
       <span className={clsx([base, colors[color]])}>
         <svg
-          className="size-4 stroke-[--checkbox-check] opacity-0 group-data-[checked]:opacity-100 sm:h-3.5 sm:w-3.5"
-          viewBox="0 0 14 14"
-          fill="none"
+          className='size-4 stroke-[--checkbox-check] opacity-0 group-data-[checked]:opacity-100 sm:h-3.5 sm:w-3.5'
+          viewBox='0 0 14 14'
+          fill='none'
         >
           {/* Checkmark icon */}
           <path
-            className="opacity-100 group-data-[indeterminate]:opacity-0"
-            d="M3 8L6 11L11 3.5"
+            className='opacity-100 group-data-[indeterminate]:opacity-0'
+            d='M3 8L6 11L11 3.5'
             strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            strokeLinecap='round'
+            strokeLinejoin='round'
           />
           {/* Indeterminate icon */}
           <path
-            className="opacity-0 group-data-[indeterminate]:opacity-100"
-            d="M3 7H11"
+            className='opacity-0 group-data-[indeterminate]:opacity-100'
+            d='M3 7H11'
             strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            strokeLinecap='round'
+            strokeLinejoin='round'
           />
         </svg>
       </span>

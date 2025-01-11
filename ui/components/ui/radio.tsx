@@ -4,10 +4,13 @@ import clsx from 'clsx'
 export function RadioGroup({
   className,
   ...props
-}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<
+  Headless.RadioGroupProps,
+  'as' | 'className'
+>) {
   return (
     <Headless.RadioGroup
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -26,7 +29,7 @@ export function RadioField({
 }: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
-      data-slot="field"
+      data-slot='field'
       {...props}
       className={clsx(
         className,
@@ -101,6 +104,8 @@ const colors = {
     '[--radio-checked-indicator:theme(colors.white)] [--radio-checked-bg:theme(colors.emerald.600)] [--radio-checked-border:theme(colors.emerald.700/90%)]',
   teal: '[--radio-checked-indicator:theme(colors.white)] [--radio-checked-bg:theme(colors.teal.600)] [--radio-checked-border:theme(colors.teal.700/90%)]',
   cyan: '[--radio-checked-bg:theme(colors.cyan.300)] [--radio-checked-border:theme(colors.cyan.400/80%)] [--radio-checked-indicator:theme(colors.cyan.950)]',
+  primary:
+    '[--radio-checked-bg:theme(colors.primary.300)] [--radio-checked-border:theme(colors.primary.400/80%)] [--radio-checked-indicator:theme(colors.primary.950)]',
   sky: '[--radio-checked-indicator:theme(colors.white)] [--radio-checked-bg:theme(colors.sky.500)] [--radio-checked-border:theme(colors.sky.600/80%)]',
   blue: '[--radio-checked-indicator:theme(colors.white)] [--radio-checked-bg:theme(colors.blue.600)] [--radio-checked-border:theme(colors.blue.700/90%)]',
   indigo:
@@ -121,9 +126,16 @@ export function Radio({
   color = 'dark/zinc',
   className,
   ...props
-}: { color?: Color; className?: string } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
+}: { color?: Color; className?: string } & Omit<
+  Headless.RadioProps,
+  'as' | 'className' | 'children'
+>) {
   return (
-    <Headless.Radio data-slot="control" {...props} className={clsx(className, 'group inline-flex focus:outline-none')}>
+    <Headless.Radio
+      data-slot='control'
+      {...props}
+      className={clsx(className, 'group inline-flex focus:outline-none')}
+    >
       <span className={clsx([base, colors[color]])}>
         <span
           className={clsx(

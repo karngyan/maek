@@ -2,10 +2,13 @@ import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import type React from 'react'
 
-export function SwitchGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function SwitchGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -24,7 +27,7 @@ export function SwitchField({
 }: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
-      data-slot="field"
+      data-slot='field'
       {...props}
       className={clsx(
         className,
@@ -100,6 +103,10 @@ const colors = {
     '[--switch-bg-ring:theme(colors.cyan.400/80%)] [--switch-bg:theme(colors.cyan.300)] dark:[--switch-bg-ring:transparent]',
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:theme(colors.cyan.950)]',
   ],
+  primary: [
+    '[--switch-bg-ring:theme(colors.primary.400/80%)] [--switch-bg:theme(colors.primary.300)] dark:[--switch-bg-ring:transparent]',
+    '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:theme(colors.primary.950)]',
+  ],
   sky: [
     '[--switch-bg-ring:theme(colors.sky.600/80%)] [--switch-bg:theme(colors.sky.500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:theme(colors.sky.600/80%)] [--switch-shadow:theme(colors.sky.900/20%)]',
@@ -146,7 +153,7 @@ export function Switch({
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Switch
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -173,7 +180,7 @@ export function Switch({
       )}
     >
       <span
-        aria-hidden="true"
+        aria-hidden='true'
         className={clsx(
           // Basic layout
           'pointer-events-none relative inline-block size-[1.125rem] rounded-full sm:size-3.5',

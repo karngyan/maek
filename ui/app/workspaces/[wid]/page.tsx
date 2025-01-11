@@ -3,7 +3,7 @@ import QuickCreateInp from '@/components/quick-create/inp'
 import NotesList from '@/components/notes-list'
 
 export const metadata: Metadata = {
-  title: 'home - maek.ai',
+  title: 'maek',
 }
 
 export default function WorkspaceHomePage() {
