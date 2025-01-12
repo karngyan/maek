@@ -13,6 +13,14 @@ import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspac
 import { useDeleteNoteMulti } from '@/queries/hooks/notes'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
+import { Squares2X2Icon } from '@heroicons/react/24/outline'
+import { useAddNotesToCollection } from '@/queries/hooks/collections'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 const NotesListBatchSelectActions = () => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
@@ -40,6 +48,7 @@ const NotesListBatchSelectActions = () => {
       setNoteMeta(newMeta)
     },
   })
+  const { mutate: addNotesToCollection } = useAddNotesToCollection()
 
   const wid = useCurrentWorkspaceId()
 
@@ -70,6 +79,30 @@ const NotesListBatchSelectActions = () => {
     setIsDeleteConfirmAlertOpen(true)
   }
 
+  const onAddToCollectionClick = () => {
+    const noteIDs = []
+    for (const key in noteMeta) {
+      if (noteMeta[key].isSelected) {
+        noteIDs.push(noteMeta[key].id)
+      }
+    }
+
+    // TODO implement more
+  }
+
+  useHotkeys('esc', () => {
+    if (!showActions) {
+      return
+    }
+
+    // alert is handled by headless ui
+    if (isDeleteConfirmAlertOpen) {
+      return
+    }
+
+    deselectAll()
+  })
+
   if (!showActions) {
     return null
   }
@@ -86,9 +119,36 @@ const NotesListBatchSelectActions = () => {
             <Button plain onClick={deselectAll} className='text-sm h-7'>
               deselect
             </Button>
-            <Button outline className='h-7 text-sm' onClick={deleteAll}>
-              <TrashIcon />
-            </Button>
+            <div className='space-x-2 border-l border-zinc-800 pl-4 '>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    outline
+                    className='h-7 text-sm'
+                    onClick={onAddToCollectionClick}
+                  >
+                    <Squares2X2Icon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                    <p className='text-xs text-zinc-400'>add to collection</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button outline className='h-7 text-sm' onClick={deleteAll}>
+                    <TrashIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                    <p className='text-xs text-zinc-400'>delete</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>

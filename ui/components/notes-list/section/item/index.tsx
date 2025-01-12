@@ -59,7 +59,7 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
     deleteNote({ workspaceId: note.workspaceId, noteUuid: note.uuid })
   }
 
-  const onCheckboxClick = (checked: boolean, uuid: string) => {
+  const onCheckboxClick = (checked: boolean, uuid: string, id: number) => {
     const currentState = noteMeta[note.uuid]?.isSelected === true
     if (currentState === checked) {
       return
@@ -70,6 +70,7 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
       [uuid]: {
         ...noteMeta[uuid],
         isSelected: checked,
+        id,
       },
     })
   }
@@ -118,7 +119,9 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
             color='primary'
             defaultChecked={false}
             checked={isNoteSelected}
-            onChange={(checked: boolean) => onCheckboxClick(checked, note.uuid)}
+            onChange={(checked: boolean) =>
+              onCheckboxClick(checked, note.uuid, note.id)
+            }
           />
         </div>
         <div className='grow text-sm truncate text-zinc-400'>{title}</div>

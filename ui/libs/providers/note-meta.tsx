@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 type NoteMeta = {
   isSelected: boolean
+  id: number
 }
 
 // uuid -> NoteMeta
