@@ -17,7 +17,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { notesKeys } from '@/queries/hooks/notes'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 
 const collectionKeys = {
   all: ['collections'] as const,
@@ -122,7 +122,6 @@ export const useTrashCollection = ({
   onSuccess?: () => unknown
 }) => {
   const qc = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: trashCollection,
@@ -130,8 +129,7 @@ export const useTrashCollection = ({
       if (onSuccess) onSuccess()
     },
     onError: (error) => {
-      toast({
-        title: 'failed to delete note',
+      toast.error('failed to delete note', {
         description: error.toString(),
       })
     },
@@ -147,7 +145,6 @@ export const useTrashCollectionMulti = ({
   onSuccess?: () => unknown
 }) => {
   const qc = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: trashCollectionMulti,
@@ -155,8 +152,7 @@ export const useTrashCollectionMulti = ({
       if (onSuccess) onSuccess()
     },
     onError: (error) => {
-      toast({
-        title: 'failed to delete notes',
+      toast.error('failed to delete notes', {
         description: error.toString(),
       })
     },

@@ -25,7 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 import {
   Alert,
   AlertTitle,
@@ -40,7 +40,6 @@ type NotesListSectionItemProps = {
 }
 
 const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
-  const { toast } = useToast()
   const { noteMeta, setNoteMeta } = useNoteMeta()
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
@@ -79,8 +78,7 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
     e.stopPropagation()
     const url = `${window.location.origin}/workspaces/${note.workspaceId}/notes/${note.uuid}`
     navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: 'link copied to clipboard',
+      toast('link copied to clipboard', {
         description: url,
       })
     })

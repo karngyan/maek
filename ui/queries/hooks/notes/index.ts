@@ -12,7 +12,7 @@ import {
   deleteNote,
   deleteNoteMulti,
 } from '@/queries/services/note'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 
 export const notesKeys = {
   all: ['notes'] as const,
@@ -87,7 +87,6 @@ export const useUpsertNote = () => {
 
 export const useDeleteNote = ({ onSuccess }: { onSuccess?: () => unknown }) => {
   const qc = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: deleteNote,
@@ -95,8 +94,7 @@ export const useDeleteNote = ({ onSuccess }: { onSuccess?: () => unknown }) => {
       if (onSuccess) onSuccess()
     },
     onError: (error) => {
-      toast({
-        title: 'failed to delete note',
+      toast('failed to delete note', {
         description: error.toString(),
       })
     },
@@ -112,16 +110,13 @@ export const useDeleteNoteMulti = ({
   onSuccess?: () => unknown
 }) => {
   const qc = useQueryClient()
-  const { toast } = useToast()
-
   return useMutation({
     mutationFn: deleteNoteMulti,
     onSuccess: () => {
       if (onSuccess) onSuccess()
     },
     onError: (error) => {
-      toast({
-        title: 'failed to delete notes',
+      toast.error('failed to delete notes', {
         description: error.toString(),
       })
     },

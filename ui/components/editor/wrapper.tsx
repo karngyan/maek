@@ -19,7 +19,7 @@ import {
   DropdownItem,
   DropdownMenu,
 } from '@/components/ui/dropdown'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 import { useFetchNote, useUpsertNote } from '@/queries/hooks/notes'
 import { useDebounceCallback } from '@react-hook/debounce'
 import dayjs from 'dayjs'
@@ -60,7 +60,6 @@ export const EditorWrapper = ({
   exitHref,
   onUpsertNote,
 }: EditorWrapperProps) => {
-  const { toast } = useToast()
   const router = useRouter()
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
@@ -119,8 +118,7 @@ export const EditorWrapper = ({
   const onCopyMaekLinkClick = () => {
     const url = `${window.location.origin}/workspaces/${workspaceId}/notes/${noteUuid}`
     navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: 'link copied to clipboard',
+      toast('link copied to clipboard', {
         description: url,
       })
     })

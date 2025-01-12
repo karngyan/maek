@@ -7,33 +7,39 @@ import {
   AlertActions,
 } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 import { useNoteMeta } from '@/libs/providers/note-meta'
 import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
 import { useDeleteNoteMulti } from '@/queries/hooks/notes'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
-import { useAddNotesToCollection } from '@/queries/hooks/collections'
+import { useAddNotesToCollection, useFetchAllCollections } from '@/queries/hooks/collections'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { CollectionSortKeys } from '@/queries/services/collection'
 
 const NotesListBatchSelectActions = () => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
-  const { toast } = useToast()
+  const wid = useCurrentWorkspaceId()
+
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
+  const [isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen] =
+    useState(false)
+  const [selectedCollectionId, setSelectedCollectionId] = useState(0)
+  const { data: collectionInfResponse } = useFetchAllCollections(wid, CollectionSortKeys.UpdatedDsc)
+
   const { mutate: deleteNoteMulti } = useDeleteNoteMulti({
     onSuccess: () => {
       setIsDeleteConfirmAlertOpen(false)
-      toast({
-        title:
-          `trashed ${selectedNotesLen} note` +
-          (selectedNotesLen > 1 ? 's' : ''),
+      toast(`trashed ${selectedNotesLen} note` +
+          (selectedNotesLen > 1 ? 's' : ''), {
         description:
           'you can restore them from trash, or delete them permanently',
       })
@@ -50,7 +56,9 @@ const NotesListBatchSelectActions = () => {
   })
   const { mutate: addNotesToCollection } = useAddNotesToCollection()
 
-  const wid = useCurrentWorkspaceId()
+  const allCollections = useMemo(() => {
+    return collectionInfResponse?.pages.map((page) => page.collections).flat()
+  }, [collectionInfResponse])
 
   const showActions = useMemo(() => {
     return Object.values(noteMeta).some((meta) => meta.isSelected)
@@ -79,7 +87,11 @@ const NotesListBatchSelectActions = () => {
     setIsDeleteConfirmAlertOpen(true)
   }
 
-  const onAddToCollectionClick = () => {
+  const onConfirmAddToCollection = () => {
+    if (selectedCollectionId <= 0) {
+      return
+    }
+
     const noteIDs = []
     for (const key in noteMeta) {
       if (noteMeta[key].isSelected) {
@@ -87,7 +99,21 @@ const NotesListBatchSelectActions = () => {
       }
     }
 
-    // TODO implement more
+    
+    addNotesToCollection({
+      wid,
+      cid: selectedCollectionId,
+      nids: noteIDs,
+    }, {
+      onSuccess: () => {        
+        setIsAddToCollectionDialogOpen(false)
+        toast(`added ${selectedNotesLen} note` + (selectedNotesLen > 1 ? 's' : '') + ' to collection', {
+          description: 'you can view them in the collection',
+        })
+        setSelectedCollectionId(0)
+        deselectAll()
+      }
+    })
   }
 
   useHotkeys('esc', () => {
@@ -125,7 +151,7 @@ const NotesListBatchSelectActions = () => {
                   <Button
                     outline
                     className='h-7 text-sm'
-                    onClick={onAddToCollectionClick}
+                    onClick={() => setIsAddToCollectionDialogOpen(true)}
                   >
                     <Squares2X2Icon />
                   </Button>
@@ -172,6 +198,22 @@ const NotesListBatchSelectActions = () => {
           </Button>
         </AlertActions>
       </Alert>
+      <Dialog
+        open={isAddToCollectionDialogOpen}
+        onClose={() => setIsAddToCollectionDialogOpen(false)}
+      >
+        <DialogTitle>select collection</DialogTitle>
+        <DialogDescription>{`add ${selectedNotesLen} note(s) to a collection`}</DialogDescription>
+        <DialogBody>
+
+        </DialogBody>
+        <DialogActions>
+          <Button plain onClick={() => setIsAddToCollectionDialogOpen(false)}>
+            cancel
+          </Button>
+          <Button onClick={onConfirmAddToCollection}>confirm</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

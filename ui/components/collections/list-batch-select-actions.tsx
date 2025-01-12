@@ -7,7 +7,7 @@ import {
   AlertActions,
 } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 import { useCollectionMeta } from '@/libs/providers/collection-meta'
 import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
 import { useTrashCollectionMulti } from '@/queries/hooks/collections'
@@ -16,15 +16,12 @@ import { useMemo, useState } from 'react'
 
 const CollectionsListBatchSelectActions = () => {
   const { collectionMeta, setCollectionMeta } = useCollectionMeta()
-  const { toast } = useToast()
   const [isTrashConfirmAlertOpen, setIsTrashConfirmAlertOpen] = useState(false)
   const { mutate: deleteCollectionMulti } = useTrashCollectionMulti({
     onSuccess: () => {
       setIsTrashConfirmAlertOpen(false)
-      toast({
-        title:
-          `trashed ${selectedCollectionsLen} collection` +
-          (selectedCollectionsLen > 1 ? 's' : ''),
+      toast(`trashed ${selectedCollectionsLen} collection` +
+          (selectedCollectionsLen > 1 ? 's' : ''), {
         description:
           'you can restore them from trash, or delete them permanently',
       })

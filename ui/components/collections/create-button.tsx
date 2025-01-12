@@ -4,14 +4,13 @@ import { Button } from '@/components/ui/button'
 import { PlusIcon } from '@heroicons/react/16/solid'
 import { useCreateCollection } from '@/queries/hooks/collections'
 import { useParams, useRouter } from 'next/navigation'
-import { useToast } from '@/components/ui/hooks/use-toast'
+import { toast } from 'sonner'
 import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
 
 export default function CollectionsCreateButton() {
   const { mutate: createCollection, isPending } = useCreateCollection()
   const params = useParams<{ wid: string }>()
   const router = useRouter()
-  const { toast } = useToast()
   const wid = useCurrentWorkspaceId()
 
   const onCreateClick = () => {
@@ -21,8 +20,7 @@ export default function CollectionsCreateButton() {
         router.push(`/workspaces/${params.wid}/collections/${collection.id}`)
       },
       onError: (data) => {
-        toast({
-          title: 'failed to create collection',
+        toast.error('failed to create collection', {
           description: data.message,
         })
       },
