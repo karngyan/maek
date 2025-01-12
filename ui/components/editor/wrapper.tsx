@@ -44,6 +44,8 @@ type EditorWrapperProps = {
     id: string
     placement: 'end' | 'start'
   }
+  exitHref?: string
+  onUpsertNote?: (noteId: number) => void
 }
 
 const BlockNoteEditor = dynamic<BlockNoteEditorProps>(
@@ -55,12 +57,15 @@ export const EditorWrapper = ({
   workspaceId,
   noteUuid,
   initialFocusOption,
+  exitHref,
+  onUpsertNote,
 }: EditorWrapperProps) => {
   const { toast } = useToast()
   const router = useRouter()
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
+  const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}`
 
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote({
@@ -92,10 +97,19 @@ export const EditorWrapper = ({
 
     const hasMeta = getHasMeta(newNote) // a little too expensive, may be we should move this to the server or use a more efficient way to update this
 
-    upsertNote({
-      ...newNote,
-      ...hasMeta,
-    })
+    upsertNote(
+      {
+        ...newNote,
+        ...hasMeta,
+      },
+      {
+        onSettled: (noteResp) => {
+          if (onUpsertNote && noteResp) {
+            onUpsertNote(noteResp.note.id)
+          }
+        },
+      }
+    )
   }, 600)
 
   const handleOnChangeDom = (dom: Block[]) => {
@@ -143,7 +157,7 @@ export const EditorWrapper = ({
   return (
     <div className='max-w-4xl mx-auto relative shrink-0 w-full grow-0 h-[calc(100vh-144px)] border border-dashed border-zinc-800 rounded-xl overflow-scroll'>
       <div className='sticky top-0 z-10 backdrop-blur-sm bg-zinc-900/60 flex flex-row justify-between p-6'>
-        <Button plain className='h-8' href={`/workspaces/${workspaceId}`}>
+        <Button plain className='h-8' href={exitHrefPath}>
           <ArrowLeftIcon className='h-6' />
           <span className='text-zinc-400'>exit</span>
         </Button>

@@ -41,14 +41,18 @@ export default function NoteIdPage({
     return data?.notes ?? []
   }, [data])
 
-  const [name, setName] = useState(() => collection?.name)
-  const [description, setDescription] = useState(() => collection?.description)
+  const [name, setName] = useState(() => collection?.name ?? '')
+  const [description, setDescription] = useState(
+    () => collection?.description ?? ''
+  )
 
   const { mutate: updateCollection } = useUpdateCollection()
 
   useEffect(() => {
-    setName(collection?.name)
-    setDescription(collection?.description)
+    if (!collection) return
+
+    setName(collection.name)
+    setDescription(collection.description)
   }, [collection])
 
   const onDeleteClick = () => {}
@@ -62,12 +66,12 @@ export default function NoteIdPage({
     })
   }, 600)
 
-  const onNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value)
     debouncedUpdate()
   }
 
-  const onDescriptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value)
     debouncedUpdate()
   }
@@ -120,7 +124,7 @@ export default function NoteIdPage({
               alt='collection name'
               placeholder='collection name'
               value={name}
-              onInput={onNameInput}
+              onChange={onNameChange}
               className='w-1/3 px-1.5 py-0.5 text-lg truncate outline-none rounded hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-none focus:border-transparent border-transparent focus:ring-0 text-zinc-300 font-semibold'
             />
             <input
@@ -128,7 +132,7 @@ export default function NoteIdPage({
               alt='collection description'
               placeholder='add a description'
               value={description}
-              onInput={onDescriptionInput}
+              onChange={onDescriptionChange}
               className='w-2/3 text-sm px-1.5 py-0.5 truncate outline-none rounded hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-none focus:border-transparent border-transparent focus:ring-0 text-zinc-400'
             />
           </div>
@@ -136,7 +140,7 @@ export default function NoteIdPage({
       </div>
 
       <div className='mt-4'>
-        <CollectionNotesList notes={notes} />
+        <CollectionNotesList notes={notes} cid={collectionId} />
       </div>
     </>
   )
