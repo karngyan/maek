@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   useFetchCollection,
+  useTrashCollection,
   useUpdateCollection,
 } from '@/queries/hooks/collections'
 import NotFound from '@/app/not-found'
@@ -21,6 +22,9 @@ import {
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
 import { useDebounceCallback } from '@react-hook/debounce'
 import CollectionNotesList from '@/components/collections/notes-list'
+import { Alert, AlertActions, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export default function NoteIdPage({
   params,
@@ -29,6 +33,7 @@ export default function NoteIdPage({
 }) {
   const workspaceId = +params.wid
   const collectionId = +params.cid
+  const router = useRouter()
 
   const { data, isPending, isError } = useFetchCollection(
     workspaceId,
@@ -41,10 +46,22 @@ export default function NoteIdPage({
     return data?.notes ?? []
   }, [data])
 
+
   const [name, setName] = useState(() => collection?.name ?? '')
   const [description, setDescription] = useState(
     () => collection?.description ?? ''
   )
+  const [isTrashConfirmAlertOpen, setIsTrashConfirmAlertOpen] = useState(false)
+  const { mutate: deleteCollection } = useTrashCollection({
+    onSuccess: () => {
+      setIsTrashConfirmAlertOpen(false)
+      toast('trashed  collection', {
+        description:
+          'you can restore it from trash, or delete permanently',
+      })
+      router.replace(`/workspaces/${workspaceId}/collections`)
+    },
+  })
 
   const { mutate: updateCollection } = useUpdateCollection()
 
@@ -55,7 +72,9 @@ export default function NoteIdPage({
     setDescription(collection.description)
   }, [collection])
 
-  const onDeleteClick = () => {}
+  const onDeleteClick = () => {
+    setIsTrashConfirmAlertOpen(true)
+  }
 
   const debouncedUpdate = useDebounceCallback(() => {
     updateCollection({
@@ -74,6 +93,10 @@ export default function NoteIdPage({
   const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value)
     debouncedUpdate()
+  }
+
+  const deleteAllConfirm = () => {
+    deleteCollection({ wid: workspaceId, cid: collectionId })
   }
 
   if (isError) {
@@ -142,6 +165,27 @@ export default function NoteIdPage({
       <div className='mt-4'>
         <CollectionNotesList notes={notes} cid={collectionId} />
       </div>
+
+      <Alert
+        open={isTrashConfirmAlertOpen}
+        onClose={setIsTrashConfirmAlertOpen}
+      >
+        <AlertTitle>
+          are you sure you want to delete <span className='underline underline-offset-2'>{collection?.name ?? 'untitled collection'}</span>?
+        </AlertTitle>
+        <AlertDescription>
+          it will be moved to trash and will be there for 30 days. you can
+          restore it within that period.
+        </AlertDescription>
+        <AlertActions>
+          <Button plain onClick={() => setIsTrashConfirmAlertOpen(false)}>
+            cancel
+          </Button>
+          <Button color='red' onClick={deleteAllConfirm}>
+            delete
+          </Button>
+        </AlertActions>
+      </Alert>
     </>
   )
 }

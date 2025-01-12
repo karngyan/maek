@@ -24,9 +24,11 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Collection, CollectionSortKeys } from '@/queries/services/collection'
 import { Combobox } from '@/components/ui/combobox'
+import { useRouter } from 'next/navigation'
 
 const NotesListBatchSelectActions = () => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
+  const router = useRouter()
   const wid = useCurrentWorkspaceId()
 
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
@@ -109,7 +111,13 @@ const NotesListBatchSelectActions = () => {
       onSuccess: () => {        
         setIsAddToCollectionDialogOpen(false)
         toast(`added ${selectedNotesLen} note` + (selectedNotesLen > 1 ? 's' : '') + ' to collection', {
-          description: 'you can view them in the collection',
+          description: 'you can view them in there',
+          action: {
+            label: 'view',
+            onClick: () => {
+              router.push(`/workspaces/${wid}/collections/${selectedCollectionId}`)
+            },
+          },
         })
         setSelectedCollectionId(0)
         deselectAll()
