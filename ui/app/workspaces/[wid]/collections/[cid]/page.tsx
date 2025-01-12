@@ -25,6 +25,13 @@ import CollectionNotesList from '@/components/collections/notes-list'
 import { Alert, AlertActions, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { defaultNewNote } from '@/libs/utils/note'
+import { notesKeys } from '@/queries/hooks/notes'
+import { v4 as uuidv4 } from 'uuid'
+import { PlusIcon } from '@heroicons/react/16/solid'
+import { useQueryClient } from '@tanstack/react-query'
+import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
+import { SimpleTooltipContent, Tooltip, TooltipTrigger } from '@/components/ui/tooltip'
 
 export default function NoteIdPage({
   params,
@@ -45,6 +52,7 @@ export default function NoteIdPage({
   const notes = useMemo(() => {
     return data?.notes ?? []
   }, [data])
+  const { data: authInfoResponse } = useAuthInfo()
 
 
   const [name, setName] = useState(() => collection?.name ?? '')
@@ -85,6 +93,21 @@ export default function NoteIdPage({
     })
   }, 600)
 
+  const qc = useQueryClient()
+
+  const onCreateNewNote = () => {
+    const nuuid = uuidv4()
+
+    qc.setQueryData(notesKeys.one(workspaceId, nuuid), {
+      note: defaultNewNote(nuuid, workspaceId, '', authInfoResponse!.user),
+    })
+
+    const sp = new URLSearchParams()
+    sp.set('cid', String(collectionId))
+    sp.set('action', 'add')
+    router.push(`/workspaces/${workspaceId}/notes/${nuuid}?${sp.toString()}`)
+  }
+
   const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value)
     debouncedUpdate()
@@ -122,17 +145,32 @@ export default function NoteIdPage({
           <ArrowLeftIcon className='h-6' />
           <span className='text-zinc-400'>back</span>
         </Button>
-        <Dropdown>
-          <DropdownButton plain className='h-8'>
-            <EllipsisHorizontalIcon className='h-6' />
-          </DropdownButton>
-          <DropdownMenu anchor='bottom end'>
-            <DropdownItem onClick={onDeleteClick}>
-              <TrashIcon />
-              delete collection
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <div className='space-x-2'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                plain
+                className='h-8'
+                onClick={onCreateNewNote}
+                aria-label='create new note'
+              >
+                <PlusIcon className='h-6' />
+              </Button>
+            </TooltipTrigger>
+            <SimpleTooltipContent label='create new note' />
+          </Tooltip>
+          <Dropdown>
+            <DropdownButton plain className='h-8'>
+              <EllipsisHorizontalIcon className='h-6' />
+            </DropdownButton>
+            <DropdownMenu anchor='bottom end'>
+              <DropdownItem onClick={onDeleteClick}>
+                <TrashIcon />
+                delete collection
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
       </div>
 
       <div className='mt-4'>
@@ -163,7 +201,7 @@ export default function NoteIdPage({
       </div>
 
       <div className='mt-4'>
-        <CollectionNotesList notes={notes} cid={collectionId} />
+        <CollectionNotesList notes={notes} cid={collectionId} onCreateNewNote={onCreateNewNote} />
       </div>
 
       <Alert

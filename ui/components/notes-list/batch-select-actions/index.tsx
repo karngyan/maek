@@ -16,8 +16,8 @@ import { useMemo, useState } from 'react'
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
 import { useAddNotesToCollection, useFetchAllCollections } from '@/queries/hooks/collections'
 import {
+  SimpleTooltipContent,
   Tooltip,
-  TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -165,11 +165,7 @@ const NotesListBatchSelectActions = () => {
                     <Squares2X2Icon />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
-                    <p className='text-xs text-zinc-400'>add to collection</p>
-                  </div>
-                </TooltipContent>
+                <SimpleTooltipContent label='add to collection' />
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -177,11 +173,7 @@ const NotesListBatchSelectActions = () => {
                     <TrashIcon />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
-                    <p className='text-xs text-zinc-400'>delete</p>
-                  </div>
-                </TooltipContent>
+                <SimpleTooltipContent label='delete' />
               </Tooltip>
             </div>
           </div>

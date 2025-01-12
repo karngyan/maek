@@ -28,4 +28,12 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+const SimpleTooltipContent = ({ label, side = 'bottom' }: { label: string; side?: 'bottom' | 'left' | 'right' | 'top'}) => (
+  <TooltipContent side={side}>
+    <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+      <p className='text-xs text-zinc-400'>{label}</p>
+    </div>
+  </TooltipContent>
+)
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, SimpleTooltipContent }

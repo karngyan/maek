@@ -4,41 +4,20 @@ import { Note } from '@/queries/services/note'
 import { RectangleStackIcon } from '@heroicons/react/16/solid'
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
-import { v4 as uuidv4 } from 'uuid'
-import { notesKeys } from '@/queries/hooks/notes'
-import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
-import { useQueryClient } from '@tanstack/react-query'
-import { defaultNewNote } from '@/libs/utils/note'
-import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
-import { useRouter } from 'next/navigation'
+import CollectionNotesListItem from './item'
 
 type CollectionNotesListProps = {
   cid: number
   notes: Note[]
+  onCreateNewNote: () => unknown
 }
 
 export default function CollectionNotesList({
   cid,
   notes,
+  onCreateNewNote,
 }: CollectionNotesListProps) {
-  const router = useRouter()
   const isNotesEmpty = notes.length === 0
-  const wid = useCurrentWorkspaceId()
-  const qc = useQueryClient()
-  const { data } = useAuthInfo()
-
-  const onCreateNewNote = () => {
-    const nuuid = uuidv4()
-
-    qc.setQueryData(notesKeys.one(wid, nuuid), {
-      note: defaultNewNote(nuuid, wid, '', data!.user),
-    })
-
-    const sp = new URLSearchParams()
-    sp.set('cid', String(cid))
-    sp.set('action', 'add')
-    router.push(`/workspaces/${wid}/notes/${nuuid}?${sp.toString()}`)
-  }
 
   if (isNotesEmpty) {
     return (
@@ -52,5 +31,11 @@ export default function CollectionNotesList({
     )
   }
 
-  return <></>
+  return <div className='mt-2'>
+    {notes?.map((note) => (
+      <div key={note.uuid}>
+        <CollectionNotesListItem note={note} cid={cid} />
+      </div>
+    ))}
+  </div>
 }

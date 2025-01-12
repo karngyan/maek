@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/libs/utils'
 
 type NotFoundProps = {
   embed?: boolean
@@ -10,7 +10,7 @@ export default function NotFound({ embed, statusCode }: NotFoundProps) {
   return (
     <>
       <main
-        className={clsx(
+        className={cn(
           'grid place-items-center bg-zinc-900 px-6 py-24 sm:py-64 lg:px-8',
           embed ? 'min-h-full' : 'min-h-screen'
         )}
