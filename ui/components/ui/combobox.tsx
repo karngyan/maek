@@ -110,7 +110,6 @@ function ComboboxComponent<T extends object>(
                           'absolute inset-y-0 right-0 items-center pr-4 text-primary-600',
                           focus ? 'text-white' : '',
                           selected ? 'flex' : 'hidden',
-                          !selected && 'hidden'
                         )}
                       >
                         <CheckIcon className="size-5" aria-hidden="true" />

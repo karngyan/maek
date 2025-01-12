@@ -32,7 +32,7 @@ const NotesListBatchSelectActions = () => {
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
   const [isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen] =
-    useState(true)
+    useState(false)
   const [selectedCollectionId, setSelectedCollectionId] = useState(0)
   const { data: collectionInfResponse } = useFetchAllCollections(wid, CollectionSortKeys.UpdatedDsc)
 
