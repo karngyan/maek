@@ -22,7 +22,8 @@ import {
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { CollectionSortKeys } from '@/queries/services/collection'
+import { Collection, CollectionSortKeys } from '@/queries/services/collection'
+import { Combobox } from '@/components/ui/combobox'
 
 const NotesListBatchSelectActions = () => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
@@ -31,7 +32,7 @@ const NotesListBatchSelectActions = () => {
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
   const [isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen] =
-    useState(false)
+    useState(true)
   const [selectedCollectionId, setSelectedCollectionId] = useState(0)
   const { data: collectionInfResponse } = useFetchAllCollections(wid, CollectionSortKeys.UpdatedDsc)
 
@@ -57,7 +58,7 @@ const NotesListBatchSelectActions = () => {
   const { mutate: addNotesToCollection } = useAddNotesToCollection()
 
   const allCollections = useMemo(() => {
-    return collectionInfResponse?.pages.map((page) => page.collections).flat()
+    return collectionInfResponse?.pages.map((page) => page.collections).flat() ?? []
   }, [collectionInfResponse])
 
   const showActions = useMemo(() => {
@@ -205,7 +206,21 @@ const NotesListBatchSelectActions = () => {
         <DialogTitle>select collection</DialogTitle>
         <DialogDescription>{`add ${selectedNotesLen} note(s) to a collection`}</DialogDescription>
         <DialogBody>
+          <Combobox<Collection>
+            items={allCollections}
+            idForItem={(item) => `${item.id}`}
+            displayValue={({ name }) => {
+              if (name == '') {
+                return '# untitled collection'
+              }
 
+              return `# ${name}`
+            }}
+            onChange={(item) => {
+              setSelectedCollectionId(item?.id ?? 0)
+            }}
+            placeholder='search collection ...'
+          />
         </DialogBody>
         <DialogActions>
           <Button plain onClick={() => setIsAddToCollectionDialogOpen(false)}>
