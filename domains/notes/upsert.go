@@ -3,6 +3,7 @@ package notes
 import (
 	"context"
 	"errors"
+	"github.com/vertica/vertica-sql-go/logger"
 
 	"github.com/jackc/pgx/v5"
 
@@ -130,6 +131,12 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			WorkspaceID:    note.WorkspaceID,
 			Updated:        note.Updated,
 		})
+
+		_, err := q.AddEmbeddingJobs(note.ID, note.WorkspaceID, req.Content)
+
+		if err != nil {
+			return err
+		}
 	})
 	if err != nil {
 		return nil, err
