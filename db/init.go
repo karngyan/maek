@@ -128,7 +128,9 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 		return err
 	}
 
-	err = migrate(ctx, l, defaultPgxPool)
+	// needed just for the CREATE EXTENSION call in the migrations
+	// https://stackoverflow.com/questions/63104126/create-extention-if-not-exists-doesnt-really-check-if-extention-does-not-exis
+	err = migrateWithSessionLock(ctx, l, defaultPgxPool)
 	if err != nil {
 		l.Error("error applying schema", zap.Error(err))
 		return err
