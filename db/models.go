@@ -28,13 +28,6 @@ type CollectionNote struct {
 	Trashed      pgtype.Bool
 }
 
-type GooseDbVersion struct {
-	ID        int32
-	VersionID int64
-	IsApplied bool
-	Tstamp    pgtype.Timestamp
-}
-
 type Note struct {
 	ID             int64
 	UUID           string

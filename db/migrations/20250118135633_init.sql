@@ -1,5 +1,5 @@
--- +goose up
--- +goose statementbegin
+-- +goose Up
+-- +goose StatementBegin
 -- workspace table
 CREATE TABLE IF NOT EXISTS workspace
 (
@@ -117,7 +117,7 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace
 CREATE INDEX IF NOT EXISTS idx_collection_workspace_deleted
     ON collection (workspace_id, deleted);
 
--- collection notes table
+-- collection_notes table
 CREATE TABLE IF NOT EXISTS collection_notes
 (
     id            BIGSERIAL PRIMARY KEY,
@@ -131,10 +131,10 @@ CREATE INDEX IF NOT EXISTS idx_collection_notes_collection
 
 CREATE INDEX IF NOT EXISTS idx_collection_notes_note
     ON collection_notes (note_id);
--- +goose statementend
+-- +goose StatementEnd
 
--- +goose down
--- +goose statementbegin
+-- +goose Down
+-- +goose StatementBegin
 DROP TABLE IF EXISTS collection_notes;
 DROP TABLE IF EXISTS collection;
 DROP TABLE IF EXISTS note;
@@ -142,5 +142,4 @@ DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS user_workspaces;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS workspace;
-
--- +goose statementend
+-- +goose StatementEnd
