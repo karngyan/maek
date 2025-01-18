@@ -1,7 +1,5 @@
 -- +goose up
 -- +goose statementbegin
-CREATE EXTENSION IF NOT EXISTS vector;
-
 -- workspace table
 CREATE TABLE IF NOT EXISTS workspace
 (
@@ -142,10 +140,7 @@ DROP TABLE IF EXISTS collection;
 DROP TABLE IF EXISTS note;
 DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS user_workspaces;
-ALTER TABLE "user"
-    DROP CONSTRAINT IF EXISTS fk_user_default_workspace;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS workspace;
 
-DROP EXTENSION IF EXISTS vector;
 -- +goose statementend
