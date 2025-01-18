@@ -1,16 +1,7 @@
 -- +goose up
 -- +goose statementbegin
-DO
-$$
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector') THEN
-            CREATE EXTENSION vector;
-        END IF;
-    END
-$$;
--- +goose statementend
+CREATE EXTENSION IF NOT EXISTS vector;
 
--- +goose statementbegin
 -- workspace table
 CREATE TABLE IF NOT EXISTS workspace
 (

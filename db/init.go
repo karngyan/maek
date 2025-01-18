@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/jackc/pgx/v5/tracelog"
 	"github.com/pressly/goose/v3"
+	"github.com/pressly/goose/v3/lock"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
@@ -171,6 +172,41 @@ func migrate(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) error {
 		fsys,
 		goose.WithLogger(logger.NewGooseLogger(l)),
 		goose.WithVerbose(true),
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = gp.Up(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func migrateWithSessionLock(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) error {
+	if pool == nil {
+		return fmt.Errorf("pool not initialized")
+	}
+
+	fsys, err := fs.Sub(embedMigrations, "migrations")
+	if err != nil {
+		return err
+	}
+
+	locker, err := lock.NewPostgresSessionLocker()
+	if err != nil {
+		return err
+	}
+
+	gp, err := goose.NewProvider(
+		goose.DialectPostgres,
+		stdlib.OpenDBFromPool(pool),
+		fsys,
+		goose.WithLogger(logger.NewGooseLogger(l)),
+		goose.WithVerbose(true),
+		goose.WithSessionLocker(locker),
 	)
 	if err != nil {
 		return err
