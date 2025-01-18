@@ -14,7 +14,7 @@ dev: ## Start development server
 	air
 
 test: ## Run go tests
-	go test -v ./...
+	go test -v ./... -count=1
 
 sqlc: ## Generate sql go files for queries in sqlc
 	sqlc generate

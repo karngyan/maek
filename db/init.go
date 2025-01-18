@@ -71,7 +71,7 @@ func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	l.Info("db pool initialized")
 
 	if c.IsDev() {
-		_, err = migrate(ctx, l, defaultPgxPool)
+		err = migrate(ctx, l, defaultPgxPool)
 		if err != nil {
 			l.Error("error applying schema", zap.Error(err))
 			return err
@@ -127,7 +127,7 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 		return err
 	}
 
-	migrateDown, err := migrate(ctx, l, defaultPgxPool)
+	err = migrate(ctx, l, defaultPgxPool)
 	if err != nil {
 		l.Error("error applying schema", zap.Error(err))
 		return err
@@ -137,12 +137,6 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			err := migrateDown()
-			if err != nil {
-				l.Error("error migrating down", zap.Error(err))
-				return err
-			}
-
 			_, err = defaultPgxPool.Exec(ctx, fmt.Sprintf(`DROP SCHEMA %s CASCADE`, randSchema))
 			if err != nil {
 				l.Error("error dropping test schema", zap.Error(err))
@@ -161,14 +155,14 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	return nil
 }
 
-func migrate(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) (func() error, error) {
+func migrate(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) error {
 	if pool == nil {
-		return nil, fmt.Errorf("pool not initialized")
+		return fmt.Errorf("pool not initialized")
 	}
 
 	fsys, err := fs.Sub(embedMigrations, "migrations")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	gp, err := goose.NewProvider(
@@ -179,20 +173,13 @@ func migrate(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) (func() err
 		goose.WithVerbose(true),
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	_, err = gp.Up(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return func() error {
-		_, err := gp.Down(ctx)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}, nil
+	return nil
 }
