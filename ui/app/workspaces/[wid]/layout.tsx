@@ -96,7 +96,6 @@ export default function WorkspacesHomeLayout({
     () => [
       { label: 'home', href: `/workspaces/${workspaceId}` },
       { label: 'collections', href: `/workspaces/${workspaceId}/collections` },
-      { label: 'favorites', href: `/workspaces/${workspaceId}/favorites` },
       { label: 'chat', href: `/workspaces/${workspaceId}/chat` },
     ],
     [workspaceId]
