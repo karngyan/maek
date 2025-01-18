@@ -1,7 +1,5 @@
 -- +goose up
 -- +goose statementbegin
-CREATE EXTENSION IF NOT EXISTS vector;
-
 -- workspace table
 CREATE TABLE IF NOT EXISTS workspace
 (
