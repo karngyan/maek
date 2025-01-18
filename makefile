@@ -1,4 +1,4 @@
-.PHONY: help up down dev test sqlc
+.PHONY: help up down dev test sqlc migrate-up migrate-up-force migrate-down migrate-status
 .DEFAULT_GOAL := help
 
 help: ## Display this help
@@ -18,3 +18,15 @@ test: ## Run go tests
 
 sqlc: ## Generate sql go files for queries in sqlc
 	sqlc generate
+
+migrate-up: ## Run all migrations
+	goose up
+
+migrate-up-force: ## Run all migrations
+	goose up --allow-missing
+
+migrate-down: ## Rollback all migrations
+	goose down
+
+migrate-status: ## Show migration status
+	goose status
