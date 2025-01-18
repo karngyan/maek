@@ -17,6 +17,7 @@ test: ## Run go tests
 	go test -v ./... -count=1
 
 sqlc: ## Generate sql go files for queries in sqlc
+	docker exec -e PGPASSWORD=passwd maek-postgres-1 pg_dump -U maek -s -d maek_dev > db/_schema.sql
 	sqlc generate
 
 migrate-up: ## Run all migrations

@@ -2,7 +2,7 @@ version: 2
 sql:
   - engine: postgresql
     schema:
-      - db/schema
+      - db/_schema.sql
     queries:
       - db/queries
     database:
