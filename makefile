@@ -1,4 +1,4 @@
-.PHONY: help up down apply setup diff test sql-generate dev
+.PHONY: help up down dev test sqlc
 .DEFAULT_GOAL := help
 
 help: ## Display this help
@@ -10,19 +10,11 @@ up: ## Start all docker services
 down: ## Stop all docker services
 	docker-compose down
 
-apply: ## Applies latest schema to database
-	pg-schema-diff apply --dsn "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable" --schema-dir ./db/schema
-
-setup: up apply ## Setup development environment
-
-diff: ## Check for schema changes
-	pg-schema-diff plan --dsn "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable" --schema-dir ./db/schema
-
 dev: ## Start development server
-	go run cmds/ui_api/main.go
+	air
 
 test: ## Run go tests
 	go test -v ./...
 
-sql-generate: ## Generate sql go files for queries
+sqlc: ## Generate sql go files for queries in sqlc
 	sqlc generate

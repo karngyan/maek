@@ -4,17 +4,19 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io/fs"
 	"time"
-
-	"github.com/jackc/pgx/v5/tracelog"
-	"github.com/karngyan/maek/libs/logger"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5/tracelog"
+	"github.com/pressly/goose/v3"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/karngyan/maek/config"
+	"github.com/karngyan/maek/libs/logger"
 	"github.com/karngyan/maek/libs/randstr"
 )
 
@@ -23,10 +25,12 @@ var (
 	Q              *Queries
 )
 
-//go:embed schema/*.sql
-var schemaFS embed.FS // only used in tests
+//go:embed migrations/*.sql
+var embedMigrations embed.FS
 
 func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
+	ctx := context.Background()
+
 	dbc, err := pgxpool.ParseConfig(c.String("database.dsn"))
 	if err != nil {
 		return err
@@ -65,6 +69,16 @@ func Init(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	})
 
 	l.Info("db pool initialized")
+
+	if c.IsDev() {
+		err = migrate(ctx, l, defaultPgxPool)
+		if err != nil {
+			l.Error("error applying schema", zap.Error(err))
+			return err
+		}
+
+		l.Info("applied migrations")
+	}
 
 	return nil
 }
@@ -113,7 +127,7 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 		return err
 	}
 
-	err = applySchema(ctx, defaultPgxPool)
+	err = migrate(ctx, l, defaultPgxPool)
 	if err != nil {
 		l.Error("error applying schema", zap.Error(err))
 		return err
@@ -141,25 +155,31 @@ func InitTest(lc fx.Lifecycle, c *config.Config, l *zap.Logger) error {
 	return nil
 }
 
-func applySchema(ctx context.Context, pool *pgxpool.Pool) error {
-	files, err := schemaFS.ReadDir("schema")
+func migrate(ctx context.Context, l *zap.Logger, pool *pgxpool.Pool) error {
+	if pool == nil {
+		return fmt.Errorf("pool not initialized")
+	}
+
+	fsys, err := fs.Sub(embedMigrations, "migrations")
 	if err != nil {
 		return err
 	}
 
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		sqlBytes, err := schemaFS.ReadFile("schema/" + file.Name())
-		if err != nil {
-			return err
-		}
-		sql := string(sqlBytes)
-		_, err = pool.Exec(ctx, sql)
-		if err != nil {
-			return err
-		}
+	gp, err := goose.NewProvider(
+		goose.DialectPostgres,
+		stdlib.OpenDBFromPool(pool),
+		fsys,
+		goose.WithLogger(logger.NewGooseLogger(l)),
+		goose.WithVerbose(true),
+	)
+	if err != nil {
+		return err
 	}
+
+	_, err = gp.Up(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

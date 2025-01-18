@@ -93,3 +93,24 @@ func (pl *PgxLogger) Log(ctx context.Context, level tracelog.LogLevel, msg strin
 		pl.l.Error(msg, append(fields, zap.Stringer("PGX_LOG_LEVEL", level))...)
 	}
 }
+
+type GooseLogger struct {
+	l *zap.Logger
+}
+
+type Logger interface {
+	Fatalf(format string, v ...interface{})
+	Printf(format string, v ...interface{})
+}
+
+func NewGooseLogger(l *zap.Logger) *GooseLogger {
+	return &GooseLogger{l: l.WithOptions(zap.AddCallerSkip(1))}
+}
+
+func (gl *GooseLogger) Fatalf(format string, v ...interface{}) {
+	gl.l.Fatal(fmt.Sprintf(format, v...))
+}
+
+func (gl *GooseLogger) Printf(format string, v ...interface{}) {
+	gl.l.Info(fmt.Sprintf(format, v...))
+}
