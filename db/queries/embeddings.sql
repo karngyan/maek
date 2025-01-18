@@ -6,9 +6,9 @@ SELECT id,
        status,
        attempts,
        created,
-       updated,
+       updated
 FROM embedding_job
-WHERE status = $1
+WHERE status = $1;
 
 -- name: InsertEmbeddingJobs :one
 INSERT INTO embedding_job (note_id, workspace_id, content)

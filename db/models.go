@@ -28,6 +28,24 @@ type CollectionNote struct {
 	Trashed      pgtype.Bool
 }
 
+type EmbeddingJob struct {
+	ID          int64
+	NoteID      int32
+	WorkspaceID int32
+	Status      pgtype.Int4
+	Content     []byte
+	Attempts    pgtype.Int4
+	Created     int64
+	Updated     int64
+}
+
+type GooseDbVersion struct {
+	ID        int32
+	VersionID int64
+	IsApplied bool
+	Tstamp    pgtype.Timestamp
+}
+
 type Note struct {
 	ID             int64
 	UUID           string

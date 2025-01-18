@@ -134,14 +134,14 @@ CREATE INDEX IF NOT EXISTS idx_collection_notes_note
 
 CREATE TABLE embedding_job
 (
-    id           SERIAL PRIMARY KEY,
-    note_id      INT   NOT NULL,
-    workspace_id INT   NOT NULL,
-    status       INT       DEFAULT 0,
-    content      JSONB NOT NULL,      -- Note content
-    attempts     INT       DEFAULT 0, -- Track retry attempts
-    created  TIMESTAMP DEFAULT NOW(),
-    updated   TIMESTAMP DEFAULT NOW()
+    id           BIGSERIAL PRIMARY KEY,
+    note_id      INT    NOT NULL,
+    workspace_id INT    NOT NULL,
+    status       INT             DEFAULT 0,
+    content      JSONB  NOT NULL,           -- Note content
+    attempts     INT             DEFAULT 0, -- Track retry attempts
+    created      BIGINT NOT NULL DEFAULT 0,
+    updated      BIGINT NOT NULL DEFAULT 0
 );
 
 -- +goose statementend
@@ -155,5 +155,5 @@ DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS user_workspaces;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS workspace;
-DROP TABLE IF EXISTS embedding_jobs
+DROP TABLE IF EXISTS embedding_job;
 -- +goose statementend
