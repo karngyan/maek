@@ -54,6 +54,7 @@ export const defaultNewNote = (
     hasTables: false,
     hasVideos: false,
     isNew: true, // client side only
+    mdContent: '',
   }
 }
 

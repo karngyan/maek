@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/sidebar'
 import {
   ArrowRightStartOnRectangleIcon,
-  BackwardIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   Cog8ToothIcon,
@@ -39,8 +38,9 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
   UserIcon,
+  MagnifyingGlassIcon,
+  InboxIcon
 } from '@heroicons/react/16/solid'
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import React, { useMemo } from 'react'
 import Avvvatars from 'avvvatars-react'
 import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
@@ -53,7 +53,6 @@ import { useLogout } from '@/queries/hooks/auth/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
 import axios from 'axios'
 import { SidebarLayout } from '@/components/ui/sidebar-layout'
-import { Button } from '@/components/ui/button'
 
 
 function WorkspaceDropdownMenu({

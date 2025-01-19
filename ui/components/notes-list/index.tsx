@@ -151,7 +151,7 @@ const NotesList = () => {
 
   return (
     <NoteMetaProvider>
-      <div className='flex flex-row justify-between items-center'>
+      <div className='flex flex-row justify-between items-center static'>
         <h2 className='text-xl text-zinc-300 font-medium'>all notes</h2>
         <Dropdown>
           <DropdownButton plain>

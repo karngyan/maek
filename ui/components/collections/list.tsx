@@ -161,7 +161,7 @@ function Row({ collection }: RowProps) {
     }
 
     return trimmedName
-  }, [collection.name])
+  }, [collection])
 
   const isSelected = useMemo(() => {
     return collectionMeta[collection.id]?.isSelected === true

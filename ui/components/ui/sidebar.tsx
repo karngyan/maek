@@ -153,9 +153,9 @@ export const SidebarItem = forwardRef(function SidebarItem(
     'data-[current]:bg-zinc-950/5 data-[slot=icon]:*:data-[current]:fill-zinc-950',
     // Dark mode
     'dark:text-white dark:data-[slot=icon]:*:fill-zinc-400',
-    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-zinc-300',
-    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-zinc-300',
-    'dark:data-[current]:bg-white/5 data-[slot=icon]:*:data-[current]:fill-zinc-300'
+    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-zinc-200',
+    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-zinc-200',
+    'dark:data-[current]:bg-white/5 dark:data-[slot=icon]:*:data-[current]:fill-zinc-200'
   )
 
   return (

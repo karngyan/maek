@@ -38,7 +38,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/workspaces/${workspaceId}/notes`, req.url))
   }
 
-  if (pathname === '/workspaces' || pathname === '/workspaces/') {
+  if (pathname === '/workspaces' || pathname === '/workspaces/' || pathname === `/workspaces/${workspaceId}`) {
     return NextResponse.redirect(new URL(`/workspaces/${workspaceId}/notes`, req.url))
   }
 
