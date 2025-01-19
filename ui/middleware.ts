@@ -35,11 +35,11 @@ export async function middleware(req: NextRequest) {
 
   // redirect to workspace if the user is logged in and tries to visit /login or /register
   if (isProtectedWhenLoggedIn(pathname)) {
-    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
+    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}/notes`, req.url))
   }
 
   if (pathname === '/workspaces' || pathname === '/workspaces/') {
-    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}`, req.url))
+    return NextResponse.redirect(new URL(`/workspaces/${workspaceId}/notes`, req.url))
   }
 
   return NextResponse.next()

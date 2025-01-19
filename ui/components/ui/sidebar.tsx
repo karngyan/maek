@@ -90,7 +90,7 @@ export function SidebarDivider({
       {...props}
       className={clsx(
         className,
-        'my-4 border-t border-zinc-950/5 lg:-mx-4 dark:border-white/5'
+        'my-4 border-t border-zinc-950/5 border-dashed lg:-mx-4 dark:border-white/5'
       )}
     />
   )
@@ -138,9 +138,9 @@ export const SidebarItem = forwardRef(function SidebarItem(
 ) {
   const classes = clsx(
     // Base
-    'flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-zinc-950 sm:py-2 sm:text-sm/5',
+    'flex w-full items-center gap-2 rounded-lg px-2 text-left text-sm font-medium text-zinc-950 py-1.5',
     // Leading icon/icon-only
-    'data-[slot=icon]:*:size-6 data-[slot=icon]:*:shrink-0 data-[slot=icon]:*:fill-zinc-500 sm:data-[slot=icon]:*:size-5',
+    'data-[slot=icon]:*:size-4 data-[slot=icon]:*:shrink-0 data-[slot=icon]:*:fill-zinc-500',
     // Trailing icon (down chevron or similar)
     'data-[slot=icon]:last:*:ml-auto data-[slot=icon]:last:*:size-5 sm:data-[slot=icon]:last:*:size-4',
     // Avatar
@@ -150,12 +150,12 @@ export const SidebarItem = forwardRef(function SidebarItem(
     // Active
     'data-[active]:bg-zinc-950/5 data-[slot=icon]:*:data-[active]:fill-zinc-950',
     // Current
-    'data-[slot=icon]:*:data-[current]:fill-zinc-950',
+    'data-[current]:bg-zinc-950/5 data-[slot=icon]:*:data-[current]:fill-zinc-950',
     // Dark mode
     'dark:text-white dark:data-[slot=icon]:*:fill-zinc-400',
-    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-white',
-    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-white',
-    'dark:data-[slot=icon]:*:data-[current]:fill-white'
+    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-zinc-300',
+    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-zinc-300',
+    'dark:data-[current]:bg-white/5 data-[slot=icon]:*:data-[current]:fill-zinc-300'
   )
 
   return (

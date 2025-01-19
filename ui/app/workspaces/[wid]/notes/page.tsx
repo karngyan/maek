@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'maek',
 }
 
-export default function WorkspaceHomePage() {
+export default function NotesPage() {
   return (
     <div className='max-w-4xl mx-auto space-y-10 relative'>
       <QuickCreateInp />

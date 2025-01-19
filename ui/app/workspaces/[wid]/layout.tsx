@@ -10,28 +10,34 @@ import {
 } from '@/components/ui/dropdown'
 import {
   Navbar,
-  NavbarDivider,
   NavbarItem,
-  NavbarLabel,
   NavbarSection,
   NavbarSpacer,
 } from '@/components/ui/navbar'
 import {
   Sidebar,
   SidebarBody,
+  SidebarFooter,
   SidebarHeader,
+  SidebarHeading,
   SidebarItem,
   SidebarLabel,
   SidebarSection,
+  SidebarSpacer,
 } from '@/components/ui/sidebar'
-import { StackedLayout } from '@/components/ui/stacked-layout'
 import {
   ArrowRightStartOnRectangleIcon,
+  BackwardIcon,
   ChevronDownIcon,
+  ChevronUpIcon,
   Cog8ToothIcon,
+  DocumentTextIcon,
+  HashtagIcon,
   LightBulbIcon,
   PlusIcon,
+  QuestionMarkCircleIcon,
   ShieldCheckIcon,
+  SparklesIcon,
   UserIcon,
 } from '@heroicons/react/16/solid'
 import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
@@ -46,6 +52,9 @@ import { Link } from '@/components/ui/link'
 import { useLogout } from '@/queries/hooks/auth/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
 import axios from 'axios'
+import { SidebarLayout } from '@/components/ui/sidebar-layout'
+import { Button } from '@/components/ui/button'
+
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -94,9 +103,16 @@ export default function WorkspacesHomeLayout({
   const workspaceId = +params.wid
   const navItems = useMemo(
     () => [
-      { label: 'home', href: `/workspaces/${workspaceId}` },
-      { label: 'collections', href: `/workspaces/${workspaceId}/collections` },
-      { label: 'chat', href: `/workspaces/${workspaceId}/chat` },
+      {
+        label: 'notes',
+        href: `/workspaces/${workspaceId}/notes`,
+        icon: <DocumentTextIcon />,
+      },
+      {
+        label: 'collections',
+        href: `/workspaces/${workspaceId}/collections`,
+        icon: <HashtagIcon />,
+      },
     ],
     [workspaceId]
   )
@@ -118,6 +134,7 @@ export default function WorkspacesHomeLayout({
           You&#39;ve been logged out. Please{' '}
           <Link
             href='/login'
+            replace={true}
             className='dark:text-primary-600 dark:hover:text-primary-500'
           >
             login
@@ -152,32 +169,9 @@ export default function WorkspacesHomeLayout({
   }
 
   return (
-    <StackedLayout
+    <SidebarLayout
       navbar={
         <Navbar>
-          <Dropdown>
-            <DropdownButton as={NavbarItem} className='max-lg:hidden'>
-              <Avvvatars
-                size={20}
-                value={workspaceAvatarValue(workspace)}
-                style='shape'
-              />
-              <NavbarLabel>{workspace.name}</NavbarLabel>
-              <ChevronDownIcon />
-            </DropdownButton>
-            <WorkspaceDropdownMenu
-              workspaces={workspaces}
-              currentWorkspaceId={workspaceId}
-            />
-          </Dropdown>
-          <NavbarDivider className='max-lg:hidden' />
-          <NavbarSection className='max-lg:hidden'>
-            {navItems.map(({ label, href }) => (
-              <NavbarItem current={pathname === href} key={label} href={href}>
-                {label}
-              </NavbarItem>
-            ))}
-          </NavbarSection>
           <NavbarSpacer />
           <NavbarSection>
             <NavbarItem href='/search' aria-label='Search'>
@@ -230,7 +224,7 @@ export default function WorkspacesHomeLayout({
         <Sidebar>
           <SidebarHeader>
             <Dropdown>
-              <DropdownButton as={SidebarItem} className='lg:mb-2.5'>
+              <DropdownButton as={SidebarItem} className='mb-2'>
                 <Avvvatars
                   size={20}
                   value={workspaceAvatarValue(workspace)}
@@ -244,24 +238,102 @@ export default function WorkspacesHomeLayout({
                 currentWorkspaceId={workspaceId}
               />
             </Dropdown>
+            <SidebarSection className='max-lg:hidden'>
+              <SidebarItem href='/search'>
+                <MagnifyingGlassIcon />
+                <SidebarLabel>search</SidebarLabel>
+              </SidebarItem>
+              <SidebarItem href='/inbox'>
+                <InboxIcon />
+                <SidebarLabel>inbox</SidebarLabel>
+              </SidebarItem>
+            </SidebarSection>
           </SidebarHeader>
           <SidebarBody>
             <SidebarSection>
-              {navItems.map(({ label, href }) => (
+              {navItems.map(({ label, href, icon }) => (
                 <SidebarItem
                   current={pathname === href}
                   key={label}
                   href={href}
                 >
-                  {label}
+                  {icon}
+                  <SidebarLabel>{label}</SidebarLabel>
                 </SidebarItem>
               ))}
             </SidebarSection>
+            <SidebarSection className='max-lg:hidden'>
+              <SidebarHeading>favorites</SidebarHeading>
+              <SidebarItem href='/events/1'>
+                Bear Hug: Live in Concert
+              </SidebarItem>
+              <SidebarItem href='/events/2'>Viking People</SidebarItem>
+              <SidebarItem href='/events/3'>Six Fingers — DJ Set</SidebarItem>
+              <SidebarItem href='/events/4'>We All Look The Same</SidebarItem>
+            </SidebarSection>
+            <SidebarSpacer />
+            <SidebarSection>
+              <SidebarItem href='/support'>
+                <QuestionMarkCircleIcon />
+                <SidebarLabel>support</SidebarLabel>
+              </SidebarItem>
+              <SidebarItem href='/changelog'>
+                <SparklesIcon />
+                <SidebarLabel>changelog</SidebarLabel>
+              </SidebarItem>
+            </SidebarSection>
           </SidebarBody>
+          <SidebarFooter className='max-lg:hidden'>
+            <Dropdown>
+              <DropdownButton as={SidebarItem}>
+                <span className='flex min-w-0 items-center gap-3'>
+                  <Avvvatars
+                    style='character'
+                    size={30}
+                    radius={5}
+                    value={user.name.length > 0 ? user.name : user.email}
+                  />
+                  <span className='min-w-0'>
+                    <span className='block truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
+                      {user.name.length > 0 ? user.name : 'add your name'}
+                    </span>
+                    <span className='block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400'>
+                      {user.email}
+                    </span>
+                  </span>
+                </span>
+                <ChevronUpIcon />
+              </DropdownButton>
+              <DropdownMenu className='min-w-64' anchor='top start'>
+                <DropdownItem href='/my-profile'>
+                  <UserIcon />
+                  <DropdownLabel>my profile</DropdownLabel>
+                </DropdownItem>
+                <DropdownItem href='/settings'>
+                  <Cog8ToothIcon />
+                  <DropdownLabel>settings</DropdownLabel>
+                </DropdownItem>
+                <DropdownDivider />
+                <DropdownItem href='/privacy-policy'>
+                  <ShieldCheckIcon />
+                  <DropdownLabel>privacy policy</DropdownLabel>
+                </DropdownItem>
+                <DropdownItem href='/share-feedback'>
+                  <LightBulbIcon />
+                  <DropdownLabel>share feedback</DropdownLabel>
+                </DropdownItem>
+                <DropdownDivider />
+                <DropdownItem href='/logout'>
+                  <ArrowRightStartOnRectangleIcon />
+                  <DropdownLabel>sign out</DropdownLabel>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </SidebarFooter>
         </Sidebar>
       }
     >
       {children}
-    </StackedLayout>
+    </SidebarLayout>
   )
 }

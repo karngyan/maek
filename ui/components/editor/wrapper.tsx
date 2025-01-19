@@ -64,12 +64,12 @@ export const EditorWrapper = ({
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
-  const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}`
+  const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}/notes`
 
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote({
     onSuccess: () => {
-      router.replace(`/workspaces/${workspaceId}`)
+      router.replace(`/workspaces/${workspaceId}/notes`)
     },
   })
 
