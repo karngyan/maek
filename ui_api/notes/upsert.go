@@ -3,6 +3,7 @@ package notes
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -28,6 +29,7 @@ func upsert(ctx web.Context) error {
 
 	var req struct {
 		Content        map[string]any `json:"content"`
+		MdContent      string         `json:"mdContent"`
 		Favorite       bool           `json:"favorite"`
 		Created        int64          `json:"created"`
 		Updated        int64          `json:"updated"`
@@ -60,6 +62,7 @@ func upsert(ctx web.Context) error {
 	note, err := notes.UpsertNote(rctx, &notes.UpsertNoteRequest{
 		UUID:           nuuid,
 		Content:        contentBytes,
+		MdContent:      strings.TrimSpace(req.MdContent),
 		Favorite:       req.Favorite,
 		Created:        req.Created,
 		Updated:        req.Updated,

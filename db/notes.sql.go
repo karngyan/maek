@@ -32,6 +32,7 @@ const getInitialNotesCreatedAsc = `-- name: GetInitialNotesCreatedAsc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -79,6 +80,7 @@ func (q *Queries) GetInitialNotesCreatedAsc(ctx context.Context, arg GetInitialN
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -113,6 +115,7 @@ const getInitialNotesCreatedDesc = `-- name: GetInitialNotesCreatedDesc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -160,6 +163,7 @@ func (q *Queries) GetInitialNotesCreatedDesc(ctx context.Context, arg GetInitial
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -194,6 +198,7 @@ const getInitialNotesUpdatedAsc = `-- name: GetInitialNotesUpdatedAsc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -241,6 +246,7 @@ func (q *Queries) GetInitialNotesUpdatedAsc(ctx context.Context, arg GetInitialN
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -275,6 +281,7 @@ const getInitialNotesUpdatedDesc = `-- name: GetInitialNotesUpdatedDesc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -322,6 +329,7 @@ func (q *Queries) GetInitialNotesUpdatedDesc(ctx context.Context, arg GetInitial
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -356,6 +364,7 @@ const getNoteByUUIDAndWorkspace = `-- name: GetNoteByUUIDAndWorkspace :one
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -392,6 +401,7 @@ func (q *Queries) GetNoteByUUIDAndWorkspace(ctx context.Context, arg GetNoteByUU
 		&i.ID,
 		&i.UUID,
 		&i.Content,
+		&i.MdContent,
 		&i.Favorite,
 		&i.Deleted,
 		&i.Trashed,
@@ -419,6 +429,7 @@ const getNotesByCollectionID = `-- name: GetNotesByCollectionID :many
 SELECT n.id,
        n.uuid,
        n.content,
+       n.md_content,
        n.favorite,
        n.deleted,
        n.trashed,
@@ -466,6 +477,7 @@ func (q *Queries) GetNotesByCollectionID(ctx context.Context, arg GetNotesByColl
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -500,6 +512,7 @@ const getNotesCreatedAsc = `-- name: GetNotesCreatedAsc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -558,6 +571,7 @@ func (q *Queries) GetNotesCreatedAsc(ctx context.Context, arg GetNotesCreatedAsc
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -592,6 +606,7 @@ const getNotesCreatedDesc = `-- name: GetNotesCreatedDesc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -650,6 +665,7 @@ func (q *Queries) GetNotesCreatedDesc(ctx context.Context, arg GetNotesCreatedDe
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -684,6 +700,7 @@ const getNotesUpdatedAsc = `-- name: GetNotesUpdatedAsc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -742,6 +759,7 @@ func (q *Queries) GetNotesUpdatedAsc(ctx context.Context, arg GetNotesUpdatedAsc
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -776,6 +794,7 @@ const getNotesUpdatedDesc = `-- name: GetNotesUpdatedDesc :many
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -834,6 +853,7 @@ func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDe
 			&i.ID,
 			&i.UUID,
 			&i.Content,
+			&i.MdContent,
 			&i.Favorite,
 			&i.Deleted,
 			&i.Trashed,
@@ -865,16 +885,17 @@ func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDe
 }
 
 const insertNote = `-- name: InsertNote :one
-INSERT INTO note (uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
+INSERT INTO note (uuid, content, md_content, favorite, deleted, trashed, has_content, has_images, has_videos,
                   has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
                   has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
 RETURNING id
 `
 
 type InsertNoteParams struct {
 	UUID           string
 	Content        []byte
+	MdContent      string
 	Favorite       bool
 	Deleted        bool
 	Trashed        bool
@@ -900,6 +921,7 @@ func (q *Queries) InsertNote(ctx context.Context, arg InsertNoteParams) (int64, 
 	row := q.db.QueryRow(ctx, insertNote,
 		arg.UUID,
 		arg.Content,
+		arg.MdContent,
 		arg.Favorite,
 		arg.Deleted,
 		arg.Trashed,
@@ -996,9 +1018,10 @@ SET content          = $1,
     has_files        = $12,
     has_quotes       = $13,
     has_tables       = $14,
-    updated          = $15
-WHERE uuid = $16
-  AND workspace_id = $17
+    updated          = $15,
+    md_content       = $16
+WHERE uuid = $17
+  AND workspace_id = $18
 `
 
 type UpdateNoteParams struct {
@@ -1017,6 +1040,7 @@ type UpdateNoteParams struct {
 	HasQuotes      bool
 	HasTables      bool
 	Updated        int64
+	MdContent      string
 	UUID           string
 	WorkspaceID    int64
 }
@@ -1038,6 +1062,7 @@ func (q *Queries) UpdateNote(ctx context.Context, arg UpdateNoteParams) error {
 		arg.HasQuotes,
 		arg.HasTables,
 		arg.Updated,
+		arg.MdContent,
 		arg.UUID,
 		arg.WorkspaceID,
 	)

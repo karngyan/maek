@@ -2,6 +2,7 @@
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -29,6 +30,7 @@ WHERE uuid = $1
 SELECT n.id,
        n.uuid,
        n.content,
+       n.md_content,
        n.favorite,
        n.deleted,
        n.trashed,
@@ -79,15 +81,16 @@ SET content          = $1,
     has_files        = $12,
     has_quotes       = $13,
     has_tables       = $14,
-    updated          = $15
-WHERE uuid = $16
-  AND workspace_id = $17;
+    updated          = $15,
+    md_content       = $16
+WHERE uuid = $17
+  AND workspace_id = $18;
 
 -- name: InsertNote :one
-INSERT INTO note (uuid, content, favorite, deleted, trashed, has_content, has_images, has_videos,
+INSERT INTO note (uuid, content, md_content, favorite, deleted, trashed, has_content, has_images, has_videos,
                   has_open_tasks, has_closed_tasks, has_code, has_audios, has_links, has_files,
                   has_quotes, has_tables, workspace_id, created, updated, created_by_id, updated_by_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
 RETURNING id;
 
 -- name: TrashNoteByUUID :one
@@ -111,6 +114,7 @@ WHERE uuid = ANY (@uuids)
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -143,6 +147,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -179,6 +184,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -211,6 +217,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -247,6 +254,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -279,6 +287,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -315,6 +324,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,
@@ -347,6 +357,7 @@ LIMIT $2;
 SELECT id,
        uuid,
        content,
+       md_content,
        favorite,
        deleted,
        trashed,

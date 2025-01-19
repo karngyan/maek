@@ -12,6 +12,7 @@ import (
 type UpsertNoteRequest struct {
 	UUID           string
 	Content        []byte
+	MdContent      string
 	Favorite       bool
 	Created        int64
 	Updated        int64
@@ -52,6 +53,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 	note := &Note{
 		UUID:           nuuid,
 		Content:        req.Content,
+		MdContent:      req.MdContent,
 		Favorite:       req.Favorite,
 		Trashed:        false,
 		WorkspaceID:    req.WorkspaceID,
@@ -85,6 +87,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			note.ID, err = q.InsertNote(ctx, db.InsertNoteParams{
 				UUID:           nuuid,
 				Content:        note.Content,
+				MdContent:      note.MdContent,
 				Favorite:       note.Favorite,
 				Deleted:        false,
 				Trashed:        false,
@@ -113,6 +116,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		// exists; time to do an update
 		return q.UpdateNote(ctx, db.UpdateNoteParams{
 			UUID:           nuuid,
+			MdContent:      req.MdContent,
 			Content:        req.Content,
 			Favorite:       note.Favorite,
 			HasContent:     note.HasContent,

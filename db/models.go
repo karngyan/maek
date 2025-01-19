@@ -32,6 +32,7 @@ type Note struct {
 	ID             int64
 	UUID           string
 	Content        []byte
+	MdContent      string
 	Favorite       bool
 	Deleted        bool
 	Trashed        bool

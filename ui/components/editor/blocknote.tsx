@@ -46,10 +46,7 @@ export default function BlockNoteEditor({
     const dom = editor.document
     setShowQuickCreate(isDomEmpty(dom))
 
-    console.time('mdgen')
     const mdContent = await editor.blocksToMarkdownLossy(dom)
-    console.timeEnd('mdgen')
-
     onChangeDom?.(dom, mdContent)
   }
 

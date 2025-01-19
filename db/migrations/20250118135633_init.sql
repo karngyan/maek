@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS note
     id               BIGSERIAL PRIMARY KEY,
     uuid             VARCHAR(100) NOT NULL UNIQUE,        -- Unique identifier for the note
     content          JSONB        NOT NULL,               -- Note content
+    md_content       TEXT         NOT NULL,               -- Markdown content
     favorite         BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     deleted          BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     trashed          BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
