@@ -1,4 +1,3 @@
-import { User } from '@/queries/services/auth'
 import { authApiClient } from '@/queries/services/base'
 import { Block } from '@blocknote/core'
 
@@ -10,6 +9,7 @@ export interface Note {
   id: number
   uuid: string
   content: NoteContent
+  mdContent: string // interesting prop, backend never returns it only flow client -> server
   favorite: boolean
   trashed: boolean
   created: number
