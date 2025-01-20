@@ -64,12 +64,12 @@ export const EditorWrapper = ({
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
-  const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}`
+  const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}/notes`
 
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote({
     onSuccess: () => {
-      router.replace(`/workspaces/${workspaceId}`)
+      router.replace(`/workspaces/${workspaceId}/notes`)
     },
   })
 
@@ -83,7 +83,7 @@ export const EditorWrapper = ({
     }
   }, [note])
 
-  const debouncedUpsert = useDebounceCallback((dom: Block[]) => {
+  const debouncedUpsert = useDebounceCallback((dom: Block[], mdContent: string) => {
     if (!note) return
     const newNote = {
       ...note,
@@ -100,6 +100,7 @@ export const EditorWrapper = ({
       {
         ...newNote,
         ...hasMeta,
+        mdContent,
       },
       {
         onSettled: (noteResp) => {
@@ -111,8 +112,8 @@ export const EditorWrapper = ({
     )
   }, 600)
 
-  const handleOnChangeDom = (dom: Block[]) => {
-    debouncedUpsert(dom)
+  const handleOnChangeDom = (dom: Block[], mdContent: string) => {
+    debouncedUpsert(dom, mdContent)
   }
 
   const onCopyMaekLinkClick = () => {
@@ -198,7 +199,7 @@ export const EditorWrapper = ({
           </div>
           <BlockNoteEditor
             content={note?.content?.dom}
-            onChangeDom={(dom) => handleOnChangeDom(dom)}
+            onChangeDom={handleOnChangeDom}
             initialFocusOption={initialFocusOption}
           />
         </>

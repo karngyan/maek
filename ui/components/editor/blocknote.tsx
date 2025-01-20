@@ -11,7 +11,7 @@ import QuickCreatePanel from '../quick-create/panel'
 
 export type BlockNoteEditorProps = {
   content?: Block[]
-  onChangeDom?: (content: Block[]) => unknown
+  onChangeDom?: (content: Block[], mdContent: string) => unknown
   initialFocusOption?: {
     id: string
     placement: 'end' | 'start'
@@ -42,14 +42,18 @@ export default function BlockNoteEditor({
     trailingBlock: true,
   })
 
+  const onChange = async () => {
+    const dom = editor.document
+    setShowQuickCreate(isDomEmpty(dom))
+
+    const mdContent = await editor.blocksToMarkdownLossy(dom)
+    onChangeDom?.(dom, mdContent)
+  }
+
   return (
     <>
       <BlockNoteView
-        onChange={() => {
-          const dom = editor.document
-          setShowQuickCreate(isDomEmpty(dom))
-          onChangeDom?.(dom)
-        }}
+        onChange={onChange}
         onSelectionChange={() => {
           if (intialFocussed) {
             return

@@ -3,7 +3,7 @@ package notes
 import (
 	"context"
 	"errors"
-	"github.com/vertica/vertica-sql-go/logger"
+	"github.com/karngyan/maek/embedder"
 
 	"github.com/jackc/pgx/v5"
 
@@ -13,6 +13,7 @@ import (
 type UpsertNoteRequest struct {
 	UUID           string
 	Content        []byte
+	MdContent      string
 	Favorite       bool
 	Created        int64
 	Updated        int64
@@ -53,6 +54,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 	note := &Note{
 		UUID:           nuuid,
 		Content:        req.Content,
+		MdContent:      req.MdContent,
 		Favorite:       req.Favorite,
 		Trashed:        false,
 		WorkspaceID:    req.WorkspaceID,
@@ -86,6 +88,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			note.ID, err = q.InsertNote(ctx, db.InsertNoteParams{
 				UUID:           nuuid,
 				Content:        note.Content,
+				MdContent:      note.MdContent,
 				Favorite:       note.Favorite,
 				Deleted:        false,
 				Trashed:        false,
@@ -112,8 +115,9 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 
 		note.ID = id
 		// exists; time to do an update
-		return q.UpdateNote(ctx, db.UpdateNoteParams{
+		err = q.UpdateNote(ctx, db.UpdateNoteParams{
 			UUID:           nuuid,
+			MdContent:      req.MdContent,
 			Content:        req.Content,
 			Favorite:       note.Favorite,
 			HasContent:     note.HasContent,
@@ -132,12 +136,13 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			Updated:        note.Updated,
 		})
 
-		_, err := q.AddEmbeddingJobs(note.ID, note.WorkspaceID, req.Content)
-
 		if err != nil {
 			return err
 		}
+
+		return embedder.AddEmbeddingJobs(ctx, q, note.ID, note.WorkspaceID, req.Content)
 	})
+
 	if err != nil {
 		return nil, err
 	}

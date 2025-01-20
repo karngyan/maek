@@ -6,4 +6,3 @@ main
 .DS_Store
 *.local.*
 tmp
-db/_schema.sql

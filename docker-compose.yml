@@ -10,7 +10,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U maek"]
+      test: [ "CMD-SHELL", "pg_isready -U maek" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,6 +23,54 @@ services:
       - POSTGRES_DB=maek_test
       - POSTGRES_USER=maek
       - POSTGRES_PASSWORD=passwd
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U maek" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - 7869:11434
+    volumes:
+      - .:/code
+      - ./ollama/ollama:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    pull_policy: always
+    tty: true
+    restart: always
+    networks:
+      - ollama-docker
+
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ollama-webui
+    volumes:
+      - ./ollama/ollama-webui:/app/backend/data
+    depends_on:
+      - ollama
+    ports:
+      - 8080:8080
+    environment:
+      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 # comma-separated Ollama hosts
+      - ENV=dev
+      - WEBUI_AUTH=False
+      - WEBUI_NAME=valiantlynx AI
+      - WEBUI_URL=http://localhost:8080
+      - WEBUI_SECRET_KEY=t0p-s3cr3t
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - ollama-docker
 
 volumes:
   pg_data:
+
+networks:
+  ollama-docker:
+    driver: bridge

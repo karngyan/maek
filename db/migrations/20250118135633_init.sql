@@ -1,5 +1,5 @@
--- +goose up
--- +goose statementbegin
+-- +goose Up
+-- +goose StatementBegin
 -- workspace table
 CREATE TABLE IF NOT EXISTS workspace
 (
@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS note
     id               BIGSERIAL PRIMARY KEY,
     uuid             VARCHAR(100) NOT NULL UNIQUE,        -- Unique identifier for the note
     content          JSONB        NOT NULL,               -- Note content
+    md_content       TEXT         NOT NULL,               -- Markdown content
     favorite         BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     deleted          BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     trashed          BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
@@ -117,7 +118,7 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace
 CREATE INDEX IF NOT EXISTS idx_collection_workspace_deleted
     ON collection (workspace_id, deleted);
 
--- collection notes table
+-- collection_notes table
 CREATE TABLE IF NOT EXISTS collection_notes
 (
     id            BIGSERIAL PRIMARY KEY,
@@ -137,17 +138,36 @@ CREATE TABLE embedding_job
     id           BIGSERIAL PRIMARY KEY,
     note_id      INT    NOT NULL,
     workspace_id INT    NOT NULL,
+    content        TEXT         NOT NULL,
     status       INT             DEFAULT 0,
-    content      JSONB  NOT NULL,           -- Note content
     attempts     INT             DEFAULT 0, -- Track retry attempts
     created      BIGINT NOT NULL DEFAULT 0,
     updated      BIGINT NOT NULL DEFAULT 0
 );
 
--- +goose statementend
+CREATE INDEX IF NOT EXISTS idx_embedding_job_status
+    ON embedding_job (status);
 
--- +goose down
--- +goose statementbegin
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE embedding
+(
+    id           BIGSERIAL PRIMARY KEY,
+    note_id      INT    NOT NULL,
+    workspace_id INT    NOT NULL,
+    chunk        TEXT ,
+    chunk_id     INT GENERATED ALWAYS AS IDENTITY,
+    embedding_vector    VECTOR(1536),
+    created      BIGINT NOT NULL DEFAULT 0,
+    updated      BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_embedding_job_status
+    ON embedding_job (status);
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
 DROP TABLE IF EXISTS collection_notes;
 DROP TABLE IF EXISTS collection;
 DROP TABLE IF EXISTS note;
@@ -155,5 +175,6 @@ DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS user_workspaces;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS workspace;
+DROP TABLE IF EXISTS embedding;
 DROP TABLE IF EXISTS embedding_job;
--- +goose statementend
+-- +goose StatementEnd

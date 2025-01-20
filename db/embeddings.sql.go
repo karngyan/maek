@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/pgvector/pgvector-go"
 )
 
 const getEmbeddingJobsByStatus = `-- name: GetEmbeddingJobsByStatus :many
@@ -24,26 +25,15 @@ FROM embedding_job
 WHERE status = $1
 `
 
-type GetEmbeddingJobsByStatusRow struct {
-	ID          int64
-	NoteID      int32
-	WorkspaceID int32
-	Content     []byte
-	Status      pgtype.Int4
-	Attempts    pgtype.Int4
-	Created     int64
-	Updated     int64
-}
-
-func (q *Queries) GetEmbeddingJobsByStatus(ctx context.Context, status pgtype.Int4) ([]GetEmbeddingJobsByStatusRow, error) {
+func (q *Queries) GetEmbeddingJobsByStatus(ctx context.Context, status pgtype.Int4) ([]EmbeddingJob, error) {
 	rows, err := q.db.Query(ctx, getEmbeddingJobsByStatus, status)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetEmbeddingJobsByStatusRow
+	var items []EmbeddingJob
 	for rows.Next() {
-		var i GetEmbeddingJobsByStatusRow
+		var i EmbeddingJob
 		if err := rows.Scan(
 			&i.ID,
 			&i.NoteID,
@@ -73,7 +63,7 @@ VALUES ($1, $2, $3)
 type InsertEmbeddingJobsParams struct {
 	NoteID      int32
 	WorkspaceID int32
-	Content     []byte
+	Content     string
 }
 
 func (q *Queries) InsertEmbeddingJobs(ctx context.Context, arg InsertEmbeddingJobsParams) (int64, error) {
@@ -81,4 +71,45 @@ func (q *Queries) InsertEmbeddingJobs(ctx context.Context, arg InsertEmbeddingJo
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const insertEmbeddings = `-- name: InsertEmbeddings :one
+INSERT INTO embedding (note_id, workspace_id, chunk, embedding_vector)
+VALUES ($1, $2, $3, $4)
+    RETURNING id
+`
+
+type InsertEmbeddingsParams struct {
+	NoteID          int32
+	WorkspaceID     int32
+	Chunk           pgtype.Text
+	EmbeddingVector pgvector.Vector
+}
+
+func (q *Queries) InsertEmbeddings(ctx context.Context, arg InsertEmbeddingsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, insertEmbeddings,
+		arg.NoteID,
+		arg.WorkspaceID,
+		arg.Chunk,
+		arg.EmbeddingVector,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const updateEmbeddingJobStatus = `-- name: UpdateEmbeddingJobStatus :exec
+UPDATE embedding_job
+SET status = $2
+WHERE id = $1
+`
+
+type UpdateEmbeddingJobStatusParams struct {
+	ID     int64
+	Status pgtype.Int4
+}
+
+func (q *Queries) UpdateEmbeddingJobStatus(ctx context.Context, arg UpdateEmbeddingJobStatusParams) error {
+	_, err := q.db.Exec(ctx, updateEmbeddingJobStatus, arg.ID, arg.Status)
+	return err
 }
