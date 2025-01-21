@@ -70,10 +70,7 @@ export default function LoginForm() {
     <>
       <div className='flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
-          <LogoMaek
-            type={'square-transparent'}
-            className='mx-auto h-10 w-auto'
-          />
+          <LogoMaek className='mx-auto h-10 w-auto' />
         </div>
 
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>

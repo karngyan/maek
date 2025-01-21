@@ -17,6 +17,7 @@ import {
 import {
   Sidebar,
   SidebarBody,
+  SidebarDivider,
   SidebarFooter,
   SidebarHeader,
   SidebarHeading,
@@ -24,7 +25,7 @@ import {
   SidebarLabel,
   SidebarSection,
   SidebarSpacer,
-} from '@/components/ui/sidebar'
+} from '@/components/sidebar'
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -52,7 +53,10 @@ import { Link } from '@/components/ui/link'
 import { useLogout } from '@/queries/hooks/auth/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
 import axios from 'axios'
-import { SidebarLayout } from '@/components/ui/sidebar-layout'
+import { SidebarLayout } from '@/components/sidebar/layout'
+import LogoMaek from '@/components/logo/maek'
+import { Button } from '@/components/ui/button'
+import SidebarIcon from '@/components/ui/icons/sidebar'
 
 
 function WorkspaceDropdownMenu({
@@ -222,6 +226,13 @@ export default function WorkspacesHomeLayout({
       sidebar={
         <Sidebar>
           <SidebarHeader>
+            <div className='flex flex-row justify-between items-center'>
+              <LogoMaek className='h-6 w-auto'/>
+              <Button plain square>
+                <SidebarIcon className='h-4'/>
+              </Button>
+            </div>
+            <SidebarDivider noMargin className='my-2'/>
             <Dropdown>
               <DropdownButton as={SidebarItem} className='mb-2'>
                 <Avvvatars
@@ -322,7 +333,7 @@ export default function WorkspacesHomeLayout({
                   <DropdownLabel>share feedback</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href='/logout'>
+                <DropdownItem onClick={logoutUser}>
                   <ArrowRightStartOnRectangleIcon />
                   <DropdownLabel>sign out</DropdownLabel>
                 </DropdownItem>

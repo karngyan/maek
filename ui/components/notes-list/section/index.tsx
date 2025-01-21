@@ -13,7 +13,7 @@ const NotesListSection = ({ title, notes }: NotesListSectionProps) => {
 
   return (
     <div>
-      <h2 className='text-lg font-semibold text-zinc-400'>{title}</h2>
+      <h2 className='text-sm font-semibold text-zinc-400'>{title}</h2>
       <div className='mt-2'>
         {notes?.map((note) => (
           <div key={note.uuid}>

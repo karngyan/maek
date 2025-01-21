@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function NotesPage() {
   return (
     <>
-      <div className='space-y-10 p-4'>
+      <div className='space-y-10 p-6'>
         <QuickCreateInp />
         <NotesList />
       </div>

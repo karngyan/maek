@@ -90,7 +90,7 @@ export const Input = forwardRef(function Input(
           // Background color
           'bg-transparent dark:bg-white/5',
           // Hide default focus styles
-          'focus:outline-none',
+          'focus:outline-none focus:ring-0',
           // Invalid state
           'data-[invalid]:border-red-500 data-[invalid]:data-[hover]:border-red-500 data-[invalid]:dark:border-red-500 data-[invalid]:data-[hover]:dark:border-red-500',
           // Disabled state

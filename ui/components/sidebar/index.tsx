@@ -4,8 +4,8 @@ import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import { LayoutGroup, motion } from 'framer-motion'
 import React, { Fragment, forwardRef, useId } from 'react'
-import { TouchTarget } from './button'
-import { Link } from './link'
+import { TouchTarget } from '@/components/ui/button'
+import { Link } from '@/components/ui/link'
 
 export function Sidebar({
   className,
@@ -24,13 +24,15 @@ export function SidebarHeader({
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <div
-      {...props}
-      className={clsx(
+    <>
+      <div {...props} className={clsx(
         className,
-        'flex flex-col border-b border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
-      )}
-    />
+        'flex flex-col p-2 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+      )}>
+        {props.children}
+      </div>
+      <SidebarDivider />
+    </>
   )
 }
 
@@ -43,7 +45,7 @@ export function SidebarBody({
       {...props}
       className={clsx(
         className,
-        'flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8'
+        'flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8',
       )}
     />
   )
@@ -54,13 +56,15 @@ export function SidebarFooter({
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <div
-      {...props}
-      className={clsx(
+    <>
+     <SidebarDivider />
+      <div {...props} className={clsx(
         className,
-        'flex flex-col border-t border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
-      )}
-    />
+        'flex flex-col p-4 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+      )}>
+        {props.children}
+      </div>
+    </>
   )
 }
 
@@ -83,14 +87,16 @@ export function SidebarSection({
 
 export function SidebarDivider({
   className,
+  noMargin,
   ...props
-}: React.ComponentPropsWithoutRef<'hr'>) {
+}: React.ComponentPropsWithoutRef<'hr'> & { noMargin?: boolean }) {
   return (
     <hr
       {...props}
       className={clsx(
         className,
-        'my-4 border-t border-zinc-950/5 border-dashed lg:-mx-4 dark:border-white/5'
+        'border-t border-zinc-950/5 border-dashed dark:border-white/5',
+        !noMargin && 'mx-4'
       )}
     />
   )

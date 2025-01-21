@@ -2,7 +2,9 @@
 
 import * as Headless from '@headlessui/react'
 import React, { useState } from 'react'
-import { NavbarItem } from './navbar'
+import { NavbarItem } from '@/components/ui/navbar'
+import { Button } from '../ui/button'
+import { MagnifyingGlassIcon } from '@heroicons/react/16/solid'
 
 function OpenMenuIcon() {
   return (
@@ -83,6 +85,11 @@ export function SidebarLayout({
 
       {/* Content */}
       <main className='flex flex-1 max-h-svh flex-col pb-2 lg:min-w-0 lg:pl-64 lg:pr-2 lg:pt-2'>
+        <div className='mb-2'>
+          <Button square plain>
+            <MagnifyingGlassIcon className='h-4' />
+          </Button>
+        </div>
         <div className='h-full overflow-scroll lg:rounded-lg lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'>
           {children}
         </div>

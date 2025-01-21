@@ -9,13 +9,23 @@ const styles = {
     // Base
     'relative isolate inline-flex items-center justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
     // Sizing
-    'px-[calc(theme(spacing[3])-2px)] py-[theme(spacing[0.5])] text-sm',
+    'px-[calc(theme(spacing[3.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing.3)-1px)] sm:py-[calc(theme(spacing[1.5])-1px)] sm:text-sm/6',
     // Focus
     'focus:outline-none data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-blue-500',
     // Disabled
     'data-[disabled]:opacity-50',
     // Icon
     '[&>[data-slot=icon]]:-mx-0.5 [&>[data-slot=icon]]:my-0.5 [&>[data-slot=icon]]:size-5 [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-[--btn-icon] [&>[data-slot=icon]]:sm:my-1 [&>[data-slot=icon]]:sm:size-4 forced-colors:[--btn-icon:ButtonText] forced-colors:data-[hover]:[--btn-icon:ButtonText]',
+  ],
+  baseSquare: [
+    // Base
+    'relative isolate inline-flex items-center justify-center gap-x-2 rounded border text-base/6 font-semibold',
+    // Sizing
+    'px-[calc(theme(spacing[2.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing[1.5])-1px)] sm:py-[calc(theme(spacing[1.5])-1px)] sm:text-sm/6',
+    // Focus
+    'focus:outline-none data-[focus]:outline data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-blue-500',
+    // Disabled
+    'data-[disabled]:opacity-50',
   ],
   solid: [
     // Optical border, implemented as the button background to avoid corner artifacts
@@ -167,7 +177,7 @@ type ButtonProps = (
   | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
   | { color?: never; outline: true; plain?: never }
   | { color?: never; outline?: never; plain: true }
-) & { className?: string; children: React.ReactNode; loading?: boolean } & (
+) & { className?: string; children: React.ReactNode; loading?: boolean; square?: boolean } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   )
@@ -180,13 +190,14 @@ export const Button = forwardRef(function Button(
     className,
     children,
     loading = false,
+    square = false,
     ...props
   }: ButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
   const classes = clsx(
     className,
-    styles.base,
+    square ? styles.baseSquare : styles.base,
     outline
       ? styles.outline
       : plain
@@ -201,7 +212,7 @@ export const Button = forwardRef(function Button(
       ref={ref as React.ForwardedRef<HTMLAnchorElement>}
     >
       <TouchTarget>
-        {loading ? <Spinner className='h-4' /> : children}
+        {loading ? <Spinner className='h-6' /> : children}
       </TouchTarget>
     </Link>
   ) : (
@@ -211,7 +222,7 @@ export const Button = forwardRef(function Button(
       ref={ref}
     >
       <TouchTarget>
-        {loading ? <Spinner className='h-4' /> : children}
+        {loading ? <Spinner className='h-6' /> : children}
       </TouchTarget>
     </Headless.Button>
   )
