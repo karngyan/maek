@@ -227,7 +227,7 @@ export default function WorkspacesHomeLayout({
         <Sidebar>
           <SidebarHeader>
             <div className='flex flex-row justify-between items-center'>
-              <LogoMaek className='h-6 w-auto'/>
+              <LogoMaek className='pl-2 h-6 w-auto'/>
               <Button plain square>
                 <SidebarIcon className='h-4'/>
               </Button>
