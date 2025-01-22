@@ -5,17 +5,23 @@ import clsx from 'clsx'
 import type React from 'react'
 import { Button } from './button'
 import { Link } from './link'
+import { forwardRef } from 'react'
 
 export function Dropdown(props: Headless.MenuProps) {
   return <Headless.Menu {...props} />
 }
 
-export function DropdownButton<T extends React.ElementType = typeof Button>({
-  as = Button,
-  ...props
-}: { className?: string } & Omit<Headless.MenuButtonProps<T>, 'className'>) {
-  return <Headless.MenuButton as={as} {...props} />
-}
+export const DropdownButton = forwardRef<
+  React.ElementRef<typeof Headless.MenuButton>,
+  {
+    as?: React.ElementType // Allow passing a custom component
+    className?: string
+  } & Omit<Headless.MenuButtonProps, 'as' | 'className'>
+>(({ as: Component = Button, ...props }, ref) => {
+  return <Headless.MenuButton as={Component} ref={ref} {...props} />
+})
+
+DropdownButton.displayName = 'DropdownButton'
 
 export function DropdownMenu({
   anchor = 'bottom',

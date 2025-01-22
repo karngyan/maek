@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
         <QueryProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={200} skipDelayDuration={100}>{children}</TooltipProvider>
         </QueryProvider>
         <Toaster />
       </body>

@@ -28,7 +28,13 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-const SimpleTooltipContent = ({ label, side = 'bottom' }: { label: string; side?: 'bottom' | 'left' | 'right' | 'top'}) => (
+const SimpleTooltipContent = ({
+  label,
+  side = 'bottom',
+}: {
+  label: string
+  side?: 'bottom' | 'left' | 'right' | 'top'
+}) => (
   <TooltipContent side={side}>
     <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
       <p className='text-xs text-zinc-400'>{label}</p>
@@ -36,4 +42,38 @@ const SimpleTooltipContent = ({ label, side = 'bottom' }: { label: string; side?
   </TooltipContent>
 )
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, SimpleTooltipContent }
+interface ConditionalTooltipProps {
+  children: React.ReactNode
+  label: string
+  side?: 'bottom' | 'left' | 'right' | 'top'
+  disabled?: boolean
+  asChild?: boolean
+}
+
+const ConditionalTooltip: React.FC<ConditionalTooltipProps> = ({
+  children,
+  asChild = false,
+  label,
+  side = 'bottom',
+  disabled = false,
+}) => {
+  if (disabled) {
+    return <>{children}</>
+  }
+
+  return (
+    <Tooltip delayDuration={100}>
+      <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
+      <SimpleTooltipContent label={label} side={side} />
+    </Tooltip>
+  )
+}
+
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  SimpleTooltipContent,
+  ConditionalTooltip,
+}

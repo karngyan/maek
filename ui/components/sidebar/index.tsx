@@ -134,10 +134,9 @@ export const SidebarItem = forwardRef(function SidebarItem(
   {
     current,
     className,
-    leftIndicator = true,
     children,
     ...props
-  }: { current?: boolean; leftIndicator?: boolean; className?: string; children: React.ReactNode } & (
+  }: { current?: boolean; className?: string; children: React.ReactNode } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   ),
@@ -167,7 +166,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
 
   return (
     <span className={clsx(className, 'relative')}>
-      {current && leftIndicator && (
+      {current && (
         <motion.span
           layoutId='current-indicator'
           className='absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white'

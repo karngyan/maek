@@ -40,6 +40,8 @@ import {
   UserIcon,
   MagnifyingGlassIcon,
   InboxIcon,
+  PencilIcon,
+  ChatBubbleBottomCenterTextIcon,
 } from '@heroicons/react/16/solid'
 import React, { useMemo } from 'react'
 import Avvvatars from 'avvvatars-react'
@@ -54,7 +56,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import axios from 'axios'
 import { SidebarLayout } from '@/components/sidebar/layout'
 import LogoMaek from '@/components/logo/maek'
-import { Button } from '@/components/ui/button'
 import SidebarIcon from '@/components/ui/icons/sidebar'
 import { useLocalStorage } from 'usehooks-ts'
 import {
@@ -62,6 +63,16 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from '@/components/ui/collapsible'
+import {
+  SimpleTooltipContent,
+  Tooltip,
+  TooltipTrigger,
+  ConditionalTooltip,
+} from '@/components/ui/tooltip'
+import { v4 as uuidv4 } from 'uuid'
+import { useQueryClient } from '@tanstack/react-query'
+import { notesKeys } from '@/queries/hooks/notes'
+import { defaultNewNote } from '@/libs/utils/note'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -271,6 +282,7 @@ function CollapsibleSidebar({
   const workspaceId = workspace.id
   const router = useRouter()
   const { mutate: logout } = useLogout()
+  const qc = useQueryClient()
 
   const logoutUser = () => {
     logout(undefined, {
@@ -280,70 +292,133 @@ function CollapsibleSidebar({
     })
   }
 
+  const createNote = () => {
+    const noteUuid = uuidv4()
+
+    qc.setQueryData(notesKeys.one(workspace.id, noteUuid), {
+      note: defaultNewNote(noteUuid, workspace.id, '', user, [
+        {
+          children: [],
+          content: [],
+          id: uuidv4(),
+          props: {
+            backgroundColor: 'default',
+            textAlignment: 'left',
+            textColor: 'default',
+          },
+          type: 'paragraph',
+        },
+      ]),
+    })
+
+    router.push(`/workspaces/${workspace.id}/notes/${noteUuid}`)
+  }
+
   return (
-    <Collapsible
-      asChild
-      open={isSidebarOpen}
-      onOpenChange={setIsSidebarOpen}
-    >
+    <Collapsible asChild open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <Sidebar>
         <SidebarHeader>
           <div className='flex flex-row justify-between items-center'>
             <CollapsibleContent>
               <LogoMaek className='pl-2 h-6 w-auto' />
             </CollapsibleContent>
-            <CollapsibleTrigger asChild>
-              <SidebarItem className='group flex-shrink-0'>
-                <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300'/>
-              </SidebarItem>
-            </CollapsibleTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CollapsibleTrigger asChild>
+                  <SidebarItem className='group flex-shrink-0'>
+                    <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300' />
+                  </SidebarItem>
+                </CollapsibleTrigger>
+              </TooltipTrigger>
+              <SimpleTooltipContent label='toggle sidebar' side='right' />
+            </Tooltip>
           </div>
           <SidebarDivider noMargin className='my-2' />
           <Dropdown>
-            <DropdownButton as={SidebarItem} className='mb-2'>
-              <span className='flex-shrink-0'>
-                <Avvvatars
-                  size={16}
-                  value={workspaceAvatarValue(workspace)}
-                  style='shape'
-                />
-              </span>
-              <CollapsibleContent asChild>
-                <span className='flex w-full flex-row items-center justify-between ml-0.5 gap-2'>
-                  <SidebarLabel>{workspace.name}</SidebarLabel>
-                  <ChevronDownIcon className='h-4' />
+            <ConditionalTooltip
+              label='switch workspace'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <DropdownButton as={SidebarItem} className='mb-2'>
+                <span className='flex-shrink-0'>
+                  <Avvvatars
+                    size={16}
+                    value={workspaceAvatarValue(workspace)}
+                    style='shape'
+                  />
                 </span>
-              </CollapsibleContent>
-            </DropdownButton>
+                <CollapsibleContent asChild>
+                  <span className='flex w-full flex-row items-center justify-between ml-0.5 gap-2'>
+                    <SidebarLabel>{workspace.name}</SidebarLabel>
+                    <ChevronDownIcon className='h-4' />
+                  </span>
+                </CollapsibleContent>
+              </DropdownButton>
+            </ConditionalTooltip>
             <WorkspaceDropdownMenu
               workspaces={workspaces}
               currentWorkspaceId={workspaceId}
             />
           </Dropdown>
+          <SidebarDivider noMargin className='mb-2' />
           <SidebarSection className='max-lg:hidden'>
-            <SidebarItem href='/search' className='flex-shrink-0'>
-              <MagnifyingGlassIcon />
-              <CollapsibleContent>
-                <SidebarLabel>search</SidebarLabel>
-              </CollapsibleContent>
-            </SidebarItem>
-            <SidebarItem href='/inbox' className='flex-shrink-0'>
-              <InboxIcon />
-              <CollapsibleContent>
-                <SidebarLabel>inbox</SidebarLabel>
-              </CollapsibleContent>
-            </SidebarItem>
+            <ConditionalTooltip
+              label='create note'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem
+                onClick={() => createNote()}
+                className='flex-shrink-0'
+              >
+                <PencilIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>create note</SidebarLabel>
+                </CollapsibleContent>
+              </SidebarItem>
+            </ConditionalTooltip>
+            <ConditionalTooltip
+              label='chat'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem
+                href={`/workspaces/${workspace.id}/chat`}
+                className='flex-shrink-0'
+              >
+                <ChatBubbleBottomCenterTextIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>chat</SidebarLabel>
+                </CollapsibleContent>
+              </SidebarItem>
+            </ConditionalTooltip>
           </SidebarSection>
         </SidebarHeader>
         <SidebarBody>
           <SidebarSection>
             {navItems.map(({ label, href, icon }) => (
-              <SidebarItem current={pathname === href} key={label} href={href} className='flex-shrink-0'>
-                {icon}
-                <CollapsibleContent>
-                  <SidebarLabel>{label}</SidebarLabel>
-                </CollapsibleContent>
-              </SidebarItem>
+              <ConditionalTooltip
+                key={label}
+                label={label}
+                disabled={isSidebarOpen}
+                side='right'
+                asChild
+              >
+                <SidebarItem
+                  current={pathname === href}
+                  href={href}
+                  className='flex-shrink-0'
+                >
+                  {icon}
+                  <CollapsibleContent>
+                    <SidebarLabel>{label}</SidebarLabel>
+                  </CollapsibleContent>
+                </SidebarItem>
+              </ConditionalTooltip>
             ))}
           </SidebarSection>
           {/* <SidebarSection className='max-lg:hidden'>
@@ -357,18 +432,32 @@ function CollapsibleSidebar({
       </SidebarSection> */}
           <SidebarSpacer />
           <SidebarSection>
+            <ConditionalTooltip
+              label='support'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
             <SidebarItem href='/support' className='flex-shrink-0'>
               <QuestionMarkCircleIcon />
               <CollapsibleContent>
                 <SidebarLabel>support</SidebarLabel>
               </CollapsibleContent>
             </SidebarItem>
+            </ConditionalTooltip>
+            <ConditionalTooltip
+              label='changelog'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
             <SidebarItem href='/changelog' className='flex-shrink-0'>
               <SparklesIcon />
               <CollapsibleContent>
                 <SidebarLabel>changelog</SidebarLabel>
               </CollapsibleContent>
             </SidebarItem>
+            </ConditionalTooltip>
           </SidebarSection>
         </SidebarBody>
         <SidebarFooter className='max-lg:hidden'>
