@@ -27,7 +27,7 @@ export function SidebarHeader({
     <>
       <div {...props} className={clsx(
         className,
-        'flex flex-col p-2 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+        'flex flex-col px-4 py-2.5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
       )}>
         {props.children}
       </div>
@@ -134,9 +134,10 @@ export const SidebarItem = forwardRef(function SidebarItem(
   {
     current,
     className,
+    leftIndicator = true,
     children,
     ...props
-  }: { current?: boolean; className?: string; children: React.ReactNode } & (
+  }: { current?: boolean; leftIndicator?: boolean; className?: string; children: React.ReactNode } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   ),
@@ -166,7 +167,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
 
   return (
     <span className={clsx(className, 'relative')}>
-      {current && (
+      {current && leftIndicator && (
         <motion.span
           layoutId='current-indicator'
           className='absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white'

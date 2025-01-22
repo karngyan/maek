@@ -20,7 +20,6 @@ import {
   SidebarDivider,
   SidebarFooter,
   SidebarHeader,
-  SidebarHeading,
   SidebarItem,
   SidebarLabel,
   SidebarSection,
@@ -48,7 +47,7 @@ import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { workspaceAvatarValue } from '@/libs/utils/auth'
-import { Workspace } from '@/queries/services/auth'
+import { User, Workspace } from '@/queries/services/auth'
 import { Link } from '@/components/ui/link'
 import { useLogout } from '@/queries/hooks/auth/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
@@ -57,6 +56,12 @@ import { SidebarLayout } from '@/components/sidebar/layout'
 import LogoMaek from '@/components/logo/maek'
 import { Button } from '@/components/ui/button'
 import SidebarIcon from '@/components/ui/icons/sidebar'
+import { useLocalStorage } from 'usehooks-ts'
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -104,9 +109,12 @@ export default function WorkspacesHomeLayout({
   params: { wid: string }
   children: React.ReactNode
 }) {
-  const router = useRouter()
-  const pathname = usePathname()
   const workspaceId = +params.wid
+  const [isSidebarOpen, setIsSidebarOpen] = useLocalStorage<boolean>(
+    'maek:sidebar-open',
+    false
+  )
+
   const navItems = useMemo(
     () => [
       {
@@ -124,6 +132,7 @@ export default function WorkspacesHomeLayout({
   )
   const { isPending, data, error } = useAuthInfo()
   const { mutate: logout } = useLogout()
+  const router = useRouter()
 
   if (isPending) {
     return (
@@ -227,89 +236,154 @@ export default function WorkspacesHomeLayout({
         </Navbar>
       }
       sidebar={
-        <Sidebar>
-          <SidebarHeader>
-            <div className='flex flex-row justify-between items-center'>
+        <CollapsibleSidebar
+          user={user}
+          navItems={navItems}
+          workspace={workspace}
+          workspaces={workspaces}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
+      }
+      isSidebarOpen={isSidebarOpen}
+    >
+      {children}
+    </SidebarLayout>
+  )
+}
+
+function CollapsibleSidebar({
+  navItems,
+  workspace,
+  workspaces,
+  user,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {
+  navItems: { label: string; href: string; icon: React.ReactNode }[]
+  workspace: Workspace
+  workspaces: Workspace[]
+  user: User
+  isSidebarOpen: boolean
+  setIsSidebarOpen: (isOpen: boolean) => unknown
+}) {
+  const pathname = usePathname()
+  const workspaceId = workspace.id
+  const router = useRouter()
+  const { mutate: logout } = useLogout()
+
+  const logoutUser = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        router.replace('/')
+      },
+    })
+  }
+
+  return (
+    <Collapsible
+      asChild
+      open={isSidebarOpen}
+      onOpenChange={setIsSidebarOpen}
+    >
+      <Sidebar>
+        <SidebarHeader>
+          <div className='flex flex-row justify-between items-center'>
+            <CollapsibleContent>
               <LogoMaek className='pl-2 h-6 w-auto' />
-              <Button plain square>
-                <SidebarIcon className='h-4' />
-              </Button>
-            </div>
-            <SidebarDivider noMargin className='my-2' />
-            <Dropdown>
-              <DropdownButton as={SidebarItem} className='mb-2 flex-shrink-0'>
+            </CollapsibleContent>
+            <CollapsibleTrigger asChild>
+              <SidebarItem className='group flex-shrink-0'>
+                <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300'/>
+              </SidebarItem>
+            </CollapsibleTrigger>
+          </div>
+          <SidebarDivider noMargin className='my-2' />
+          <Dropdown>
+            <DropdownButton as={SidebarItem} className='mb-2'>
+              <span className='flex-shrink-0'>
                 <Avvvatars
-                  size={20}
+                  size={16}
                   value={workspaceAvatarValue(workspace)}
                   style='shape'
                 />
-                <SidebarLabel>{workspace.name}</SidebarLabel>
-                <ChevronDownIcon />
-              </DropdownButton>
-              <WorkspaceDropdownMenu
-                workspaces={workspaces}
-                currentWorkspaceId={workspaceId}
-              />
-            </Dropdown>
-            <SidebarSection className='max-lg:hidden'>
-              <SidebarItem href='/search'>
-                <MagnifyingGlassIcon />
+              </span>
+              <CollapsibleContent asChild>
+                <span className='flex w-full flex-row items-center justify-between ml-0.5 gap-2'>
+                  <SidebarLabel>{workspace.name}</SidebarLabel>
+                  <ChevronDownIcon className='h-4' />
+                </span>
+              </CollapsibleContent>
+            </DropdownButton>
+            <WorkspaceDropdownMenu
+              workspaces={workspaces}
+              currentWorkspaceId={workspaceId}
+            />
+          </Dropdown>
+          <SidebarSection className='max-lg:hidden'>
+            <SidebarItem href='/search' className='flex-shrink-0'>
+              <MagnifyingGlassIcon />
+              <CollapsibleContent>
                 <SidebarLabel>search</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href='/inbox'>
-                <InboxIcon />
+              </CollapsibleContent>
+            </SidebarItem>
+            <SidebarItem href='/inbox' className='flex-shrink-0'>
+              <InboxIcon />
+              <CollapsibleContent>
                 <SidebarLabel>inbox</SidebarLabel>
-              </SidebarItem>
-            </SidebarSection>
-          </SidebarHeader>
-          <SidebarBody>
-            <SidebarSection>
-              {navItems.map(({ label, href, icon }) => (
-                <SidebarItem
-                  current={pathname === href}
-                  key={label}
-                  href={href}
-                >
-                  {icon}
+              </CollapsibleContent>
+            </SidebarItem>
+          </SidebarSection>
+        </SidebarHeader>
+        <SidebarBody>
+          <SidebarSection>
+            {navItems.map(({ label, href, icon }) => (
+              <SidebarItem current={pathname === href} key={label} href={href} className='flex-shrink-0'>
+                {icon}
+                <CollapsibleContent>
                   <SidebarLabel>{label}</SidebarLabel>
-                </SidebarItem>
-              ))}
-            </SidebarSection>
-            <SidebarSection className='max-lg:hidden'>
-              <SidebarHeading>favorites</SidebarHeading>
-              <SidebarItem href='/events/1'>
-                Bear Hug: Live in Concert
+                </CollapsibleContent>
               </SidebarItem>
-              <SidebarItem href='/events/2'>Viking People</SidebarItem>
-              <SidebarItem href='/events/3'>Six Fingers — DJ Set</SidebarItem>
-              <SidebarItem href='/events/4'>We All Look The Same</SidebarItem>
-            </SidebarSection>
-            <SidebarSpacer />
-            <SidebarSection>
-              <SidebarItem href='/support'>
-                <QuestionMarkCircleIcon />
+            ))}
+          </SidebarSection>
+          {/* <SidebarSection className='max-lg:hidden'>
+        <SidebarHeading>favorites</SidebarHeading>
+        <SidebarItem href='/events/1'>
+          Bear Hug: Live in Concert
+        </SidebarItem>
+        <SidebarItem href='/events/2'>Viking People</SidebarItem>
+        <SidebarItem href='/events/3'>Six Fingers — DJ Set</SidebarItem>
+        <SidebarItem href='/events/4'>We All Look The Same</SidebarItem>
+      </SidebarSection> */}
+          <SidebarSpacer />
+          <SidebarSection>
+            <SidebarItem href='/support' className='flex-shrink-0'>
+              <QuestionMarkCircleIcon />
+              <CollapsibleContent>
                 <SidebarLabel>support</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href='/changelog'>
-                <SparklesIcon />
+              </CollapsibleContent>
+            </SidebarItem>
+            <SidebarItem href='/changelog' className='flex-shrink-0'>
+              <SparklesIcon />
+              <CollapsibleContent>
                 <SidebarLabel>changelog</SidebarLabel>
-              </SidebarItem>
-            </SidebarSection>
-          </SidebarBody>
-          <SidebarFooter className='max-lg:hidden'>
-            <Dropdown>
-              <DropdownButton
-                as={SidebarItem}
-              >
-                <span className='w-10/12 flex flex-row items-center gap-3'>
-                  <span className='flex-shrink-0'>
-                    <Avvvatars
-                      style='character'
-                      size={30}
-                      radius={5}
-                      value={user.name.length > 0 ? user.name : user.email}
-                    />
-                  </span>
+              </CollapsibleContent>
+            </SidebarItem>
+          </SidebarSection>
+        </SidebarBody>
+        <SidebarFooter className='max-lg:hidden'>
+          <Dropdown>
+            <DropdownButton as={SidebarItem}>
+              <span className='w-10/12 flex flex-row items-center gap-3'>
+                <span className='flex-shrink-0'>
+                  <Avvvatars
+                    style='character'
+                    size={30}
+                    radius={5}
+                    value={user.name.length > 0 ? user.name : user.email}
+                  />
+                </span>
+                <CollapsibleContent asChild>
                   <span className='w-9/12 flex flex-col'>
                     <span className='truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
                       {user.name.length > 0 ? user.name : 'add your name'}
@@ -318,41 +392,41 @@ export default function WorkspacesHomeLayout({
                       {user.email}
                     </span>
                   </span>
-                </span>
+                </CollapsibleContent>
+              </span>
+              <CollapsibleContent asChild>
                 <span className='grow flex items-center justify-end flex-shrink-0'>
                   <ChevronUpIcon className='h-4' />
                 </span>
-              </DropdownButton>
-              <DropdownMenu className='min-w-64' anchor='top start'>
-                <DropdownItem href='/my-profile'>
-                  <UserIcon />
-                  <DropdownLabel>my profile</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/settings'>
-                  <Cog8ToothIcon />
-                  <DropdownLabel>settings</DropdownLabel>
-                </DropdownItem>
-                <DropdownDivider />
-                <DropdownItem href='/privacy-policy'>
-                  <ShieldCheckIcon />
-                  <DropdownLabel>privacy policy</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/share-feedback'>
-                  <LightBulbIcon />
-                  <DropdownLabel>share feedback</DropdownLabel>
-                </DropdownItem>
-                <DropdownDivider />
-                <DropdownItem onClick={logoutUser}>
-                  <ArrowRightStartOnRectangleIcon />
-                  <DropdownLabel>sign out</DropdownLabel>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </SidebarFooter>
-        </Sidebar>
-      }
-    >
-      {children}
-    </SidebarLayout>
+              </CollapsibleContent>
+            </DropdownButton>
+            <DropdownMenu className='min-w-64' anchor='top start'>
+              <DropdownItem href='/my-profile'>
+                <UserIcon />
+                <DropdownLabel>my profile</DropdownLabel>
+              </DropdownItem>
+              <DropdownItem href='/settings'>
+                <Cog8ToothIcon />
+                <DropdownLabel>settings</DropdownLabel>
+              </DropdownItem>
+              <DropdownDivider />
+              <DropdownItem href='/privacy-policy'>
+                <ShieldCheckIcon />
+                <DropdownLabel>privacy policy</DropdownLabel>
+              </DropdownItem>
+              <DropdownItem href='/share-feedback'>
+                <LightBulbIcon />
+                <DropdownLabel>share feedback</DropdownLabel>
+              </DropdownItem>
+              <DropdownDivider />
+              <DropdownItem onClick={logoutUser}>
+                <ArrowRightStartOnRectangleIcon />
+                <DropdownLabel>sign out</DropdownLabel>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </SidebarFooter>
+      </Sidebar>
+    </Collapsible>
   )
 }

@@ -64,10 +64,12 @@ type RightSidebarState = 'chat' | 'copilot' | 'none'
 export function SidebarLayout({
   navbar,
   sidebar,
+  isSidebarOpen,
   children,
 }: React.PropsWithChildren<{
   navbar: React.ReactNode
   sidebar: React.ReactNode
+  isSidebarOpen: boolean
 }>) {
   const [showSidebar, setShowSidebar] = useState(false)
   const [rightSidebarState, setRightSidebarState] =
@@ -95,7 +97,7 @@ export function SidebarLayout({
   return (
     <div className='relative isolate flex min-h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950'>
       {/* Sidebar on Desktop */}
-      <div className='max-lg:hidden w-64 overflow-hidden'>
+      <div className={cn('fixed inset-y-0 left-0 max-lg:hidden overflow-hidden', isSidebarOpen ? 'w-64' : 'w-16')}>
         {sidebar}
       </div>
 
@@ -117,7 +119,7 @@ export function SidebarLayout({
         <div className='min-w-0 flex-1'>{navbar}</div>
       </header>
 
-      <main className='flex flex-1 max-h-svh flex-col pb-2 lg:min-w-0 lg:pr-2 lg:pt-2'>
+      <main className={cn('transition-all duration-100 ease-in-out flex flex-1 max-h-svh flex-col pb-2 lg:min-w-0 lg:pr-2 lg:pt-2', isSidebarOpen ? 'lg:pl-64' : 'lg:pl-16')}>
         <div className='mb-2 flex flex-row justify-between items-center'>
           <div className='space-x-1.5'>
             <Button square plain>
