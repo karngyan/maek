@@ -40,7 +40,7 @@ import {
   SparklesIcon,
   UserIcon,
   MagnifyingGlassIcon,
-  InboxIcon
+  InboxIcon,
 } from '@heroicons/react/16/solid'
 import React, { useMemo } from 'react'
 import Avvvatars from 'avvvatars-react'
@@ -58,7 +58,6 @@ import LogoMaek from '@/components/logo/maek'
 import { Button } from '@/components/ui/button'
 import SidebarIcon from '@/components/ui/icons/sidebar'
 
-
 function WorkspaceDropdownMenu({
   workspaces,
   currentWorkspaceId,
@@ -75,7 +74,11 @@ function WorkspaceDropdownMenu({
       <DropdownDivider />
       {workspaces.map((workspace) => {
         return (
-          <DropdownItem key={workspace.id} href={`/workspaces/${workspace.id}`}>
+          <DropdownItem
+            key={workspace.id}
+            href={`/workspaces/${workspace.id}`}
+            className='flex-shrink-0'
+          >
             <Avvvatars
               style='shape'
               size={16}
@@ -184,7 +187,7 @@ export default function WorkspacesHomeLayout({
               <InboxIcon />
             </NavbarItem>
             <Dropdown>
-              <DropdownButton as={NavbarItem}>
+              <DropdownButton as={NavbarItem} className='flex-shrink-0'>
                 <Avvvatars
                   style='character'
                   size={20}
@@ -227,14 +230,14 @@ export default function WorkspacesHomeLayout({
         <Sidebar>
           <SidebarHeader>
             <div className='flex flex-row justify-between items-center'>
-              <LogoMaek className='pl-2 h-6 w-auto'/>
+              <LogoMaek className='pl-2 h-6 w-auto' />
               <Button plain square>
-                <SidebarIcon className='h-4'/>
+                <SidebarIcon className='h-4' />
               </Button>
             </div>
-            <SidebarDivider noMargin className='my-2'/>
+            <SidebarDivider noMargin className='my-2' />
             <Dropdown>
-              <DropdownButton as={SidebarItem} className='mb-2'>
+              <DropdownButton as={SidebarItem} className='mb-2 flex-shrink-0'>
                 <Avvvatars
                   size={20}
                   value={workspaceAvatarValue(workspace)}
@@ -295,24 +298,30 @@ export default function WorkspacesHomeLayout({
           </SidebarBody>
           <SidebarFooter className='max-lg:hidden'>
             <Dropdown>
-              <DropdownButton as={SidebarItem}>
-                <span className='flex min-w-0 items-center gap-3'>
-                  <Avvvatars
-                    style='character'
-                    size={30}
-                    radius={5}
-                    value={user.name.length > 0 ? user.name : user.email}
-                  />
-                  <span className='min-w-0'>
-                    <span className='block truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
+              <DropdownButton
+                as={SidebarItem}
+              >
+                <span className='w-10/12 flex flex-row items-center gap-3'>
+                  <span className='flex-shrink-0'>
+                    <Avvvatars
+                      style='character'
+                      size={30}
+                      radius={5}
+                      value={user.name.length > 0 ? user.name : user.email}
+                    />
+                  </span>
+                  <span className='w-9/12 flex flex-col'>
+                    <span className='truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
                       {user.name.length > 0 ? user.name : 'add your name'}
                     </span>
-                    <span className='block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400'>
+                    <span className='truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400'>
                       {user.email}
                     </span>
                   </span>
                 </span>
-                <ChevronUpIcon />
+                <span className='grow flex items-center justify-end flex-shrink-0'>
+                  <ChevronUpIcon className='h-4' />
+                </span>
               </DropdownButton>
               <DropdownMenu className='min-w-64' anchor='top start'>
                 <DropdownItem href='/my-profile'>

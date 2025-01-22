@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "dayjs": "^1.11.13",
     "next": "14.2.23",
+    "re-resizable": "^6.10.3",
     "react": "^18",
     "react-dom": "^18",
     "react-hotkeys-hook": "^4.6.1",

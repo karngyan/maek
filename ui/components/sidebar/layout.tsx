@@ -1,10 +1,19 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { NavbarItem } from '@/components/ui/navbar'
 import { Button } from '../ui/button'
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
+import {
+  ArrowRightStartOnRectangleIcon,
+  ChatBubbleBottomCenterTextIcon,
+  InboxIcon,
+  MagnifyingGlassIcon,
+  PaperAirplaneIcon,
+} from '@heroicons/react/16/solid'
+import { useLocalStorage } from 'usehooks-ts'
+import { Resizable } from 're-resizable'
+import { cn } from '@/libs/utils'
 
 function OpenMenuIcon() {
   return (
@@ -50,6 +59,8 @@ function MobileSidebar({
   )
 }
 
+type RightSidebarState = 'chat' | 'copilot' | 'none'
+
 export function SidebarLayout({
   navbar,
   sidebar,
@@ -59,11 +70,71 @@ export function SidebarLayout({
   sidebar: React.ReactNode
 }>) {
   const [showSidebar, setShowSidebar] = useState(false)
+  const [rightSidebarState, setRightSidebarState] =
+    useLocalStorage<RightSidebarState>('maek:right-sidebar-state', 'none')
+  const isAnyRightSidebarOpen = useMemo(
+    () => rightSidebarState !== 'none',
+    [rightSidebarState]
+  )
+
+  const [leftSidebarWidth, setLeftSidebarWidth] = useLocalStorage<number>(
+    'maek:left-sidebar-width',
+    256
+  )
+  const [rightSidebarWidth, setRightSidebarWidth] = useLocalStorage<number>(
+    'maek:right-sidebar-width',
+    320
+  )
+  const [isResizingLeftSidebar, setIsResizingLeftSidebar] = useState(false)
+  const [isResizingRightSidebar, setIsResizingRightSidebar] = useState(false)
+
+  const onResizeStart = (panel: 'left' | 'right') => {
+    if (panel === 'left') {
+      setIsResizingLeftSidebar(true)
+    } else {
+      setIsResizingRightSidebar(true)
+    }
+  }
+
+  const onResizeStop = (panel: 'left' | 'right', d: { width: number }) => {
+    if (panel === 'left') {
+      setLeftSidebarWidth(leftSidebarWidth + d.width)
+      setIsResizingLeftSidebar(false)
+    } else {
+      setRightSidebarWidth(rightSidebarWidth + d.width)
+      setIsResizingRightSidebar(false)
+    }
+  }
 
   return (
     <div className='relative isolate flex min-h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950'>
-      {/* Sidebar on desktop */}
-      <div className='fixed inset-y-0 left-0 w-64 max-lg:hidden'>{sidebar}</div>
+      {/* Resizable Sidebar on Desktop */}
+      <Resizable
+        size={{ width: leftSidebarWidth }}
+        enable={{ right: true }}
+        minWidth={256}
+        maxWidth={400}
+        onResizeStop={(e, direction, ref, d) => {
+          onResizeStop('left', d)
+        }}
+        onResizeStart={() => onResizeStart('left')}
+        className='max-lg:hidden'
+        handleWrapperClass='group'
+        handleComponent={{
+          right: (
+            <div
+              className={cn(
+                'opacity-0 flex transition-opacity duration-100 ease-in-out group-hover:opacity-70 -ml-1 w-full h-full items-center justify-center',
+                isResizingLeftSidebar && 'opacity-70'
+              )}
+            >
+              <div className='border-r border-dashed border-primary-600 h-4'></div>
+            </div>
+          ),
+        }}
+      >
+        {sidebar}
+      </Resizable>
 
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
@@ -83,20 +154,96 @@ export function SidebarLayout({
         <div className='min-w-0 flex-1'>{navbar}</div>
       </header>
 
-      {/* Content */}
-      <main className='flex flex-1 max-h-svh flex-col pb-2 lg:min-w-0 lg:pl-64 lg:pr-2 lg:pt-2'>
-        <div className='mb-2 space-x-1.5'>
-          <Button square plain>
-            <MagnifyingGlassIcon className='h-4' />
-          </Button>
-          <Button square plain>
-            <InboxIcon className='h-4' />
-          </Button>
+      <main className='flex flex-1 max-h-svh flex-col pb-2 lg:min-w-0 lg:pr-2 lg:pt-2'>
+        <div className='mb-2 flex flex-row justify-between items-center'>
+          <div className='space-x-1.5'>
+            <Button square plain>
+              <MagnifyingGlassIcon className='h-4' />
+            </Button>
+            <Button square plain>
+              <InboxIcon className='h-4' />
+            </Button>
+          </div>
+
+          {!isAnyRightSidebarOpen && (
+            <div className='space-x-1.5'>
+              <Button
+                square
+                plain
+                onClick={() => setRightSidebarState('copilot')}
+              >
+                <PaperAirplaneIcon className='h-4' />
+              </Button>
+              <Button square plain onClick={() => setRightSidebarState('chat')}>
+                <ChatBubbleBottomCenterTextIcon className='h-4' />
+              </Button>
+            </div>
+          )}
         </div>
         <div className='h-full overflow-scroll lg:rounded-lg lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'>
           {children}
         </div>
       </main>
+
+      {isAnyRightSidebarOpen && (
+        <Resizable
+          size={{ width: rightSidebarWidth }}
+          enable={{ left: true }}
+          minWidth={250}
+          maxWidth={700}
+          onResizeStop={(e, direction, ref, d) => {
+            onResizeStop('right', d)
+          }}
+          onResizeStart={() => onResizeStart('right')}
+          handleWrapperClass='group'
+          handleComponent={{
+            left: (
+              <div
+                className={cn(
+                  'opacity-0 flex transition-opacity duration-100 ease-in-out group-hover:opacity-70 -ml-1 pt-14 pb-4 w-full h-full items-center justify-center',
+                  isResizingRightSidebar && 'opacity-70'
+                )}
+              >
+                <div className='border-l border-dashed border-primary-600 h-4'></div>
+              </div>
+            ),
+          }}
+          className='max-lg:hidden'
+        >
+          <aside className='flex flex-1 h-full max-h-svh flex-col pb-2 lg:min-w-0 lg:pr-2 lg:pt-2'>
+            <div className='mb-2 flex flex-row justify-between items-center'>
+              <div className='space-x-1.5'>
+                <Button
+                  square
+                  plain
+                  onClick={() => setRightSidebarState('copilot')}
+                  data-checked={rightSidebarState === 'copilot'}
+                >
+                  <PaperAirplaneIcon className='h-4' />
+                </Button>
+                <Button
+                  square
+                  plain
+                  onClick={() => setRightSidebarState('chat')}
+                  data-checked={rightSidebarState === 'chat'}
+                >
+                  <ChatBubbleBottomCenterTextIcon className='h-4' />
+                </Button>
+              </div>
+              <div>
+                <Button
+                  square
+                  plain
+                  onClick={() => setRightSidebarState('none')}
+                >
+                  <ArrowRightStartOnRectangleIcon className='h-4' />
+                </Button>
+              </div>
+            </div>
+            <div className='h-full overflow-scroll lg:rounded-lg lg:bg-white lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'></div>
+          </aside>
+        </Resizable>
+      )}
     </div>
   )
 }

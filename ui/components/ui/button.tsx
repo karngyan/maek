@@ -64,6 +64,8 @@ const styles = {
     'border-transparent text-zinc-950 data-[active]:bg-zinc-950/5 data-[hover]:bg-zinc-950/5',
     // Dark mode
     'dark:text-zinc-400 dark:data-[active]:bg-white/10 dark:data-[hover]:bg-white/10',
+    // Checked
+    'data-[checked=true]:bg-zinc-950/5 dark:data-[checked=true]:bg-white/10',
     // Icon
     '[--btn-icon:theme(colors.zinc.500)] data-[active]:[--btn-icon:theme(colors.zinc.700)] data-[hover]:[--btn-icon:theme(colors.zinc.700)] dark:[--btn-icon:theme(colors.zinc.500)] dark:data-[active]:[--btn-icon:theme(colors.zinc.400)] dark:data-[hover]:[--btn-icon:theme(colors.zinc.400)]',
   ],
