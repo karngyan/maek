@@ -77,64 +77,27 @@ export function SidebarLayout({
     [rightSidebarState]
   )
 
-  const [leftSidebarWidth, setLeftSidebarWidth] = useLocalStorage<number>(
-    'maek:left-sidebar-width',
-    256
-  )
   const [rightSidebarWidth, setRightSidebarWidth] = useLocalStorage<number>(
     'maek:right-sidebar-width',
     320
   )
-  const [isResizingLeftSidebar, setIsResizingLeftSidebar] = useState(false)
   const [isResizingRightSidebar, setIsResizingRightSidebar] = useState(false)
 
-  const onResizeStart = (panel: 'left' | 'right') => {
-    if (panel === 'left') {
-      setIsResizingLeftSidebar(true)
-    } else {
+  const onResizeStart = () => {
       setIsResizingRightSidebar(true)
-    }
   }
 
-  const onResizeStop = (panel: 'left' | 'right', d: { width: number }) => {
-    if (panel === 'left') {
-      setLeftSidebarWidth(leftSidebarWidth + d.width)
-      setIsResizingLeftSidebar(false)
-    } else {
+  const onResizeStop = (d: { width: number }) => {
       setRightSidebarWidth(rightSidebarWidth + d.width)
       setIsResizingRightSidebar(false)
-    }
   }
 
   return (
     <div className='relative isolate flex min-h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950'>
-      {/* Resizable Sidebar on Desktop */}
-      <Resizable
-        size={{ width: leftSidebarWidth }}
-        enable={{ right: true }}
-        minWidth={256}
-        maxWidth={400}
-        onResizeStop={(e, direction, ref, d) => {
-          onResizeStop('left', d)
-        }}
-        onResizeStart={() => onResizeStart('left')}
-        className='max-lg:hidden'
-        handleWrapperClass='group'
-        handleComponent={{
-          right: (
-            <div
-              className={cn(
-                'opacity-0 flex transition-opacity duration-100 ease-in-out group-hover:opacity-70 -ml-1 w-full h-full items-center justify-center',
-                isResizingLeftSidebar && 'opacity-70'
-              )}
-            >
-              <div className='border-r border-dashed border-primary-600 h-4'></div>
-            </div>
-          ),
-        }}
-      >
+      {/* Sidebar on Desktop */}
+      <div className='max-lg:hidden w-64 overflow-hidden'>
         {sidebar}
-      </Resizable>
+      </div>
 
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
@@ -192,9 +155,9 @@ export function SidebarLayout({
           minWidth={250}
           maxWidth={700}
           onResizeStop={(e, direction, ref, d) => {
-            onResizeStop('right', d)
+            onResizeStop(d)
           }}
-          onResizeStart={() => onResizeStart('right')}
+          onResizeStart={onResizeStart}
           handleWrapperClass='group'
           handleComponent={{
             left: (

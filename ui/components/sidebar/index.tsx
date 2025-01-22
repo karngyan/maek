@@ -60,7 +60,7 @@ export function SidebarFooter({
      <SidebarDivider />
       <div {...props} className={clsx(
         className,
-        'flex flex-col p-4 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+        'flex flex-col p-2 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
       )}>
         {props.children}
       </div>
