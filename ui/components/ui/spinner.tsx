@@ -1,10 +1,10 @@
 import styles from './styles.module.css'
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 
 export function Spinner({ className }: { className?: string }) {
   return (
     <svg
-      className={clsx('dark:text-zinc-950 text-zinc-500', className)}
+      className={cn('dark:text-zinc-950 text-zinc-500', className)}
       viewBox='0 0 24 24'
       xmlns='http://www.w3.org/2000/svg'
       fill='currentColor'

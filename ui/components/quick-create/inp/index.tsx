@@ -53,7 +53,7 @@ const QuickCreateInp = () => {
 
   return (
     <div className='min-w-0 flex-1 relative'>
-      <div className='overflow-hidden rounded-lg shadow-sm ring-1 ring-inset drop-shadow-md ring-zinc-800 focus-within:shadow-lg transition-shadow duration-300'>
+      <div className='overflow-hidden rounded-lg shadow-xs ring-1 ring-inset drop-shadow-md ring-zinc-800 focus-within:shadow-lg transition-shadow duration-300'>
         <label htmlFor='quick-note' className='sr-only'>
           add to your notes
         </label>

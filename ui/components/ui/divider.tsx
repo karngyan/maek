@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 
 export function Divider({
   soft = false,
@@ -9,7 +9,7 @@ export function Divider({
     <hr
       role="presentation"
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'w-full border-t',
         soft && 'border-zinc-950/5 dark:border-white/5',

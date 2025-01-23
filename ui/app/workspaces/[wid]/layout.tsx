@@ -93,7 +93,7 @@ function WorkspaceDropdownMenu({
           <DropdownItem
             key={workspace.id}
             href={`/workspaces/${workspace.id}`}
-            className='flex-shrink-0'
+            className='shrink-0'
           >
             <Avvvatars
               style='shape'
@@ -207,7 +207,7 @@ export default function WorkspacesHomeLayout({
               <InboxIcon />
             </NavbarItem>
             <Dropdown>
-              <DropdownButton as={NavbarItem} className='flex-shrink-0'>
+              <DropdownButton as={NavbarItem} className='shrink-0'>
                 <Avvvatars
                   style='character'
                   size={20}
@@ -325,7 +325,7 @@ function CollapsibleSidebar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <CollapsibleTrigger asChild>
-                  <SidebarItem className='group flex-shrink-0'>
+                  <SidebarItem className='group shrink-0'>
                     <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300 size-4' />
                   </SidebarItem>
                 </CollapsibleTrigger>
@@ -342,7 +342,7 @@ function CollapsibleSidebar({
               asChild
             >
               <DropdownButton as={SidebarItem} className='mb-2'>
-                <span className='flex-shrink-0'>
+                <span className='shrink-0'>
                   <Avvvatars
                     size={16}
                     value={workspaceAvatarValue(workspace)}
@@ -372,7 +372,7 @@ function CollapsibleSidebar({
             >
               <SidebarItem
                 onClick={() => createNote()}
-                className='flex-shrink-0'
+                className='shrink-0'
               >
                 <PencilIcon />
                 <CollapsibleContent>
@@ -388,7 +388,8 @@ function CollapsibleSidebar({
             >
               <SidebarItem
                 href={`/workspaces/${workspace.id}/chat`}
-                className='flex-shrink-0'
+                className='shrink-0'
+                current={pathname === `/workspaces/${workspace.id}/chat`}
               >
                 <ChatBubbleBottomCenterTextIcon />
                 <CollapsibleContent>
@@ -411,7 +412,7 @@ function CollapsibleSidebar({
                 <SidebarItem
                   current={pathname === href}
                   href={href}
-                  className='flex-shrink-0'
+                  className='shrink-0'
                 >
                   {icon}
                   <CollapsibleContent>
@@ -438,7 +439,7 @@ function CollapsibleSidebar({
               side='right'
               asChild
             >
-            <SidebarItem href='/support' className='flex-shrink-0'>
+            <SidebarItem href='/support' className='shrink-0'>
               <QuestionMarkCircleIcon />
               <CollapsibleContent>
                 <SidebarLabel>support</SidebarLabel>
@@ -451,7 +452,7 @@ function CollapsibleSidebar({
               side='right'
               asChild
             >
-            <SidebarItem href='/changelog' className='flex-shrink-0'>
+            <SidebarItem href='/changelog' className='shrink-0'>
               <SparklesIcon />
               <CollapsibleContent>
                 <SidebarLabel>changelog</SidebarLabel>
@@ -464,7 +465,7 @@ function CollapsibleSidebar({
           <Dropdown>
             <DropdownButton as={SidebarItem}>
               <span className='w-10/12 flex flex-row items-center gap-3'>
-                <span className='flex-shrink-0'>
+                <span className='shrink-0'>
                   <Avvvatars
                     style='character'
                     size={30}
@@ -484,7 +485,7 @@ function CollapsibleSidebar({
                 </CollapsibleContent>
               </span>
               <CollapsibleContent asChild>
-                <span className='grow flex items-center justify-end flex-shrink-0'>
+                <span className='grow flex items-center justify-end shrink-0'>
                   <ChevronUpIcon className='h-4' />
                 </span>
               </CollapsibleContent>

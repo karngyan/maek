@@ -155,7 +155,7 @@ export const EditorWrapper = ({
 
   return (
     <div className='relative shrink-0 w-full grow-0 h-full'>
-      <div className='sticky top-0 z-10 backdrop-blur-sm bg-zinc-900/60 flex flex-row justify-between p-6'>
+      <div className='sticky top-0 z-10 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-6'>
         <Button plain className='h-8' href={exitHrefPath}>
           <ArrowLeftIcon className='h-6' />
           <span className='text-zinc-400'>exit</span>
