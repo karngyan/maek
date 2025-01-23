@@ -148,7 +148,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
     // Leading icon/icon-only
     'data-[slot=icon]:*:size-4 data-[slot=icon]:*:shrink-0 data-[slot=icon]:*:fill-zinc-500',
     // Trailing icon (down chevron or similar)
-    'data-[slot=icon]:last:*:ml-auto data-[slot=icon]:last:*:size-5 sm:data-[slot=icon]:last:*:size-4',
+    'data-[slot=icon]:last:*:ml-auto data-[slot=icon]:last:*:size-4',
     // Avatar
     'data-[slot=avatar]:*:-m-0.5 data-[slot=avatar]:*:size-7 data-[slot=avatar]:*:[--ring-opacity:10%] sm:data-[slot=avatar]:*:size-6',
     // Hover

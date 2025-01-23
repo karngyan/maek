@@ -326,7 +326,7 @@ function CollapsibleSidebar({
               <TooltipTrigger asChild>
                 <CollapsibleTrigger asChild>
                   <SidebarItem className='group flex-shrink-0'>
-                    <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300' />
+                    <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300 size-4' />
                   </SidebarItem>
                 </CollapsibleTrigger>
               </TooltipTrigger>

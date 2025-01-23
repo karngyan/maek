@@ -154,7 +154,7 @@ export const EditorWrapper = ({
   }
 
   return (
-    <div className='max-w-4xl mx-auto relative shrink-0 w-full grow-0 h-[calc(100vh-144px)] border border-dashed border-zinc-800 rounded-xl overflow-scroll'>
+    <div className='relative shrink-0 w-full grow-0 h-full'>
       <div className='sticky top-0 z-10 backdrop-blur-sm bg-zinc-900/60 flex flex-row justify-between p-6'>
         <Button plain className='h-8' href={exitHrefPath}>
           <ArrowLeftIcon className='h-6' />
