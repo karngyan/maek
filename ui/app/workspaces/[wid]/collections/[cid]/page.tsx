@@ -186,7 +186,7 @@ export default function NoteIdPage({
               placeholder='collection name'
               value={name}
               onChange={onNameChange}
-              className='w-1/3 px-1.5 py-0.5 text-lg truncate outline-none rounded hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-none focus:border-transparent border-transparent focus:ring-0 text-zinc-300 font-semibold'
+              className='w-1/3 px-1.5 py-0.5 text-lg truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-300 font-semibold'
             />
             <input
               type='text'
@@ -194,7 +194,7 @@ export default function NoteIdPage({
               placeholder='add a description'
               value={description}
               onChange={onDescriptionChange}
-              className='w-2/3 text-sm px-1.5 py-0.5 truncate outline-none rounded hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-none focus:border-transparent border-transparent focus:ring-0 text-zinc-400'
+              className='w-2/3 text-sm px-1.5 py-0.5 truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-400'
             />
           </div>
         </div>

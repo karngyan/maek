@@ -36,7 +36,7 @@ const SimpleTooltipContent = ({
   side?: 'bottom' | 'left' | 'right' | 'top'
 }) => (
   <TooltipContent side={side}>
-    <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+    <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded-sm px-2 py-1'>
       <p className='text-xs text-zinc-400'>{label}</p>
     </div>
   </TooltipContent>

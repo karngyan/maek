@@ -100,7 +100,7 @@ const QuickButton = ({
     <button
       type='button'
       onClick={() => onClick?.()}
-      className='inline-flex shrink-0 text-xs justify-center items-center space-x-1.5 rounded-full bg-zinc-900 px-2.5 py-1 font-semibold text-zinc-500 shadow-sm ring-1 ring-inset ring-zinc-800 hover:shadow hover:bg-zinc-950'
+      className='inline-flex shrink-0 text-xs justify-center items-center space-x-1.5 rounded-full bg-zinc-900 px-2.5 py-1 font-semibold text-zinc-500 shadow-xs ring-1 ring-inset ring-zinc-800 hover:shadow-sm hover:bg-zinc-950'
     >
       {icon}
       <span>{children}</span>

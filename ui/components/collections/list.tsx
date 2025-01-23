@@ -229,7 +229,7 @@ function Row({ collection }: RowProps) {
                   {formatTimestamp(collection.created)}
                 </TooltipTrigger>
                 <TooltipContent side='bottom'>
-                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded-sm px-2 py-1'>
                     <p className='text-xs text-zinc-400'>
                       Created {formatFullDate(collection.created)}
                     </p>
@@ -242,7 +242,7 @@ function Row({ collection }: RowProps) {
                   {formatTimestamp(collection.created)}
                 </TooltipTrigger>
                 <TooltipContent side='bottom'>
-                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded px-2 py-1'>
+                  <div className='bg-zinc-900 border border-zinc-800 shadow-zinc-900 rounded-sm px-2 py-1'>
                     <p className='text-xs text-zinc-400'>
                       Updated {formatFullDate(collection.updated)}
                     </p>

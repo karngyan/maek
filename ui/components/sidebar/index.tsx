@@ -146,22 +146,22 @@ export const SidebarItem = forwardRef(function SidebarItem(
     // Base
     'flex w-full items-center gap-2 rounded-lg px-2 text-left text-sm font-medium text-zinc-950 py-1.5',
     // Leading icon/icon-only
-    'data-[slot=icon]:*:size-4 data-[slot=icon]:*:shrink-0 data-[slot=icon]:*:fill-zinc-500',
+    '*:data-[slot=icon]:size-4 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500',
     // Trailing icon (down chevron or similar)
-    'data-[slot=icon]:last:*:ml-auto data-[slot=icon]:last:*:size-4',
+    '*:last:data-[slot=icon]:ml-auto *:last:data-[slot=icon]:size-4',
     // Avatar
-    'data-[slot=avatar]:*:-m-0.5 data-[slot=avatar]:*:size-7 data-[slot=avatar]:*:[--ring-opacity:10%] sm:data-[slot=avatar]:*:size-6',
+    '*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 *:data-[slot=avatar]:[--ring-opacity:10%] sm:*:data-[slot=avatar]:size-6',
     // Hover
-    'data-[hover]:bg-zinc-950/5 data-[slot=icon]:*:data-[hover]:fill-zinc-950',
+    'data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950',
     // Active
-    'data-[active]:bg-zinc-950/5 data-[slot=icon]:*:data-[active]:fill-zinc-950',
+    'data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950',
     // Current
-    'data-[current]:bg-zinc-950/5 data-[slot=icon]:*:data-[current]:fill-zinc-950',
+    'data-current:bg-zinc-950/5 data-current:*:data-[slot=icon]:fill-zinc-950',
     // Dark mode
-    'dark:text-white dark:data-[slot=icon]:*:fill-zinc-400',
-    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-zinc-200',
-    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-zinc-200',
-    'dark:data-[current]:bg-white/5 dark:data-[slot=icon]:*:data-[current]:fill-zinc-200'
+    'dark:text-white dark:*:data-[slot=icon]:fill-zinc-400',
+    'dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-zinc-200',
+    'dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-zinc-200',
+    'dark:data-current:bg-white/5 dark:data-current:*:data-[slot=icon]:fill-zinc-200'
   )
 
   return (

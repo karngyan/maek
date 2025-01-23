@@ -13,7 +13,7 @@ export default function NotesPage() {
         <QuickCreateInp />
         <NotesList />
       </div>
-      <div className='sticky bottom-0 inset-x-0 h-16 bg-gradient-to-t to-transparent from-zinc-900 pointer-events-none' />
+      <div className='sticky bottom-0 inset-x-0 h-16 bg-linear-to-t to-transparent from-zinc-900 pointer-events-none' />
     </>
   )
 }
