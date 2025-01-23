@@ -62,7 +62,7 @@ const QuickCreateInp = () => {
           name='quick-note'
           rows={2}
           placeholder='add to your notes ...'
-          className='caret-zinc-400 block w-full resize-none border-0 bg-transparent py-1.5 text-zinc-300 placeholder:text-zinc-600 focus:ring-0 text-sm leading-6'
+          className='caret-zinc-400 block w-full resize-none border-0 bg-transparent px-3 outline-hidden py-2 text-zinc-300 placeholder:text-zinc-600 focus:ring-0 text-sm leading-6'
           defaultValue={''}
           onInput={handleInput}
         />
