@@ -1,5 +1,5 @@
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 import React, { forwardRef } from 'react'
 
 export const Textarea = forwardRef(function Textarea(
@@ -13,7 +13,7 @@ export const Textarea = forwardRef(function Textarea(
   return (
     <span
       data-slot="control"
-      className={clsx([
+      className={cn([
         className,
         // Basic layout
         'relative block w-full',
@@ -30,7 +30,7 @@ export const Textarea = forwardRef(function Textarea(
       <Headless.Textarea
         ref={ref}
         {...props}
-        className={clsx([
+        className={cn([
           // Basic layout
           'relative block h-full w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
           // Typography

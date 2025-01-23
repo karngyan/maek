@@ -1,5 +1,5 @@
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 
 export function RadioGroup({
   className,
@@ -12,7 +12,7 @@ export function RadioGroup({
     <Headless.RadioGroup
       data-slot='control'
       {...props}
-      className={clsx(
+      className={cn(
         className,
         // Basic groups
         'space-y-3 **:data-[slot=label]:font-normal',
@@ -31,7 +31,7 @@ export function RadioField({
     <Headless.Field
       data-slot='field'
       {...props}
-      className={clsx(
+      className={cn(
         className,
         // Base layout
         'grid grid-cols-[1.125rem_1fr] items-center gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
@@ -134,11 +134,11 @@ export function Radio({
     <Headless.Radio
       data-slot='control'
       {...props}
-      className={clsx(className, 'group inline-flex focus:outline-hidden')}
+      className={cn(className, 'group inline-flex focus:outline-hidden')}
     >
-      <span className={clsx([base, colors[color]])}>
+      <span className={cn([base, colors[color]])}>
         <span
-          className={clsx(
+          className={cn(
             'size-full rounded-full border-[4.5px] border-transparent bg-(--radio-indicator) bg-clip-padding',
             // Forced colors mode
             'forced-colors:border-[Canvas] forced-colors:group-data-checked:border-[Highlight]'

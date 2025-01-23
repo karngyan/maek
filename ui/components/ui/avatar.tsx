@@ -1,9 +1,9 @@
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
 import React, { forwardRef } from 'react'
 import { TouchTarget } from './button'
 import { Link } from './link'
 import Image from 'next/image'
+import { cn } from '@/libs/utils'
 
 type AvatarProps = {
   src?: string | null
@@ -25,11 +25,11 @@ export function Avatar({
     <span
       data-slot='avatar'
       {...props}
-      className={clsx(
+      className={cn(
         className,
         // Basic layout
         'inline-grid shrink-0 align-middle [--avatar-radius:20%] [--ring-opacity:20%] *:col-start-1 *:row-start-1',
-        'outline outline-1 -outline-offset-1 outline-black/(--ring-opacity) dark:outline-white/(--ring-opacity)',
+        'outline-1 -outline-offset-1 outline-black/(--ring-opacity) dark:outline-white/(--ring-opacity)',
         // Add the correct border radius
         square
           ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)'
@@ -75,7 +75,7 @@ export const AvatarButton = forwardRef(function AvatarButton(
     ),
   ref: React.ForwardedRef<HTMLElement>
 ) {
-  const classes = clsx(
+  const classes = cn(
     className,
     square ? 'rounded-[20%]' : 'rounded-full',
     'relative inline-grid focus:outline-hidden data-focus:outline data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'

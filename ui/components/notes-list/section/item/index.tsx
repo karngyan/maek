@@ -7,7 +7,6 @@ import React, { useMemo, useState } from 'react'
 import ScribbleIcon from '@/components/ui/icons/scribble'
 import { useNoteMeta } from '@/libs/providers/note-meta'
 import { Checkbox } from '@/components/ui/checkbox'
-import clsx from 'clsx'
 import {
   Dropdown,
   DropdownButton,
@@ -34,6 +33,7 @@ import {
 } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useDeleteNote } from '@/queries/hooks/notes'
+import { cn } from '@/libs/utils'
 
 type NotesListSectionItemProps = {
   note: Note
@@ -103,14 +103,14 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
       >
         <div className='flex items-center justify-center'>
           <ScribbleIcon
-            className={clsx(
+            className={cn(
               'text-zinc-400 h-3 mr-3',
               isNoteSelected ? 'hidden' : 'group-hover:hidden'
             )}
           />
           <Checkbox
             aria-label='Select note'
-            className={clsx(
+            className={cn(
               'mr-3 transition-opacity duration-200 ease-in-out h-3 w-3 mb-0.5',
               isNoteSelected ? 'block' : 'hidden group-hover:block'
             )}

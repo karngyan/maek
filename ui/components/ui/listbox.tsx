@@ -1,7 +1,7 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 import React, { Fragment } from 'react'
 
 export function Listbox<T>({
@@ -24,7 +24,7 @@ export function Listbox<T>({
         autoFocus={autoFocus}
         data-slot='control'
         aria-label={ariaLabel}
-        className={clsx([
+        className={cn([
           className,
           // Basic layout
           'group relative block w-full',
@@ -50,7 +50,7 @@ export function Listbox<T>({
               </span>
             )
           }
-          className={clsx([
+          className={cn([
             // Basic layout
             'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
             // Set minimum height for when no value is selected
@@ -94,7 +94,7 @@ export function Listbox<T>({
       <Headless.ListboxOptions
         transition
         anchor='selection start'
-        className={clsx(
+        className={cn(
           // Anchor positioning
           '[--anchor-offset:-1.625rem] [--anchor-padding:--spacing(4)] sm:[--anchor-offset:-1.375rem]',
           // Base styles
@@ -125,7 +125,7 @@ export function ListboxOption<T>({
   Headless.ListboxOptionProps<'div', T>,
   'as' | 'className'
 >) {
-  const sharedClasses = clsx(
+  const sharedClasses = cn(
     // Base
     'flex min-w-0 items-center',
     // Icons
@@ -141,13 +141,13 @@ export function ListboxOption<T>({
       {({ selectedOption }) => {
         if (selectedOption) {
           return (
-            <div className={clsx(className, sharedClasses)}>{children}</div>
+            <div className={cn(className, sharedClasses)}>{children}</div>
           )
         }
 
         return (
           <div
-            className={clsx(
+            className={cn(
               // Basic layout
               'group/option grid cursor-default grid-cols-[--spacing(5)_1fr] items-baseline gap-x-2 rounded-lg py-2.5 pl-2 pr-3.5 sm:grid-cols-[--spacing(4)_1fr] sm:py-1.5 sm:pl-1.5 sm:pr-3',
               // Typography
@@ -173,7 +173,7 @@ export function ListboxOption<T>({
                 strokeLinejoin='round'
               />
             </svg>
-            <span className={clsx(className, sharedClasses, 'col-start-2')}>
+            <span className={cn(className, sharedClasses, 'col-start-2')}>
               {children}
             </span>
           </div>
@@ -190,7 +190,7 @@ export function ListboxLabel({
   return (
     <span
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0'
       )}
@@ -206,7 +206,7 @@ export function ListboxDescription({
   return (
     <span
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'flex flex-1 overflow-hidden text-zinc-500 before:w-2 before:min-w-0 before:shrink group-data-focus/option:text-white dark:text-zinc-400'
       )}

@@ -1,8 +1,8 @@
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
 import React, { forwardRef } from 'react'
 import { Link } from './link'
 import { Spinner } from './spinner'
+import { cn } from '@/libs/utils'
 
 const styles = {
   base: [
@@ -197,14 +197,14 @@ export const Button = forwardRef(function Button(
   }: ButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
-  const classes = clsx(
+  const classes = cn(
     className,
     square ? styles.baseSquare : styles.base,
     outline
       ? styles.outline
       : plain
         ? styles.plain
-        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc'])
+        : cn(styles.solid, styles.colors[color ?? 'dark/zinc'])
   )
 
   return 'href' in props ? (
@@ -220,7 +220,7 @@ export const Button = forwardRef(function Button(
   ) : (
     <Headless.Button
       {...props}
-      className={clsx(classes, 'cursor-default')}
+      className={cn(classes, 'cursor-default')}
       ref={ref}
     >
       <TouchTarget>

@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useId, useRef } from 'react'
-import clsx from 'clsx'
 import { type TimelineSegment, animate, timeline } from 'motion'
+import { cn } from '@/libs/utils'
 
 type Star = [x: number, y: number, dim?: boolean, blur?: boolean]
 
@@ -196,7 +196,7 @@ export function StarField({ className }: { className?: string }) {
       viewBox='0 0 881 211'
       fill='white'
       aria-hidden='true'
-      className={clsx(
+      className={cn(
         'pointer-events-none absolute w-[55.0625rem] origin-top-right bottom-10 rotate-[5deg] overflow-visible opacity-80',
         className
       )}

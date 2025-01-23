@@ -3,7 +3,7 @@
 import * as Headless from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { forwardRef, Fragment, useState } from 'react'
-import clsx from 'clsx'
+import { cn } from '@/libs/utils'
 
 interface ComboboxProps<T extends object> {
   label?: string
@@ -62,7 +62,7 @@ function ComboboxComponent<T extends object>(
         setSelectedItem(item)
         onChange(item)
       }}
-      className={clsx('relative w-full', className)}
+      className={cn('relative w-full', className)}
       {...props}
     >
       {label && (
@@ -95,7 +95,7 @@ function ComboboxComponent<T extends object>(
                     renderItem({ item, focus, selected })
                   ) : (
                     <div
-                      className={clsx(
+                      className={cn(
                         'group relative cursor-default select-none py-2 pl-3 pr-9 text-zinc-300',
                         focus && 'bg-primary-700 text-zinc-200 outline-hidden'
                       )}
@@ -106,7 +106,7 @@ function ComboboxComponent<T extends object>(
                         </span>
                       </div>
                       <span
-                        className={clsx(
+                        className={cn(
                           'absolute inset-y-0 right-0 items-center pr-4 text-primary-600',
                           focus ? 'text-white' : '',
                           selected ? 'flex' : 'hidden',

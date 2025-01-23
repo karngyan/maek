@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import clsx from 'clsx'
 import React from 'react'
+import { cn } from '@/libs/utils'
 
 export function IconLink({
   children,
@@ -15,7 +15,7 @@ export function IconLink({
   return (
     <Link
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'group relative isolate flex items-center rounded-lg px-2 py-0.5 text-[0.8125rem]/6 font-medium text-white/30 transition-colors hover:text-sky-300',
         compact ? 'gap-x-2' : 'gap-x-3'

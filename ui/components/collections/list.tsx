@@ -28,7 +28,6 @@ import {
 } from '@/components/ui/dropdown'
 import { Link } from '@/components/ui/link'
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Tooltip,
@@ -44,6 +43,7 @@ import {
 } from '@/components/ui/alert'
 import { Divider } from '@/components/ui/divider'
 import CollectionsListBatchSelectActions from '@/components/collections/list-batch-select-actions'
+import { cn } from '@/libs/utils'
 
 const SortOptions = [
   { value: CollectionSortKeys.UpdatedDsc, label: 'last modified' },
@@ -201,14 +201,14 @@ function Row({ collection }: RowProps) {
       >
         <div className='flex items-center justify-center mr-3'>
           <Squares2X2Icon
-            className={clsx(
+            className={cn(
               'text-zinc-400 h-4',
               isSelected ? 'hidden' : 'group-hover:hidden'
             )}
           />
           <Checkbox
             aria-label='Select note'
-            className={clsx(
+            className={cn(
               'transition-opacity duration-200 ease-in-out h-4 w-4 mb-0.5',
               isSelected ? 'block' : 'hidden group-hover:block'
             )}

@@ -1,21 +1,24 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
 import { LayoutGroup, motion } from 'framer-motion'
-import React, { Fragment, forwardRef, useId } from 'react'
+import React, { Fragment, forwardRef, use, useId } from 'react'
 import { TouchTarget } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
+import { cn } from '@/libs/utils'
 
 export function Sidebar({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'>) {
+  const id = useId()
   return (
-    <nav
-      {...props}
-      className={clsx(className, 'flex h-full min-h-0 flex-col')}
-    />
+    <LayoutGroup id={id}>
+      <nav
+        {...props}
+        className={cn(className, 'flex h-full min-h-0 flex-col')}
+      />
+    </LayoutGroup>
   )
 }
 
@@ -25,10 +28,13 @@ export function SidebarHeader({
 }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <>
-      <div {...props} className={clsx(
-        className,
-        'flex flex-col px-4 py-2.5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
-      )}>
+      <div
+        {...props}
+        className={cn(
+          className,
+          'flex flex-col px-4 py-2.5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+        )}
+      >
         {props.children}
       </div>
       <SidebarDivider />
@@ -43,9 +49,9 @@ export function SidebarBody({
   return (
     <div
       {...props}
-      className={clsx(
+      className={cn(
         className,
-        'flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8',
+        'flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8'
       )}
     />
   )
@@ -57,11 +63,14 @@ export function SidebarFooter({
 }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <>
-     <SidebarDivider />
-      <div {...props} className={clsx(
-        className,
-        'flex flex-col p-2 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
-      )}>
+      <SidebarDivider />
+      <div
+        {...props}
+        className={cn(
+          className,
+          'flex flex-col p-2 [&>[data-slot=section]+[data-slot=section]]:mt-2.5'
+        )}
+      >
         {props.children}
       </div>
     </>
@@ -72,16 +81,12 @@ export function SidebarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  const id = useId()
-
   return (
-    <LayoutGroup id={id}>
-      <div
-        {...props}
-        data-slot='section'
-        className={clsx(className, 'flex flex-col gap-0.5')}
-      />
-    </LayoutGroup>
+    <div
+      {...props}
+      data-slot='section'
+      className={cn(className, 'flex flex-col gap-0.5')}
+    />
   )
 }
 
@@ -93,7 +98,7 @@ export function SidebarDivider({
   return (
     <hr
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'border-t border-zinc-950/5 border-dashed dark:border-white/5',
         !noMargin && 'mx-4'
@@ -110,7 +115,7 @@ export function SidebarSpacer({
     <div
       aria-hidden='true'
       {...props}
-      className={clsx(className, 'mt-8 flex-1')}
+      className={cn(className, 'mt-8 flex-1')}
     />
   )
 }
@@ -122,7 +127,7 @@ export function SidebarHeading({
   return (
     <h3
       {...props}
-      className={clsx(
+      className={cn(
         className,
         'mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-400'
       )}
@@ -142,7 +147,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
   ),
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
 ) {
-  const classes = clsx(
+  const classes = cn(
     // Base
     'flex w-full items-center gap-2 rounded-lg px-2 text-left text-sm font-medium text-zinc-950 py-1.5',
     // Leading icon/icon-only
@@ -165,7 +170,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
   )
 
   return (
-    <span className={clsx(className, 'relative')}>
+    <span className={cn(className, 'relative')}>
       {current && (
         <motion.span
           layoutId='current-indicator'
@@ -185,7 +190,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
       ) : (
         <Headless.Button
           {...props}
-          className={clsx('cursor-default', classes)}
+          className={cn('cursor-default', classes)}
           data-current={current ? 'true' : undefined}
           ref={ref}
         >
@@ -200,5 +205,5 @@ export function SidebarLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={clsx(className, 'truncate')} />
+  return <span {...props} className={cn(className, 'truncate')} />
 }

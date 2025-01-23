@@ -389,6 +389,7 @@ function CollapsibleSidebar({
               <SidebarItem
                 href={`/workspaces/${workspace.id}/chat`}
                 className='shrink-0'
+                current={pathname === `/workspaces/${workspace.id}/chat`}
               >
                 <ChatBubbleBottomCenterTextIcon />
                 <CollapsibleContent>
