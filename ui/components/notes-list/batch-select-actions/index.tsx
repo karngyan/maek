@@ -14,17 +14,27 @@ import { useDeleteNoteMulti } from '@/queries/hooks/notes'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
-import { useAddNotesToCollection, useFetchAllCollections } from '@/queries/hooks/collections'
+import {
+  useAddNotesToCollection,
+  useFetchAllCollections,
+} from '@/queries/hooks/collections'
 import {
   SimpleTooltipContent,
   Tooltip,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Collection, CollectionSortKeys } from '@/queries/services/collection'
 import { Combobox } from '@/components/ui/combobox'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 
 const NotesListBatchSelectActions = () => {
   const { noteMeta, setNoteMeta } = useNoteMeta()
@@ -36,16 +46,21 @@ const NotesListBatchSelectActions = () => {
   const [isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen] =
     useState(false)
   const [selectedCollectionId, setSelectedCollectionId] = useState(0)
-  const { data: collectionInfResponse } = useFetchAllCollections(wid, CollectionSortKeys.UpdatedDsc)
+  const { data: collectionInfResponse } = useFetchAllCollections(
+    wid,
+    CollectionSortKeys.UpdatedDsc
+  )
 
   const { mutate: deleteNoteMulti } = useDeleteNoteMulti({
     onSuccess: () => {
       setIsDeleteConfirmAlertOpen(false)
-      toast(`trashed ${selectedNotesLen} note` +
-          (selectedNotesLen > 1 ? 's' : ''), {
-        description:
-          'you can restore them from trash, or delete them permanently',
-      })
+      toast(
+        `trashed ${selectedNotesLen} note` + (selectedNotesLen > 1 ? 's' : ''),
+        {
+          description:
+            'you can restore them from trash, or delete them permanently',
+        }
+      )
 
       // clear note meta for selected notes
       const newMeta = { ...noteMeta }
@@ -60,7 +75,9 @@ const NotesListBatchSelectActions = () => {
   const { mutate: addNotesToCollection } = useAddNotesToCollection()
 
   const allCollections = useMemo(() => {
-    return collectionInfResponse?.pages.map((page) => page.collections).flat() ?? []
+    return (
+      collectionInfResponse?.pages.map((page) => page.collections).flat() ?? []
+    )
   }, [collectionInfResponse])
 
   const showActions = useMemo(() => {
@@ -102,27 +119,36 @@ const NotesListBatchSelectActions = () => {
       }
     }
 
-    
-    addNotesToCollection({
-      wid,
-      cid: selectedCollectionId,
-      nids: noteIDs,
-    }, {
-      onSuccess: () => {        
-        setIsAddToCollectionDialogOpen(false)
-        toast(`added ${selectedNotesLen} note` + (selectedNotesLen > 1 ? 's' : '') + ' to collection', {
-          description: 'you can view them in there',
-          action: {
-            label: 'view',
-            onClick: () => {
-              router.push(`/workspaces/${wid}/collections/${selectedCollectionId}`)
-            },
-          },
-        })
-        setSelectedCollectionId(0)
-        deselectAll()
+    addNotesToCollection(
+      {
+        wid,
+        cid: selectedCollectionId,
+        nids: noteIDs,
+      },
+      {
+        onSuccess: () => {
+          setIsAddToCollectionDialogOpen(false)
+          toast(
+            `added ${selectedNotesLen} note` +
+              (selectedNotesLen > 1 ? 's' : '') +
+              ' to collection',
+            {
+              description: 'you can view them in there',
+              action: {
+                label: 'view',
+                onClick: () => {
+                  router.push(
+                    `/workspaces/${wid}/collections/${selectedCollectionId}`
+                  )
+                },
+              },
+            }
+          )
+          setSelectedCollectionId(0)
+          deselectAll()
+        },
       }
-    })
+    )
   }
 
   useHotkeys('esc', () => {
@@ -144,7 +170,13 @@ const NotesListBatchSelectActions = () => {
 
   return (
     <>
-      <div className='animate-in z-10 slide-in-from-bottom fixed inset-x-0 bottom-0'>
+      <motion.div
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', bounce: 0.3, duration: 0.5 }}
+        className='z-10 fixed inset-x-0 bottom-0'
+      >
         <div className='flex items-center justify-center mb-12'>
           <div className='bg-zinc-900 flex space-x-4 flex-row items-center justify-center shadow-lg border border-zinc-800 rounded-lg px-4 py-2'>
             <p className='text-zinc-400 text-sm'>
@@ -178,7 +210,7 @@ const NotesListBatchSelectActions = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
       <Alert
         open={isDeleteConfirmAlertOpen}
         onClose={setIsDeleteConfirmAlertOpen}

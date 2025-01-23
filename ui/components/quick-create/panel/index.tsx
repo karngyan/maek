@@ -8,6 +8,7 @@ import {
   QuickCreateOption,
   useQuickCreateOptions,
 } from '@/queries/hooks/use-quick-create-options'
+import { motion } from 'framer-motion'
 
 type QuickCreatePanelProps = {
   onQuickCreate: (
@@ -69,7 +70,13 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
   }
 
   return (
-    <div className='animate-in slide-in-from-bottom no-scrollbar absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'>
+    <motion.div
+      initial={{ y: '100%', opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: '100%', opacity: 0 }}
+      transition={{ type: 'spring', bounce: 0, duration: 0.15 }}
+      className='no-scrollbar absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'
+    >
       <span className='text-sm text-zinc-500 shrink-0'>quick create:</span>
       {options.map((option) => {
         if (option == null) return null
@@ -84,7 +91,7 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
           </QuickButton>
         )
       })}
-    </div>
+    </motion.div>
   )
 }
 

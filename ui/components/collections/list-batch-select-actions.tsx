@@ -13,6 +13,7 @@ import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspac
 import { useTrashCollectionMulti } from '@/queries/hooks/collections'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 
 const CollectionsListBatchSelectActions = () => {
   const { collectionMeta, setCollectionMeta } = useCollectionMeta()
@@ -20,11 +21,14 @@ const CollectionsListBatchSelectActions = () => {
   const { mutate: deleteCollectionMulti } = useTrashCollectionMulti({
     onSuccess: () => {
       setIsTrashConfirmAlertOpen(false)
-      toast(`trashed ${selectedCollectionsLen} collection` +
-          (selectedCollectionsLen > 1 ? 's' : ''), {
-        description:
-          'you can restore them from trash, or delete them permanently',
-      })
+      toast(
+        `trashed ${selectedCollectionsLen} collection` +
+          (selectedCollectionsLen > 1 ? 's' : ''),
+        {
+          description:
+            'you can restore them from trash, or delete them permanently',
+        }
+      )
 
       // clear collection meta for selected collections
       const newMeta = { ...collectionMeta }
@@ -77,7 +81,13 @@ const CollectionsListBatchSelectActions = () => {
 
   return (
     <>
-      <div className='animate-in z-10 slide-in-from-bottom fixed inset-x-0 bottom-0'>
+      <motion.div
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', bounce: 0.3, duration: 0.5 }}
+        className='z-10 fixed inset-x-0 bottom-0'
+      >
         <div className='flex items-center justify-center mb-12'>
           <div className='bg-zinc-900 flex space-x-4 flex-row items-center justify-center shadow-lg border border-zinc-800 rounded-lg px-4 py-2'>
             <p className='text-zinc-400 text-sm'>
@@ -92,7 +102,7 @@ const CollectionsListBatchSelectActions = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
       <Alert
         open={isTrashConfirmAlertOpen}
         onClose={setIsTrashConfirmAlertOpen}
