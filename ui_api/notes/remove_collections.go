@@ -1,32 +1,35 @@
-package collections
+package notes
 
 import (
 	"net/http"
 
 	"github.com/karngyan/maek/domains/collections"
+	"github.com/karngyan/maek/domains/notes"
+	"github.com/karngyan/maek/ui_api/models"
 
 	"github.com/karngyan/maek/ui_api/web"
 	"github.com/labstack/echo/v4"
 )
 
-func removeNotes(ctx web.Context) error {
+func removeCollections(ctx web.Context) error {
 	var (
-		cid int64
-		wid int64
+		nuuid string
+		wid   int64
 	)
 	echo.PathParamsBinder(ctx).
-		Int64("collection_id", &cid).
+		String("note_uuid", &nuuid).
 		Int64("workspace_id", &wid)
 
-	if cid == 0 {
+	if nuuid == "" {
 		return ctx.JSON(http.StatusBadRequest, map[string]any{
-			"collection_id": "collection_id is required",
+			"note_uuid": "note_uuid is required",
 		})
 	}
 
 	var req struct {
-		NoteIDs []int64 `json:"noteIds"`
+		CollectionIDs []int64 `json:"collectionIds"`
 	}
+
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
 			"error": err.Error(),
@@ -34,12 +37,17 @@ func removeNotes(ctx web.Context) error {
 	}
 
 	rctx := ctx.Request().Context()
-	err := collections.RemoveNotesFromCollection(rctx, wid, cid, req.NoteIDs)
+	err := notes.RemoveCollectionsFromNote(rctx, wid, nuuid, req.CollectionIDs)
+	if err != nil {
+		return ctx.InternalError(err)
+	}
+
+	cs, err := collections.FindCollectionsForNoteUUID(rctx, wid, nuuid)
 	if err != nil {
 		return ctx.InternalError(err)
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]any{
-		"message": "Notes removed from collection successfully",
+		"collections": models.ModelForCollections(cs),
 	})
 }

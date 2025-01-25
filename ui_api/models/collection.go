@@ -29,3 +29,12 @@ func ModelForCollection(collection *collections.Collection) *Collection {
 		UpdatedByID: collection.UpdatedByID,
 	}
 }
+
+func ModelForCollections(collections []*collections.Collection) []*Collection {
+	uiCollections := make([]*Collection, 0, len(collections))
+	for _, c := range collections {
+		uiCollections = append(uiCollections, ModelForCollection(c))
+	}
+
+	return uiCollections
+}

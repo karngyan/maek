@@ -11,18 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addNotesToCollection = `-- name: AddNotesToCollection :exec
+const addNotesToCollections = `-- name: AddNotesToCollections :exec
 INSERT INTO collection_notes (collection_id, note_id)
 SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[])
 `
 
-type AddNotesToCollectionParams struct {
+type AddNotesToCollectionsParams struct {
 	CollectionIds []int64
 	NoteIds       []int64
 }
 
-func (q *Queries) AddNotesToCollection(ctx context.Context, arg AddNotesToCollectionParams) error {
-	_, err := q.db.Exec(ctx, addNotesToCollection, arg.CollectionIds, arg.NoteIds)
+func (q *Queries) AddNotesToCollections(ctx context.Context, arg AddNotesToCollectionsParams) error {
+	_, err := q.db.Exec(ctx, addNotesToCollections, arg.CollectionIds, arg.NoteIds)
 	return err
 }
 
@@ -82,6 +82,57 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 		&i.UpdatedByID,
 	)
 	return i, err
+}
+
+const getCollectionsByNoteUUIDAndWorkspace = `-- name: GetCollectionsByNoteUUIDAndWorkspace :many
+SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
+       c.workspace_id, c.created_by_id, c.updated_by_id
+FROM collection c
+JOIN collection_notes cn ON c.id = cn.collection_id
+JOIN note n ON cn.note_id = n.id
+WHERE n.uuid = $1
+  AND c.workspace_id = $2
+  AND c.deleted = FALSE
+  AND c.trashed = FALSE
+  AND n.deleted = FALSE
+  AND n.trashed = FALSE
+ORDER BY c.updated DESC
+`
+
+type GetCollectionsByNoteUUIDAndWorkspaceParams struct {
+	UUID        string
+	WorkspaceID int64
+}
+
+func (q *Queries) GetCollectionsByNoteUUIDAndWorkspace(ctx context.Context, arg GetCollectionsByNoteUUIDAndWorkspaceParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getCollectionsByNoteUUIDAndWorkspace, arg.UUID, arg.WorkspaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertCollection = `-- name: InsertCollection :one
@@ -212,6 +263,23 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeCollectionsFromNote = `-- name: RemoveCollectionsFromNote :exec
+UPDATE collection_notes
+SET trashed = TRUE
+WHERE note_id = $1
+  AND collection_id = ANY($2)
+`
+
+type RemoveCollectionsFromNoteParams struct {
+	NoteID        int64
+	CollectionIds []int64
+}
+
+func (q *Queries) RemoveCollectionsFromNote(ctx context.Context, arg RemoveCollectionsFromNoteParams) error {
+	_, err := q.db.Exec(ctx, removeCollectionsFromNote, arg.NoteID, arg.CollectionIds)
+	return err
 }
 
 const removeNotesFromCollection = `-- name: RemoveNotesFromCollection :exec

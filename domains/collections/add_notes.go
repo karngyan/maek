@@ -13,24 +13,29 @@ func AddNotesToCollection(ctx context.Context, wid, cid int64, noteIDs []int64) 
 		return nil, err
 	}
 
-	dbNotes, err := db.Q.GetNotesByCollectionID(ctx, db.GetNotesByCollectionIDParams{
-		CollectionID: cid,
-		WorkspaceID:  wid,
-	})
+	err = db.Tx(ctx, func(ctx context.Context, q *db.Queries) error {
+		dbNotes, err := db.Q.GetNotesByCollectionID(ctx, db.GetNotesByCollectionIDParams{
+			CollectionID: cid,
+			WorkspaceID:  wid,
+		})
+		if err != nil {
+			return err
+		}
 
-	noteSet := mapset.NewSet[int64](noteIDs...)
-	for _, dbNote := range dbNotes {
-		noteSet.Add(dbNote.ID)
-	}
+		noteSet := mapset.NewSet[int64](noteIDs...)
+		for _, dbNote := range dbNotes {
+			noteSet.Add(dbNote.ID)
+		}
 
-	cids := make([]int64, 0, noteSet.Cardinality())
-	for i := 0; i < noteSet.Cardinality(); i++ {
-		cids = append(cids, cid)
-	}
+		cids := make([]int64, 0, noteSet.Cardinality())
+		for i := 0; i < noteSet.Cardinality(); i++ {
+			cids = append(cids, cid)
+		}
 
-	err = db.Q.AddNotesToCollection(ctx, db.AddNotesToCollectionParams{
-		CollectionIds: cids,
-		NoteIds:       noteSet.ToSlice(),
+		return db.Q.AddNotesToCollections(ctx, db.AddNotesToCollectionsParams{
+			CollectionIds: cids,
+			NoteIds:       noteSet.ToSlice(),
+		})
 	})
 	if err != nil {
 		return nil, err

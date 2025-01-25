@@ -1,0 +1,15 @@
+{
+  "collections": [
+    {
+      "created": 1234567890,
+      "createdById": 1,
+      "description": "",
+      "id": 1,
+      "name": "test collection name",
+      "trashed": false,
+      "updated": 1234567890,
+      "updatedById": 1,
+      "workspaceId": 1
+    }
+  ]
+}

@@ -3,7 +3,7 @@ INSERT INTO collection (name, description, created, updated, trashed, deleted, w
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id;
 
--- name: AddNotesToCollection :exec
+-- name: AddNotesToCollections :exec
 INSERT INTO collection_notes (collection_id, note_id)
 SELECT UNNEST(@collection_ids::BIGINT[]), UNNEST(@note_ids::BIGINT[]);
 
@@ -12,6 +12,26 @@ UPDATE collection_notes
 SET trashed = TRUE
 WHERE collection_id = $1
   AND note_id = ANY(@note_ids);
+
+-- name: RemoveCollectionsFromNote :exec
+UPDATE collection_notes
+SET trashed = TRUE
+WHERE note_id = $1
+  AND collection_id = ANY(@collection_ids);
+
+-- name: GetCollectionsByNoteUUIDAndWorkspace :many
+SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
+       c.workspace_id, c.created_by_id, c.updated_by_id
+FROM collection c
+JOIN collection_notes cn ON c.id = cn.collection_id
+JOIN note n ON cn.note_id = n.id
+WHERE n.uuid = $1
+  AND c.workspace_id = $2
+  AND c.deleted = FALSE
+  AND c.trashed = FALSE
+  AND n.deleted = FALSE
+  AND n.trashed = FALSE
+ORDER BY c.updated DESC;
 
 -- name: GetCollectionByIDAndWorkspace :one
 SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
