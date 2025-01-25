@@ -15,7 +15,7 @@ func TestUpdate(t *testing.T) {
 	defer testutil.TruncateTables()
 	cs := testutil.NewClientStateWithUser(t)
 
-	c, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID)
+	c, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID, "")
 	assert.NoError(t, err)
 
 	rr, err := cs.Put(fmt.Sprintf("/v1/workspaces/%d/collections/%d", cs.Workspace.ID, c.ID), map[string]any{

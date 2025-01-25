@@ -19,7 +19,7 @@ func TestList(t *testing.T) {
 
 	i := 1
 	for i < 10 {
-		c, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID)
+		c, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID, "")
 		assert.NoError(t, err)
 		_, err = collections.UpdateCollection(context.Background(), &collections.UpdateCollectionRequest{
 			ID:          c.ID,

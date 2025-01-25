@@ -11,45 +11,26 @@ import { toast } from 'sonner'
 import { useNoteMeta } from '@/libs/providers/note-meta'
 import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspace-id'
 import { useDeleteNoteMulti } from '@/queries/hooks/notes'
-import { TrashIcon } from '@heroicons/react/16/solid'
+import { HashtagIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
-import { Squares2X2Icon } from '@heroicons/react/24/outline'
-import {
-  useAddNotesToCollection,
-  useFetchAllCollections,
-} from '@/queries/hooks/collections'
 import {
   SimpleTooltipContent,
   Tooltip,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  Dialog,
-  DialogActions,
-  DialogBody,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Collection, CollectionSortKeys } from '@/queries/services/collection'
-import { Combobox } from '@/components/ui/combobox'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { AddToCollection } from './add-to-collection'
 
 const NotesListBatchSelectActions = () => {
-  const { noteMeta, setNoteMeta } = useNoteMeta()
-  const router = useRouter()
+  const { noteMeta, setNoteMeta, deselectAll } = useNoteMeta()
   const wid = useCurrentWorkspaceId()
 
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
   const [isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen] =
     useState(false)
-  const [selectedCollectionId, setSelectedCollectionId] = useState(0)
-  const { data: collectionInfResponse } = useFetchAllCollections(
-    wid,
-    CollectionSortKeys.UpdatedDsc
-  )
+
 
   const { mutate: deleteNoteMulti } = useDeleteNoteMulti({
     onSuccess: () => {
@@ -72,13 +53,6 @@ const NotesListBatchSelectActions = () => {
       setNoteMeta(newMeta)
     },
   })
-  const { mutate: addNotesToCollection } = useAddNotesToCollection()
-
-  const allCollections = useMemo(() => {
-    return (
-      collectionInfResponse?.pages.map((page) => page.collections).flat() ?? []
-    )
-  }, [collectionInfResponse])
 
   const showActions = useMemo(() => {
     return Object.values(noteMeta).some((meta) => meta.isSelected)
@@ -87,14 +61,6 @@ const NotesListBatchSelectActions = () => {
   const selectedNotesLen = useMemo(() => {
     return Object.values(noteMeta).filter((meta) => meta.isSelected).length
   }, [noteMeta])
-
-  const deselectAll = () => {
-    const newMeta = { ...noteMeta }
-    Object.keys(newMeta).forEach((uuid) => {
-      newMeta[uuid].isSelected = false
-    })
-    setNoteMeta(newMeta)
-  }
 
   const deleteAllConfirm = () => {
     const selectedUuids = Object.keys(noteMeta).filter(
@@ -105,50 +71,6 @@ const NotesListBatchSelectActions = () => {
 
   const deleteAll = () => {
     setIsDeleteConfirmAlertOpen(true)
-  }
-
-  const onConfirmAddToCollection = () => {
-    if (selectedCollectionId <= 0) {
-      return
-    }
-
-    const noteIDs = []
-    for (const key in noteMeta) {
-      if (noteMeta[key].isSelected) {
-        noteIDs.push(noteMeta[key].id)
-      }
-    }
-
-    addNotesToCollection(
-      {
-        wid,
-        cid: selectedCollectionId,
-        nids: noteIDs,
-      },
-      {
-        onSuccess: () => {
-          setIsAddToCollectionDialogOpen(false)
-          toast(
-            `added ${selectedNotesLen} note` +
-              (selectedNotesLen > 1 ? 's' : '') +
-              ' to collection',
-            {
-              description: 'you can view them in there',
-              action: {
-                label: 'view',
-                onClick: () => {
-                  router.push(
-                    `/workspaces/${wid}/collections/${selectedCollectionId}`
-                  )
-                },
-              },
-            }
-          )
-          setSelectedCollectionId(0)
-          deselectAll()
-        },
-      }
-    )
   }
 
   useHotkeys('esc', () => {
@@ -194,7 +116,7 @@ const NotesListBatchSelectActions = () => {
                     className='h-7 text-sm'
                     onClick={() => setIsAddToCollectionDialogOpen(true)}
                   >
-                    <Squares2X2Icon />
+                    <HashtagIcon />
                   </Button>
                 </TooltipTrigger>
                 <SimpleTooltipContent label='add to collection' />
@@ -231,36 +153,11 @@ const NotesListBatchSelectActions = () => {
           </Button>
         </AlertActions>
       </Alert>
-      <Dialog
+      <AddToCollection
         open={isAddToCollectionDialogOpen}
         onClose={() => setIsAddToCollectionDialogOpen(false)}
-      >
-        <DialogTitle>select collection</DialogTitle>
-        <DialogDescription>{`add ${selectedNotesLen} note(s) to a collection`}</DialogDescription>
-        <DialogBody>
-          <Combobox<Collection>
-            items={allCollections}
-            idForItem={(item) => `${item.id}`}
-            displayValue={({ name }) => {
-              if (name == '') {
-                return '# untitled collection'
-              }
-
-              return `# ${name}`
-            }}
-            onChange={(item) => {
-              setSelectedCollectionId(item?.id ?? 0)
-            }}
-            placeholder='search collection ...'
-          />
-        </DialogBody>
-        <DialogActions>
-          <Button plain onClick={() => setIsAddToCollectionDialogOpen(false)}>
-            cancel
-          </Button>
-          <Button onClick={onConfirmAddToCollection}>confirm</Button>
-        </DialogActions>
-      </Dialog>
+        wid={wid}
+      />
     </>
   )
 }

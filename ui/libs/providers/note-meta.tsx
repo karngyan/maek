@@ -13,6 +13,7 @@ type Store = Record<string, NoteMeta>
 type NoteMetaContextType = {
   noteMeta: Store
   setNoteMeta: React.Dispatch<React.SetStateAction<Store>>
+  deselectAll: () => void
 }
 
 const NoteMetaContext = createContext<NoteMetaContextType | undefined>(
@@ -22,8 +23,16 @@ const NoteMetaContext = createContext<NoteMetaContextType | undefined>(
 const NoteMetaProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [noteMeta, setNoteMeta] = useState<Store>({})
 
+  const deselectAll = () => {
+    const newNoteMeta = { ...noteMeta }
+    for (const key in newNoteMeta) {
+      newNoteMeta[key].isSelected = false
+    }
+    setNoteMeta(newNoteMeta)
+  }
+
   return (
-    <NoteMetaContext.Provider value={{ noteMeta, setNoteMeta }}>
+    <NoteMetaContext.Provider value={{ noteMeta, setNoteMeta, deselectAll }}>
       {children}
     </NoteMetaContext.Provider>
   )

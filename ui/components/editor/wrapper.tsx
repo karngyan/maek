@@ -6,6 +6,7 @@ import { BlockNoteEditorProps } from '@/components/editor/blocknote'
 import { Block } from '@blocknote/core'
 import {
   ArrowLeftIcon,
+  DocumentTextIcon,
   EllipsisHorizontalIcon,
   LinkIcon,
   TrashIcon,
@@ -32,7 +33,7 @@ import {
 } from '@/components/ui/alert'
 import { useDeleteNote } from '@/queries/hooks/notes'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { getHasMeta } from '@/libs/utils/note'
+import { getHasMeta, getNoteTitle } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
 import { useRouter } from 'next/navigation'
@@ -65,6 +66,7 @@ export const EditorWrapper = ({
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
   const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}/notes`
+  const [currentDom, setCurrentDom] = useState<Block[]>([])
 
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote({
@@ -83,38 +85,47 @@ export const EditorWrapper = ({
     }
   }, [note])
 
-  const debouncedUpsert = useDebounceCallback((dom: Block[], mdContent: string) => {
-    if (!note) return
-    const newNote = {
-      ...note,
-      updated: dayjs().unix(),
-      content: {
-        ...note.content,
-        dom,
-      },
-    }
-
-    const hasMeta = getHasMeta(newNote) // a little too expensive, may be we should move this to the server or use a more efficient way to update this
-
-    upsertNote(
-      {
-        ...newNote,
-        ...hasMeta,
-        mdContent,
-      },
-      {
-        onSettled: (noteResp) => {
-          if (onUpsertNote && noteResp) {
-            onUpsertNote(noteResp.note.id)
-          }
+  const debouncedUpsert = useDebounceCallback(
+    (dom: Block[], mdContent: string) => {
+      if (!note) return
+      const newNote = {
+        ...note,
+        updated: dayjs().unix(),
+        content: {
+          ...note.content,
+          dom,
         },
       }
-    )
-  }, 600)
+
+      const hasMeta = getHasMeta(newNote) // a little too expensive, may be we should move this to the server or use a more efficient way to update this
+
+      upsertNote(
+        {
+          ...newNote,
+          ...hasMeta,
+          mdContent,
+        },
+        {
+          onSettled: (noteResp) => {
+            if (onUpsertNote && noteResp) {
+              onUpsertNote(noteResp.note.id)
+            }
+          },
+        }
+      )
+    },
+    600
+  )
 
   const handleOnChangeDom = (dom: Block[], mdContent: string) => {
     debouncedUpsert(dom, mdContent)
+    setCurrentDom(dom)
   }
+
+  const title = useMemo(() => {
+    if (currentDom.length > 0) return getNoteTitle(currentDom)
+    return getNoteTitle(note?.content?.dom ?? [])
+  }, [currentDom, note])
 
   const onCopyMaekLinkClick = () => {
     const url = `${window.location.origin}/workspaces/${workspaceId}/notes/${noteUuid}`
@@ -154,12 +165,21 @@ export const EditorWrapper = ({
   }
 
   return (
-    <div className='relative shrink-0 w-full grow-0 h-full'>
-      <div className='sticky top-0 z-10 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-6'>
-        <Button plain className='h-8' href={exitHrefPath}>
-          <ArrowLeftIcon className='h-6' />
-          <span className='text-zinc-400'>exit</span>
-        </Button>
+    <div className='relative shrink-0 w-full grow-0 min-h-full'>
+      <div className='sticky top-0 border-b border-dashed border-zinc-800 z-50 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-3'>
+        <div className='flex items-center overflow-hidden space-x-1'>
+          <Button plain className='h-8' href={exitHrefPath}>
+            <ArrowLeftIcon className='h-6' />
+          </Button>
+          <button className='flex items-center space-x-2'>
+            <div className='p-2 bg-white/10 rounded-lg shrink-0'>
+              <DocumentTextIcon className='h-4 text-zinc-400' />
+            </div>
+            <Text className='text-sm text-zinc-200 truncate'>
+              {title.trim() !== '' ? title : 'untitled note'}
+            </Text>
+          </button>
+        </div>
         <div className='inline-flex space-x-0.5 items-center justify-center'>
           <Button plain onClick={onFavoriteClick} className='h-8'>
             {note?.favorite ? (
@@ -194,7 +214,7 @@ export const EditorWrapper = ({
         </div>
       ) : (
         <>
-          <div className='pl-[3.3rem]'>
+          <div className='pl-[3.3rem] pt-6'>
             <Text className='text-xs'>{`${ts.created} -- ${ts.updated}`}</Text>
           </div>
           <BlockNoteEditor

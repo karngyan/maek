@@ -50,7 +50,7 @@ const NotesListSectionItem = ({ note }: NotesListSectionItemProps) => {
   })
 
   const title = useMemo(() => {
-    return getNoteTitle(note)
+    return getNoteTitle(note.content.dom ?? [])
   }, [note])
 
   const onDeleteConfirm = () => {

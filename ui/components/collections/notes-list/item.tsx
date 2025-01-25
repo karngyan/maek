@@ -34,7 +34,7 @@ const CollectionNotesListItem = ({ note, cid }: CollectionNotesListItemProps) =>
   const { mutate: removeNotesFromCollection } = useRemoveNotesFromCollection()
 
   const title = useMemo(() => {
-    return getNoteTitle(note)
+    return getNoteTitle(note.content.dom ?? [])
   }, [note])
 
   const onCopyMaekLinkClick = (e: React.MouseEvent) => {

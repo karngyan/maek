@@ -30,11 +30,18 @@ interface ListCollectionsResponse {
   nextCursor: string
 }
 
-export const createCollection = async (
+export const createCollection = async ({
+  wid,
+  name,
+}: {
   wid: number
-): Promise<CollectionResponse> => {
+  name: string
+}): Promise<CollectionResponse> => {
   const response = await authApiClient.post<CollectionResponse>(
-    `/v1/workspaces/${wid}/collections`
+    `/v1/workspaces/${wid}/collections`,
+    {
+      name,
+    }
   )
 
   return response.data

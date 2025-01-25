@@ -169,10 +169,10 @@ export const getHasMeta = (note: Note) => {
 // getNoteTitle returns the first text content of a note. It's an expensive
 // operation, so it should be memoized and only called when necessary.
 // Can also be used to make sure if the note has any content.
-export const getNoteTitle = (note: Note) => {
+export const getNoteTitle = (dom: Block[]) => {
   let title = ''
 
-  forEachBlock(note.content.dom, (block) => {
+  forEachBlock(dom, (block) => {
     const type = block.type
     switch (type) {
       case 'paragraph':

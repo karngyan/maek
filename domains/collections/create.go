@@ -7,10 +7,11 @@ import (
 	"github.com/karngyan/maek/db"
 )
 
-func CreateCollection(ctx context.Context, wid int64, userID int64) (*Collection, error) {
+func CreateCollection(ctx context.Context, wid int64, userID int64, name string) (*Collection, error) {
 	now := timecop.Now().Unix()
 
 	collection := &Collection{
+		Name:        name,
 		Created:     now,
 		Updated:     now,
 		WorkspaceID: wid,
@@ -20,6 +21,7 @@ func CreateCollection(ctx context.Context, wid int64, userID int64) (*Collection
 
 	var err error
 	collection.ID, err = db.Q.InsertCollection(ctx, db.InsertCollectionParams{
+		Name:        collection.Name,
 		Created:     collection.Created,
 		Updated:     collection.Updated,
 		WorkspaceID: collection.WorkspaceID,

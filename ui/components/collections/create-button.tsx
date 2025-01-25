@@ -14,7 +14,7 @@ export default function CollectionsCreateButton() {
   const wid = useCurrentWorkspaceId()
 
   const onCreateClick = () => {
-    createCollection(wid, {
+    createCollection({ wid, name: '' }, {
       onSuccess: (data) => {
         const { collection } = data
         router.push(`/workspaces/${params.wid}/collections/${collection.id}`)

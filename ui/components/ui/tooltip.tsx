@@ -63,7 +63,7 @@ const ConditionalTooltip: React.FC<ConditionalTooltipProps> = ({
   }
 
   return (
-    <Tooltip delayDuration={100}>
+    <Tooltip delayDuration={300}>
       <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
       <SimpleTooltipContent label={label} side={side} />
     </Tooltip>

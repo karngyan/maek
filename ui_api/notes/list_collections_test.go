@@ -40,7 +40,7 @@ func TestListCollectionsForNote(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	c, err := collections.CreateCollection(ctx, cs.Workspace.ID, cs.User.ID)
+	c, err := collections.CreateCollection(ctx, cs.Workspace.ID, cs.User.ID, "")
 	require.NoError(t, err)
 
 	c, err = collections.UpdateCollection(ctx, &collections.UpdateCollectionRequest{

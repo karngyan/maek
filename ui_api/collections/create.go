@@ -11,7 +11,17 @@ import (
 func create(ctx web.Context) error {
 	rctx := ctx.Request().Context()
 
-	collection, err := collections.CreateCollection(rctx, ctx.WorkspaceID, ctx.Session.UserID)
+	var req struct {
+		Name string `json:"name"`
+	}
+
+	if err := ctx.Bind(&req); err != nil {
+		return ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	collection, err := collections.CreateCollection(rctx, ctx.WorkspaceID, ctx.Session.UserID, req.Name)
 	if err != nil {
 		return ctx.InternalError(err)
 	}
