@@ -206,7 +206,7 @@ export const EditorWrapper = ({
         </div>
         <div className='ml-2 inline-flex space-x-1 items-center justify-center'>
           <div className='hidden sm:flex'>
-          <OrganizeNote wid={workspaceId} note={note} />
+            <OrganizeNote wid={workspaceId} note={note} />
           </div>
           <Button plain onClick={onFavoriteClick} className='h-8'>
             {note?.favorite ? (
@@ -246,7 +246,7 @@ export const EditorWrapper = ({
             {collectionsForNote.length > 0 && (
               <div className='hidden sm:flex flex-row space-x-2'>
                 {collectionsForNote.slice(0, 4).map((collection) => (
-                  <Badge key={collection.id} className='text-xs' color='teal'>
+                  <Badge key={collection.id} className='text-xs' color='zinc'>
                     {collection.name}
                   </Badge>
                 ))}
