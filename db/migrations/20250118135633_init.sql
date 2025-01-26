@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS collection
     description   TEXT         NOT NULL,               -- Collection description
     created       BIGINT       NOT NULL DEFAULT 0,     -- Creation timestamp
     updated       BIGINT       NOT NULL DEFAULT 0,     -- Last updated timestamp
+    favorite      BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     trashed       BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
     deleted       BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     workspace_id  BIGINT       NOT NULL,               -- Foreign key to workspace table
@@ -117,6 +118,12 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace
 
 CREATE INDEX IF NOT EXISTS idx_collection_workspace_deleted
     ON collection (workspace_id, deleted);
+
+CREATE INDEX IF NOT EXISTS idx_collection_workspace_trashed
+    ON collection (workspace_id, trashed);
+
+CREATE INDEX IF NOT EXISTS idx_collection_workspace_favorite
+    ON collection (workspace_id, favorite);
 
 -- collection_notes table
 CREATE TABLE IF NOT EXISTS collection_notes

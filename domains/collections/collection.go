@@ -10,6 +10,7 @@ type Collection struct {
 	Description string
 	Created     int64
 	Updated     int64
+	Favorite    bool
 	Trashed     bool
 	Deleted     bool
 	WorkspaceID int64
@@ -24,6 +25,7 @@ func CollectionFromDB(dbCollection db.Collection) *Collection {
 		Description: dbCollection.Description,
 		Created:     dbCollection.Created,
 		Updated:     dbCollection.Updated,
+		Favorite:    dbCollection.Favorite,
 		Trashed:     dbCollection.Trashed,
 		Deleted:     dbCollection.Deleted,
 		WorkspaceID: dbCollection.WorkspaceID,

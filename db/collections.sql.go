@@ -58,7 +58,7 @@ func (q *Queries) DeleteCollection(ctx context.Context, arg DeleteCollectionPara
 }
 
 const getCollectionByIDAndWorkspace = `-- name: GetCollectionByIDAndWorkspace :one
-SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+SELECT id, name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE id = $1
   AND workspace_id = $2
@@ -78,6 +78,7 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 		&i.Description,
 		&i.Created,
 		&i.Updated,
+		&i.Favorite,
 		&i.Trashed,
 		&i.Deleted,
 		&i.WorkspaceID,
@@ -89,7 +90,7 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 
 const getCollectionsByNoteUUIDAndWorkspace = `-- name: GetCollectionsByNoteUUIDAndWorkspace :many
 
-SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
+SELECT c.id, c.name, c.description, c.created, c.updated, c.favorite, c.trashed, c.deleted,
        c.workspace_id, c.created_by_id, c.updated_by_id
 FROM collection c
 JOIN collection_notes cn ON c.id = cn.collection_id
@@ -125,6 +126,7 @@ func (q *Queries) GetCollectionsByNoteUUIDAndWorkspace(ctx context.Context, arg 
 			&i.Description,
 			&i.Created,
 			&i.Updated,
+			&i.Favorite,
 			&i.Trashed,
 			&i.Deleted,
 			&i.WorkspaceID,
@@ -142,8 +144,8 @@ func (q *Queries) GetCollectionsByNoteUUIDAndWorkspace(ctx context.Context, arg 
 }
 
 const insertCollection = `-- name: InsertCollection :one
-INSERT INTO collection (name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+INSERT INTO collection (name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id
 `
 
@@ -152,6 +154,7 @@ type InsertCollectionParams struct {
 	Description string
 	Created     int64
 	Updated     int64
+	Favorite    bool
 	Trashed     bool
 	Deleted     bool
 	WorkspaceID int64
@@ -165,6 +168,7 @@ func (q *Queries) InsertCollection(ctx context.Context, arg InsertCollectionPara
 		arg.Description,
 		arg.Created,
 		arg.Updated,
+		arg.Favorite,
 		arg.Trashed,
 		arg.Deleted,
 		arg.WorkspaceID,
@@ -177,7 +181,7 @@ func (q *Queries) InsertCollection(ctx context.Context, arg InsertCollectionPara
 }
 
 const listCollections = `-- name: ListCollections :many
-SELECT id, name, description, created, updated, trashed, deleted,
+SELECT id, name, description, created, updated, favorite, trashed, deleted,
        workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE workspace_id = $1
@@ -255,6 +259,7 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 			&i.Description,
 			&i.Created,
 			&i.Updated,
+			&i.Favorite,
 			&i.Trashed,
 			&i.Deleted,
 			&i.WorkspaceID,
@@ -365,17 +370,19 @@ const updateCollection = `-- name: UpdateCollection :one
 UPDATE collection
 SET name          = $1,
     description   = $2,
-    updated_by_id = $3,
-    updated       = $4
-WHERE id = $5
-  AND workspace_id = $6
-RETURNING id, name, description, created, updated, trashed, deleted,
+    favorite      = $3,
+    updated_by_id = $4,
+    updated       = $5
+WHERE id = $6
+  AND workspace_id = $7
+RETURNING id, name, description, created, updated, favorite, trashed, deleted,
           workspace_id, created_by_id, updated_by_id
 `
 
 type UpdateCollectionParams struct {
 	Name        string
 	Description string
+	Favorite    bool
 	UpdatedByID int64
 	Updated     int64
 	ID          int64
@@ -386,6 +393,7 @@ func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionPara
 	row := q.db.QueryRow(ctx, updateCollection,
 		arg.Name,
 		arg.Description,
+		arg.Favorite,
 		arg.UpdatedByID,
 		arg.Updated,
 		arg.ID,
@@ -398,6 +406,7 @@ func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionPara
 		&i.Description,
 		&i.Created,
 		&i.Updated,
+		&i.Favorite,
 		&i.Trashed,
 		&i.Deleted,
 		&i.WorkspaceID,

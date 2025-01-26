@@ -32,12 +32,14 @@ export default function CollectionsCreateButton() {
       <Button
         className='hidden sm:flex'
         disabled={isPending}
+        outline
         onClick={onCreateClick}
       >
         <PlusIcon />
         new collection
       </Button>
       <Button
+      outline
         className='flex sm:hidden'
         onClick={onCreateClick}
         disabled={isPending}
