@@ -14,17 +14,20 @@ export default function CollectionsCreateButton() {
   const wid = useCurrentWorkspaceId()
 
   const onCreateClick = () => {
-    createCollection({ wid, name: '' }, {
-      onSuccess: (data) => {
-        const { collection } = data
-        router.push(`/workspaces/${params.wid}/collections/${collection.id}`)
-      },
-      onError: (data) => {
-        toast.error('failed to create collection', {
-          description: data.message,
-        })
-      },
-    })
+    createCollection(
+      { wid, name: '' },
+      {
+        onSuccess: (data) => {
+          const { collection } = data
+          router.push(`/workspaces/${params.wid}/collections/${collection.id}`)
+        },
+        onError: (data) => {
+          toast.error('failed to create collection', {
+            description: data.message,
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -39,7 +42,7 @@ export default function CollectionsCreateButton() {
         new collection
       </Button>
       <Button
-      outline
+        outline
         className='flex sm:hidden'
         onClick={onCreateClick}
         disabled={isPending}
