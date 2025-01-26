@@ -6,6 +6,7 @@ package db
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/pgvector/pgvector-go"
 )
 
 type Collection struct {
@@ -26,6 +27,28 @@ type CollectionNote struct {
 	CollectionID int64
 	NoteID       int64
 	Trashed      pgtype.Bool
+}
+
+type Embedding struct {
+	ID              int64
+	NoteID          int32
+	WorkspaceID     int32
+	Chunk           pgtype.Text
+	ChunkID         pgtype.Int4
+	EmbeddingVector pgvector.Vector
+	Created         int64
+	Updated         int64
+}
+
+type EmbeddingJob struct {
+	ID          int64
+	NoteID      int32
+	WorkspaceID int32
+	Content     string
+	Status      pgtype.Int4
+	Attempts    pgtype.Int4
+	Created     int64
+	Updated     int64
 }
 
 type Note struct {

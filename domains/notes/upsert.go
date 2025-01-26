@@ -3,6 +3,7 @@ package notes
 import (
 	"context"
 	"errors"
+	"github.com/karngyan/maek/embedder"
 
 	"github.com/jackc/pgx/v5"
 
@@ -114,7 +115,7 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 
 		note.ID = id
 		// exists; time to do an update
-		return q.UpdateNote(ctx, db.UpdateNoteParams{
+		err = q.UpdateNote(ctx, db.UpdateNoteParams{
 			UUID:           nuuid,
 			MdContent:      req.MdContent,
 			Content:        req.Content,
@@ -134,7 +135,14 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			WorkspaceID:    note.WorkspaceID,
 			Updated:        note.Updated,
 		})
+
+		if err != nil {
+			return err
+		}
+
+		return embedder.AddEmbeddingJobs(ctx, q, note.ID, note.WorkspaceID, req.Content)
 	})
+
 	if err != nil {
 		return nil, err
 	}

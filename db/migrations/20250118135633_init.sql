@@ -132,6 +132,38 @@ CREATE INDEX IF NOT EXISTS idx_collection_notes_collection
 
 CREATE INDEX IF NOT EXISTS idx_collection_notes_note
     ON collection_notes (note_id);
+
+CREATE TABLE embedding_job
+(
+    id           BIGSERIAL PRIMARY KEY,
+    note_id      INT    NOT NULL,
+    workspace_id INT    NOT NULL,
+    content        TEXT         NOT NULL,
+    status       INT             DEFAULT 0,
+    attempts     INT             DEFAULT 0, -- Track retry attempts
+    created      BIGINT NOT NULL DEFAULT 0,
+    updated      BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_embedding_job_status
+    ON embedding_job (status);
+
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE embedding
+(
+    id           BIGSERIAL PRIMARY KEY,
+    note_id      INT    NOT NULL,
+    workspace_id INT    NOT NULL,
+    chunk        TEXT ,
+    chunk_id     INT GENERATED ALWAYS AS IDENTITY,
+    embedding_vector    VECTOR(1536),
+    created      BIGINT NOT NULL DEFAULT 0,
+    updated      BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_embedding_job_status
+    ON embedding_job (status);
 -- +goose StatementEnd
 
 -- +goose Down
@@ -143,4 +175,6 @@ DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS user_workspaces;
 DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS workspace;
+DROP TABLE IF EXISTS embedding;
+DROP TABLE IF EXISTS embedding_job;
 -- +goose StatementEnd
