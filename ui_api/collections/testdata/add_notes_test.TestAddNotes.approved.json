@@ -3,6 +3,7 @@
     "created": 1234567890,
     "createdById": 1,
     "description": "",
+    "favorite": false,
     "id": 1,
     "name": "",
     "trashed": false,
