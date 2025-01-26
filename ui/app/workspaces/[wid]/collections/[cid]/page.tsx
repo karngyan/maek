@@ -155,7 +155,7 @@ export default function NoteIdPage({
               <ArrowLeftIcon className='h-6' />
             </Button>
             <div className='flex-1 flex w-full flex-row items-center space-x-2'>
-              <div className='flex items-center justify-center rounded-full bg-primary-600 h-8 w-8'>
+              <div className='hidden sm:flex items-center justify-center rounded-full bg-primary-600 h-8 w-8'>
                 <Squares2X2Icon className='h-4 w-4 text-white' />
               </div>
               <div className='flex flex-col w-full'>
