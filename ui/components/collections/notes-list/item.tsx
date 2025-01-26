@@ -80,7 +80,7 @@ const CollectionNotesListItem = ({ note, cid }: CollectionNotesListItemProps) =>
       <Link
         key={note.uuid}
         href={`/workspaces/${note.workspaceId}/notes/${note.uuid}?cid=${cid}`}
-        className='flex items-center justify-center group rounded-lg hover:bg-zinc-800 p-2 transition-colors duration-200'
+        className='flex items-center justify-center group rounded-lg hover:bg-zinc-800 pl-4 pr-3 py-2 transition-colors duration-200'
       >
         <div className='flex items-center justify-center'>
           <ScribbleIcon
