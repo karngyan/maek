@@ -146,20 +146,19 @@ export default function NoteIdPage({
     <>
       <div className='relative shrink-0 w-full grow-0 min-h-full'>
         <div className='sticky top-0 border-b border-dashed border-zinc-800 z-50 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-3'>
-          <div className='flex items-center overflow-hidden space-x-1'>
+          <div className='flex w-full items-center overflow-hidden space-x-1'>
             <Button
               plain
               className='h-8'
               href={`/workspaces/${workspaceId}/collections`}
             >
               <ArrowLeftIcon className='h-6' />
-              <span className='text-zinc-400'>back</span>
             </Button>
-            <div className='flex flex-row items-center space-x-2'>
-              <div className='flex items-center justify-center rounded-full bg-primary-600 h-12 w-12'>
-                <Squares2X2Icon className='h-6 w-6 text-white' />
+            <div className='flex-1 flex w-full flex-row items-center space-x-2'>
+              <div className='flex items-center justify-center rounded-full bg-primary-600 h-8 w-8'>
+                <Squares2X2Icon className='h-4 w-4 text-white' />
               </div>
-              <div className='flex flex-col w-full space-y-0.5'>
+              <div className='flex flex-col w-full'>
                 <input
                   type='text'
                   autoFocus={collection?.name === ''}
@@ -167,7 +166,7 @@ export default function NoteIdPage({
                   placeholder='collection name'
                   value={name}
                   onChange={onNameChange}
-                  className='w-1/3 px-1.5 py-0.5 text-lg truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-300 font-semibold'
+                  className='w-1/3 px-1.5 py-0.5 text-sm truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-200 font-semibold'
                 />
                 <input
                   type='text'
@@ -175,13 +174,13 @@ export default function NoteIdPage({
                   placeholder='add a description'
                   value={description}
                   onChange={onDescriptionChange}
-                  className='w-2/3 text-sm px-1.5 py-0.5 truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-400'
+                  className='w-2/3 text-xs px-1.5 py-0.5 truncate outline-hidden rounded-sm hover:bg-zinc-800 focus:bg-zinc-800 bg-zinc-900 border-none focus:outline-hidden focus:border-transparent border-transparent focus:ring-0 text-zinc-300'
                 />
               </div>
             </div>
           </div>
 
-          <div className='space-x-2'>
+          <div className='flex items-center space-x-2'>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -209,7 +208,7 @@ export default function NoteIdPage({
           </div>
         </div>
 
-        <div className='mt-4'>
+        <div className='px-6 py-4'>
           <CollectionNotesList
             notes={notes}
             cid={collectionId}
