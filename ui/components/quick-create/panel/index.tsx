@@ -8,7 +8,7 @@ import {
   QuickCreateOption,
   useQuickCreateOptions,
 } from '@/queries/hooks/use-quick-create-options'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 type QuickCreatePanelProps = {
   onQuickCreate: (

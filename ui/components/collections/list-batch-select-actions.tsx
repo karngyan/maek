@@ -13,7 +13,7 @@ import { useCurrentWorkspaceId } from '@/queries/hooks/auth/use-current-workspac
 import { useTrashCollectionMulti } from '@/queries/hooks/collections'
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 const CollectionsListBatchSelectActions = () => {
   const { collectionMeta, setCollectionMeta } = useCollectionMeta()

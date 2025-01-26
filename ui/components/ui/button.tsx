@@ -179,7 +179,12 @@ type ButtonProps = (
   | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
   | { color?: never; outline: true; plain?: never }
   | { color?: never; outline?: never; plain: true }
-) & { className?: string; children: React.ReactNode; loading?: boolean; square?: boolean } & (
+) & {
+  className?: string
+  children: React.ReactNode
+  loading?: boolean
+  square?: boolean
+} & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   )
@@ -198,13 +203,13 @@ export const Button = forwardRef(function Button(
   ref: React.ForwardedRef<HTMLElement>
 ) {
   const classes = cn(
-    className,
     square ? styles.baseSquare : styles.base,
     outline
       ? styles.outline
       : plain
         ? styles.plain
-        : cn(styles.solid, styles.colors[color ?? 'dark/zinc'])
+        : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
+    className
   )
 
   return 'href' in props ? (

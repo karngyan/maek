@@ -21,7 +21,11 @@ import {
   DropdownMenu,
 } from '@/components/ui/dropdown'
 import { toast } from 'sonner'
-import { useFetchNote, useUpsertNote } from '@/queries/hooks/notes'
+import {
+  useFetchCollectionsForNote,
+  useFetchNote,
+  useUpsertNote,
+} from '@/queries/hooks/notes'
 import { useDebounceCallback } from '@react-hook/debounce'
 import dayjs from 'dayjs'
 import { Text } from '@/components/ui/text'
@@ -37,6 +41,9 @@ import { getHasMeta, getNoteTitle } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
 import { useRouter } from 'next/navigation'
+import { OrganizeNote } from './organize-note'
+import { Spinner } from '../ui/spinner'
+import { Badge } from '../ui/badge'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -74,8 +81,17 @@ export const EditorWrapper = ({
       router.replace(`/workspaces/${workspaceId}/notes`)
     },
   })
-
   const note = useMemo(() => data?.note, [data])
+  const { data: collectionsForNoteResponse } = useFetchCollectionsForNote(
+    workspaceId,
+    note?.uuid ?? '',
+    note != null
+  )
+
+  const collectionsForNote = useMemo(() => {
+    return collectionsForNoteResponse?.collections ?? []
+  }, [collectionsForNoteResponse])
+
   const ts = useMemo(() => {
     if (!note) return { updated: '', created: '' }
     dayjs.extend(relativeTime)
@@ -164,12 +180,20 @@ export const EditorWrapper = ({
     return <NotFound embed={true} statusCode={404} />
   }
 
+  if (!note) {
+    return (
+      <div className='h-screen flex items-center justify-center'>
+        <Spinner className='dark:text-zinc-800 h-12' />
+      </div>
+    )
+  }
+
   return (
     <div className='relative shrink-0 w-full grow-0 min-h-full'>
       <div className='sticky top-0 border-b border-dashed border-zinc-800 z-50 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-3'>
         <div className='flex items-center overflow-hidden space-x-1'>
           <Button plain className='h-8' href={exitHrefPath}>
-            <ArrowLeftIcon className='h-6' />
+            <ArrowLeftIcon className='h-4' />
           </Button>
           <button className='flex items-center space-x-2'>
             <div className='p-2 bg-white/10 rounded-lg shrink-0'>
@@ -180,7 +204,10 @@ export const EditorWrapper = ({
             </Text>
           </button>
         </div>
-        <div className='inline-flex space-x-0.5 items-center justify-center'>
+        <div className='ml-2 inline-flex space-x-1 items-center justify-center'>
+          <div className='hidden sm:flex'>
+          <OrganizeNote wid={workspaceId} note={note} />
+          </div>
           <Button plain onClick={onFavoriteClick} className='h-8'>
             {note?.favorite ? (
               <StarIconSolid className='h-6' />
@@ -216,6 +243,20 @@ export const EditorWrapper = ({
         <>
           <div className='pl-[3.3rem] pt-6'>
             <Text className='text-xs'>{`${ts.created} -- ${ts.updated}`}</Text>
+            {collectionsForNote.length > 0 && (
+              <div className='hidden sm:flex flex-row space-x-2'>
+                {collectionsForNote.slice(0, 4).map((collection) => (
+                  <Badge key={collection.id} className='text-xs' color='teal'>
+                    {collection.name}
+                  </Badge>
+                ))}
+                {collectionsForNote.length > 4 && (
+                  <Badge className='text-xs' color='zinc'>
+                    +{collectionsForNote.length - 4}
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
           <BlockNoteEditor
             content={note?.content?.dom}

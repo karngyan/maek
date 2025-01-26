@@ -60,12 +60,15 @@ export const useFetchAllNotes = (workspaceId: number, sort: string) => {
 
 export const useFetchCollectionsForNote = (
   workspaceId: number,
-  noteUuid: string
+  noteUuid: string,
+  enabled = true,
 ) => {
   return useQuery({
     queryFn: () => fetchCollectionsForNote({ workspaceId, noteUuid }),
     queryKey: notesKeys.collectionsForNote(workspaceId, noteUuid),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 10 * 1000,
+    enabled,
   })
 }
 

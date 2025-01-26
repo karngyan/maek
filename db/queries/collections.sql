@@ -4,20 +4,25 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id;
 
 -- name: AddNotesToCollections :exec
-INSERT INTO collection_notes (collection_id, note_id)
-SELECT UNNEST(@collection_ids::BIGINT[]), UNNEST(@note_ids::BIGINT[]);
+INSERT INTO collection_notes (collection_id, note_id, trashed)
+SELECT UNNEST(@collection_ids::BIGINT[]), UNNEST(@note_ids::BIGINT[]), FALSE
+ON CONFLICT (collection_id, note_id)
+DO UPDATE
+SET trashed = FALSE;
 
 -- name: RemoveNotesFromCollection :exec
 UPDATE collection_notes
 SET trashed = TRUE
 WHERE collection_id = $1
-  AND note_id = ANY(@note_ids);
+  AND note_id = ANY(@note_ids)
+  AND trashed = FALSE; -- Avoid updating already trashed entries
 
 -- name: RemoveCollectionsFromNote :exec
 UPDATE collection_notes
 SET trashed = TRUE
 WHERE note_id = $1
-  AND collection_id = ANY(@collection_ids);
+  AND collection_id = ANY(@collection_ids)
+  AND trashed = FALSE; -- Avoid updating already trashed entries
 
 -- name: GetCollectionsByNoteUUIDAndWorkspace :many
 SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
@@ -26,6 +31,7 @@ FROM collection c
 JOIN collection_notes cn ON c.id = cn.collection_id
 JOIN note n ON cn.note_id = n.id
 WHERE n.uuid = $1
+  AND cn.trashed = FALSE
   AND c.workspace_id = $2
   AND c.deleted = FALSE
   AND c.trashed = FALSE

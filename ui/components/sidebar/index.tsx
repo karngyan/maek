@@ -1,7 +1,7 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import { LayoutGroup, motion } from 'framer-motion'
+import { LayoutGroup, motion } from 'motion/react'
 import React, { Fragment, forwardRef, useId } from 'react'
 import { TouchTarget } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'

@@ -21,7 +21,7 @@ export const maekDarkTheme = {
     },
     selected: {
       text: '#f4f4f5',
-      background: '#155e75',
+      background: 'var(--color-primary-700)',
     },
     disabled: {
       text: '#52525b',

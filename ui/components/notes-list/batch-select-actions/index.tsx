@@ -19,7 +19,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { AddToCollection } from './add-to-collection'
 
 const NotesListBatchSelectActions = () => {

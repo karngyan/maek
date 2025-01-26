@@ -124,14 +124,23 @@ CREATE TABLE IF NOT EXISTS collection_notes
     id            BIGSERIAL PRIMARY KEY,
     collection_id BIGINT NOT NULL,      -- Foreign key to collection table
     note_id       BIGINT NOT NULL,      -- Foreign key to note table
-    trashed       BOOLEAN DEFAULT FALSE -- Trash flag
+    trashed       BOOLEAN DEFAULT FALSE, -- Trash flag
+
+    CONSTRAINT unique_collection_note_pair UNIQUE (collection_id, note_id)
 );
 
+-- Create an index for collection_id
 CREATE INDEX IF NOT EXISTS idx_collection_notes_collection
     ON collection_notes (collection_id);
 
+-- Create an index for note_id
 CREATE INDEX IF NOT EXISTS idx_collection_notes_note
     ON collection_notes (note_id);
+
+-- Optional: Create a partial index to optimize queries that filter by trashed
+CREATE INDEX IF NOT EXISTS idx_collection_notes_not_trashed
+    ON collection_notes (collection_id, note_id)
+    WHERE trashed = FALSE;
 -- +goose StatementEnd
 
 -- +goose Down

@@ -12,8 +12,11 @@ import (
 )
 
 const addNotesToCollections = `-- name: AddNotesToCollections :exec
-INSERT INTO collection_notes (collection_id, note_id)
-SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[])
+INSERT INTO collection_notes (collection_id, note_id, trashed)
+SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[]), FALSE
+ON CONFLICT (collection_id, note_id)
+DO UPDATE
+SET trashed = FALSE
 `
 
 type AddNotesToCollectionsParams struct {
@@ -85,12 +88,14 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 }
 
 const getCollectionsByNoteUUIDAndWorkspace = `-- name: GetCollectionsByNoteUUIDAndWorkspace :many
+
 SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
        c.workspace_id, c.created_by_id, c.updated_by_id
 FROM collection c
 JOIN collection_notes cn ON c.id = cn.collection_id
 JOIN note n ON cn.note_id = n.id
 WHERE n.uuid = $1
+  AND cn.trashed = FALSE
   AND c.workspace_id = $2
   AND c.deleted = FALSE
   AND c.trashed = FALSE
@@ -104,6 +109,7 @@ type GetCollectionsByNoteUUIDAndWorkspaceParams struct {
 	WorkspaceID int64
 }
 
+// Avoid updating already trashed entries
 func (q *Queries) GetCollectionsByNoteUUIDAndWorkspace(ctx context.Context, arg GetCollectionsByNoteUUIDAndWorkspaceParams) ([]Collection, error) {
 	rows, err := q.db.Query(ctx, getCollectionsByNoteUUIDAndWorkspace, arg.UUID, arg.WorkspaceID)
 	if err != nil {
@@ -266,10 +272,12 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 }
 
 const removeCollectionsFromNote = `-- name: RemoveCollectionsFromNote :exec
+
 UPDATE collection_notes
 SET trashed = TRUE
 WHERE note_id = $1
   AND collection_id = ANY($2)
+  AND trashed = FALSE
 `
 
 type RemoveCollectionsFromNoteParams struct {
@@ -277,6 +285,7 @@ type RemoveCollectionsFromNoteParams struct {
 	CollectionIds []int64
 }
 
+// Avoid updating already trashed entries
 func (q *Queries) RemoveCollectionsFromNote(ctx context.Context, arg RemoveCollectionsFromNoteParams) error {
 	_, err := q.db.Exec(ctx, removeCollectionsFromNote, arg.NoteID, arg.CollectionIds)
 	return err
@@ -287,6 +296,7 @@ UPDATE collection_notes
 SET trashed = TRUE
 WHERE collection_id = $1
   AND note_id = ANY($2)
+  AND trashed = FALSE
 `
 
 type RemoveNotesFromCollectionParams struct {
