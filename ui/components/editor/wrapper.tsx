@@ -40,10 +40,11 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { getHasMeta, getNoteTitle } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { OrganizeNote } from './organize-note'
 import { Spinner } from '../ui/spinner'
 import { Badge } from '../ui/badge'
+import { useFetchCollection } from '@/queries/hooks/collections'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -69,6 +70,8 @@ export const EditorWrapper = ({
   onUpsertNote,
 }: EditorWrapperProps) => {
   const router = useRouter()
+  const sp = useSearchParams()
+  const collectionIdStr = sp.get('cid')
   const { data, isPending, isError } = useFetchNote(workspaceId, noteUuid)
   const [isDeleteConfirmAlertOpen, setIsDeleteConfirmAlertOpen] =
     useState(false)
@@ -81,6 +84,13 @@ export const EditorWrapper = ({
       router.replace(`/workspaces/${workspaceId}/notes`)
     },
   })
+
+  const { data: collectionFromSearchParamResponse } = useFetchCollection(
+    workspaceId,
+    collectionIdStr ? +collectionIdStr : 0,
+    collectionIdStr != null
+  )
+
   const note = useMemo(() => data?.note, [data])
   const { data: collectionsForNoteResponse } = useFetchCollectionsForNote(
     workspaceId,
@@ -89,8 +99,19 @@ export const EditorWrapper = ({
   )
 
   const collectionsForNote = useMemo(() => {
-    return collectionsForNoteResponse?.collections ?? []
-  }, [collectionsForNoteResponse])
+    const collections = collectionsForNoteResponse?.collections ?? []
+
+    if (collectionIdStr && collectionFromSearchParamResponse?.collection) {
+      const found = collections.find(
+        (c) => c.id === collectionFromSearchParamResponse.collection.id
+      )
+      if (!found) {
+        collections.unshift(collectionFromSearchParamResponse.collection)
+      }
+    }
+
+    return collections
+  }, [collectionsForNoteResponse, collectionFromSearchParamResponse, collectionIdStr])
 
   const ts = useMemo(() => {
     if (!note) return { updated: '', created: '' }
@@ -247,7 +268,7 @@ export const EditorWrapper = ({
               <div className='hidden sm:flex flex-row space-x-2'>
                 {collectionsForNote.slice(0, 4).map((collection) => (
                   <Badge key={collection.id} className='text-xs' color='zinc'>
-                    {collection.name}
+                    {collection.name !== '' ? collection.name : 'untitled collection'}
                   </Badge>
                 ))}
                 {collectionsForNote.length > 4 && (
