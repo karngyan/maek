@@ -11,4 +11,5 @@ func Configure(e *echo.Echo, l *zap.Logger) {
 	e.POST("/v1/auth/login", web.WrapPublicRoute(login, l))
 	e.GET("/v1/auth/logout", web.WrapAuthenticated(logout, l))
 	e.GET("/v1/auth/info", web.WrapAuthenticatedWithUserAllWorkspaces(info, l))
+	e.PUT("/v1/auth/user", web.WrapAuthenticated(updateUser, l))
 }

@@ -323,3 +323,19 @@ func (q *Queries) InsertWorkspace(ctx context.Context, arg InsertWorkspaceParams
 	err := row.Scan(&id)
 	return id, err
 }
+
+const updateUserName = `-- name: UpdateUserName :exec
+UPDATE "user"
+SET name = $1
+WHERE id = $2
+`
+
+type UpdateUserNameParams struct {
+	Name string
+	ID   int64
+}
+
+func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error {
+	_, err := q.db.Exec(ctx, updateUserName, arg.Name, arg.ID)
+	return err
+}

@@ -83,7 +83,7 @@ function WorkspaceDropdownMenu({
 }) {
   return (
     <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
-      <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings`}>
+      <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings/ws`}>
         <Cog8ToothIcon />
         <DropdownLabel>settings</DropdownLabel>
       </DropdownItem>
@@ -215,13 +215,9 @@ export default function WorkspacesHomeLayout({
                 />
               </DropdownButton>
               <DropdownMenu className='min-w-64' anchor='bottom end'>
-                <DropdownItem href='/profile'>
+                <DropdownItem href={`/workspaces/${workspaceId}/settings/account`}>
                   <UserIcon />
-                  <DropdownLabel>my profile</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/settings'>
-                  <Cog8ToothIcon />
-                  <DropdownLabel>settings</DropdownLabel>
+                  <DropdownLabel>my account</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
                 <DropdownItem href='/privacy'>
@@ -491,20 +487,16 @@ function CollapsibleSidebar({
               </CollapsibleContent>
             </DropdownButton>
             <DropdownMenu className='min-w-64' anchor='top start'>
-              <DropdownItem href='/my-profile'>
+              <DropdownItem href={`/workspaces/${workspaceId}/settings/account`}>
                 <UserIcon />
-                <DropdownLabel>my profile</DropdownLabel>
-              </DropdownItem>
-              <DropdownItem href='/settings'>
-                <Cog8ToothIcon />
-                <DropdownLabel>settings</DropdownLabel>
+                <DropdownLabel>my account</DropdownLabel>
               </DropdownItem>
               <DropdownDivider />
               <DropdownItem href='/privacy-policy'>
                 <ShieldCheckIcon />
                 <DropdownLabel>privacy policy</DropdownLabel>
               </DropdownItem>
-              <DropdownItem href='/share-feedback'>
+              <DropdownItem href='https://x.com/intent/post?text=%40gyankarn+about+maek%3A' target='_blank' rel='noreferrer,noopener'>
                 <LightBulbIcon />
                 <DropdownLabel>share feedback</DropdownLabel>
               </DropdownItem>

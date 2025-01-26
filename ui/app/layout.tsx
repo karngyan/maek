@@ -6,6 +6,7 @@ import { monaSansGithub } from '@/fonts'
 import { Toaster } from '@/components/ui/toaster'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
+
 export const metadata: Metadata = {
   title: 'maek',
   description:
@@ -19,10 +20,13 @@ export default function RootLayout({
     <html lang='en' className='dark bg-zinc-950'>
       <body className={`${monaSansGithub.className} antialiased`}>
         <QueryProvider>
-          <TooltipProvider delayDuration={200} skipDelayDuration={100}>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+            {children}
+          </TooltipProvider>
         </QueryProvider>
         <Toaster />
       </body>
     </html>
   )
 }
+

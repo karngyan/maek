@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 import { IconLink } from '@/components/icon-link'
 import React, { useId } from 'react'
-import { StarField } from '@/components/star-field'
 
 export default function HomePage() {
   return (
@@ -41,9 +40,6 @@ export default function HomePage() {
               and enhance your workflow with intelligent, minimalistic design.
               Elevate your productivity and focus on what matters.
             </p>
-          </div>
-          <div className='hidden lg:block'>
-            <StarField />
           </div>
         </div>
       </div>

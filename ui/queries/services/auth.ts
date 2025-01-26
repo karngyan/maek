@@ -72,3 +72,19 @@ export const login = async ({
 export const logout = async () => {
   await authApiClient.get('/v1/auth/logout')
 }
+
+export const updateUser = async ({
+  name,
+  email = '',
+  updateType = 'name',
+}: {
+  name?: string
+  email?: string,
+  updateType?: 'name' | 'email' | 'both'
+}): Promise<void> => {
+  await authApiClient.put<void>('/v1/auth/user', {
+    name,
+    email,
+    updateType,
+  })
+}
