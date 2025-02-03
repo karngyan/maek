@@ -64,4 +64,11 @@ UPDATE "user"
 SET name = $1
 WHERE id = $2;
 
+-- name: UpdateWorkspaceNameDescription :exec
+UPDATE workspace
+SET 
+  name = $1,
+  description = $2
+WHERE id = $3;
+
 

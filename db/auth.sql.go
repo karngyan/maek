@@ -339,3 +339,22 @@ func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) 
 	_, err := q.db.Exec(ctx, updateUserName, arg.Name, arg.ID)
 	return err
 }
+
+const updateWorkspaceNameDescription = `-- name: UpdateWorkspaceNameDescription :exec
+UPDATE workspace
+SET 
+  name = $1,
+  description = $2
+WHERE id = $3
+`
+
+type UpdateWorkspaceNameDescriptionParams struct {
+	Name        string
+	Description string
+	ID          int64
+}
+
+func (q *Queries) UpdateWorkspaceNameDescription(ctx context.Context, arg UpdateWorkspaceNameDescriptionParams) error {
+	_, err := q.db.Exec(ctx, updateWorkspaceNameDescription, arg.Name, arg.Description, arg.ID)
+	return err
+}

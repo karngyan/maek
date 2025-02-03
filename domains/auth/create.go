@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bluele/go-timecop"
@@ -123,4 +124,47 @@ func CreateDefaultWorkspaceWithUser(ctx context.Context, name, email, passwd, ip
 
 func GenerateToken(user *User) string {
 	return fmt.Sprintf("%d:%d:%d:%s", user.DefaultWorkspaceID, user.ID, timecop.Now().Unix(), randstr.Base62(16))
+}
+
+func AddNewWorkspace(ctx context.Context, uid int64, name, description string) (*Workspace, error) {
+	now := timecop.Now().Unix()
+
+	name = strings.TrimSpace(name)
+	description = strings.TrimSpace(description)
+
+	workspace := &Workspace{
+		Name:        name,
+		Description: description,
+		Created:     now,
+		Updated:     now,
+	}
+
+	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) error {
+		wid, err := q.InsertWorkspace(ctx, db.InsertWorkspaceParams{
+			Name:        workspace.Name,
+			Description: workspace.Description,
+			Created:     workspace.Created,
+			Updated:     workspace.Updated,
+		})
+		if err != nil {
+			return err
+		}
+
+		workspace.ID = wid
+		_, err = q.InsertUserWorkspace(ctx, db.InsertUserWorkspaceParams{
+			UserID:      uid,
+			WorkspaceID: wid,
+		})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return workspace, nil
 }
