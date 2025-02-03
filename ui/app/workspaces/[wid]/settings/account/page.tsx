@@ -22,16 +22,16 @@ export default function AccountSettingsPage() {
 
   const [userLocalName, setUserLocalName] = useState(user?.name)
 
-  const debouncedUpdateName = useDebounceCallback(
-    (name: string) => {
-      updateUser({ name: name.trim(), updateType: 'name' }, {
+  const debouncedUpdateName = useDebounceCallback((name: string) => {
+    updateUser(
+      { name: name.trim(), updateType: 'name' },
+      {
         onSuccess: () => {
           toast.success('your name has been updated')
-        }
-      })
-    },
-    600
-  )
+        },
+      }
+    )
+  }, 600)
 
   const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value
@@ -48,15 +48,25 @@ export default function AccountSettingsPage() {
   }
 
   if (error) {
-    return <div className='text-zinc-300 py-80 px-6'>error: {error.message}</div>
+    return (
+      <div className='text-zinc-300 py-80 px-6'>error: {error.message}</div>
+    )
   }
 
   return (
     <div className='max-w-lg mx-auto py-16'>
       <FieldGroup>
         <Field>
+          <Label>email</Label>
+          <Input name='email' type='email' value={user?.email} disabled />
+        </Field>
+        <Field>
           <Label>full name</Label>
-          <Input name='full_name' value={userLocalName} onChange={onNameChange} />
+          <Input
+            name='full_name'
+            value={userLocalName}
+            onChange={onNameChange}
+          />
         </Field>
       </FieldGroup>
     </div>
