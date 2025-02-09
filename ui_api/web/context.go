@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/bluele/go-timecop"
 
@@ -47,6 +48,12 @@ func (c Context) Unauthorized() error {
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
+	})
+
+	c.SetCookie(&http.Cookie{
+		Name:   "last_visited_ws_id",
+		Value:  "",
+		MaxAge: -1,
 	})
 
 	return c.JSON(http.StatusUnauthorized, map[string]any{
@@ -172,6 +179,15 @@ func authenticated(h HandlerFunc, l *zap.Logger, withUser, withCurrentWorkspace,
 			if !found {
 				return ctx.Unauthorized()
 			}
+		}
+
+		if wid > 0 {
+			c.SetCookie(&http.Cookie{
+				Name:   "last_visited_ws_id",
+				Value:  fmt.Sprintf("%d", wid),
+				Path:   "/",
+				MaxAge: int((365 * 24 * time.Hour).Seconds()), // 1 year
+			})
 		}
 
 		return h(ctx)

@@ -43,7 +43,7 @@ import {
   PencilIcon,
   ChatBubbleBottomCenterTextIcon,
 } from '@heroicons/react/16/solid'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Avvvatars from 'avvvatars-react'
 import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import { Spinner } from '@/components/ui/spinner'
@@ -73,6 +73,19 @@ import { v4 as uuidv4 } from 'uuid'
 import { useQueryClient } from '@tanstack/react-query'
 import { notesKeys } from '@/queries/hooks/notes'
 import { defaultNewNote } from '@/libs/utils/note'
+import {
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, Label } from '@/components/ui/fieldset'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { useAddWorkspace } from '@/queries/hooks/auth/use-add-workspace'
+import { toast } from 'sonner'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -81,35 +94,127 @@ function WorkspaceDropdownMenu({
   workspaces: Workspace[]
   currentWorkspaceId: number
 }) {
+  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false)
+  const [workspaceName, setWorkspaceName] = useState('')
+  const [workspaceDescription, setWorkspaceDescription] = useState('')
+  const [isWorkspaceCreatePending, setIsWorkspaceCreatePending] =
+    useState(false)
+  const router = useRouter()
+
+  const { mutate: addWorkspace } = useAddWorkspace()
+
+  const openNewWorkspaceModal = () => {
+    setIsWorkspaceModalOpen(true)
+  }
+
+  const onWorkspaceNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkspaceName(e.target.value)
+  }
+
+  const onWorkspaceDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setWorkspaceDescription(e.target.value)
+  }
+
+  const createWorkspace = () => {
+    setIsWorkspaceCreatePending(true)
+
+    addWorkspace(
+      { name: workspaceName.trim(), description: workspaceDescription.trim() },
+      {
+        onSuccess: ({ workspace }) => {
+          setIsWorkspaceModalOpen(false)
+          setWorkspaceName('')
+          setWorkspaceDescription('')
+          toast.success('workspace created')
+          router.push(`/workspaces/${workspace.id}/notes`)
+        },
+        onError: (err) => {
+          toast.error('failed to create workspace', {
+            description: err.toString()
+          })
+        },
+        onSettled: () => {
+          setIsWorkspaceCreatePending(false)
+        },
+      }
+    )
+  }
+
   return (
-    <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
-      <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings/ws`}>
-        <Cog8ToothIcon />
-        <DropdownLabel>settings</DropdownLabel>
-      </DropdownItem>
-      <DropdownDivider />
-      {workspaces.map((workspace) => {
-        return (
-          <DropdownItem
-            key={workspace.id}
-            href={`/workspaces/${workspace.id}`}
-            className='shrink-0'
-          >
-            <Avvvatars
-              style='shape'
-              size={16}
-              value={workspaceAvatarValue(workspace)}
+    <>
+      <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
+        <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings/ws`}>
+          <Cog8ToothIcon />
+          <DropdownLabel>settings</DropdownLabel>
+        </DropdownItem>
+        <DropdownDivider />
+        {workspaces.map((workspace) => {
+          return (
+            <DropdownItem
+              key={workspace.id}
+              href={`/workspaces/${workspace.id}`}
+              className='shrink-0'
+            >
+              <Avvvatars
+                style='shape'
+                size={16}
+                value={workspaceAvatarValue(workspace)}
+              />
+              <DropdownLabel>{workspace.name}</DropdownLabel>
+            </DropdownItem>
+          )
+        })}
+        <DropdownDivider />
+        <DropdownItem onClick={openNewWorkspaceModal}>
+          <PlusIcon />
+          <DropdownLabel>new workspace&hellip;</DropdownLabel>
+        </DropdownItem>
+      </DropdownMenu>
+
+      <Dialog
+        open={isWorkspaceModalOpen}
+        onClose={() => setIsWorkspaceModalOpen(false)}
+      >
+        <DialogTitle>create a new workspace</DialogTitle>
+        <DialogDescription>
+          each workspace is an independent space for notes and collections with
+          its own AI context, ensuring no data sharing between workspaces
+        </DialogDescription>
+        <DialogBody>
+          <Field>
+            <Label className='sr-only'>name</Label>
+            <Input
+              value={workspaceName}
+              onChange={onWorkspaceNameChange}
+              name='workspace_name'
+              placeholder='workspace name'
             />
-            <DropdownLabel>{workspace.name}</DropdownLabel>
-          </DropdownItem>
-        )
-      })}
-      <DropdownDivider />
-      <DropdownItem href='/create-workspace'>
-        <PlusIcon />
-        <DropdownLabel>new workspace&hellip;</DropdownLabel>
-      </DropdownItem>
-    </DropdownMenu>
+          </Field>
+          <Field>
+            <Label className='sr-only'>description</Label>
+            <Textarea
+              value={workspaceDescription}
+              onChange={onWorkspaceDescriptionChange}
+              name='workspace_description'
+              placeholder='workspace description'
+            />
+          </Field>
+        </DialogBody>
+        <DialogActions>
+          <Button plain onClick={() => setIsWorkspaceModalOpen(false)}>
+            cancel
+          </Button>
+          <Button
+            disabled={isWorkspaceCreatePending}
+            onClick={createWorkspace}
+          >
+            create
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
@@ -215,7 +320,9 @@ export default function WorkspacesHomeLayout({
                 />
               </DropdownButton>
               <DropdownMenu className='min-w-64' anchor='bottom end'>
-                <DropdownItem href={`/workspaces/${workspaceId}/settings/account`}>
+                <DropdownItem
+                  href={`/workspaces/${workspaceId}/settings/account`}
+                >
                   <UserIcon />
                   <DropdownLabel>my account</DropdownLabel>
                 </DropdownItem>
@@ -366,10 +473,7 @@ function CollapsibleSidebar({
               side='right'
               asChild
             >
-              <SidebarItem
-                onClick={() => createNote()}
-                className='shrink-0'
-              >
+              <SidebarItem onClick={() => createNote()} className='shrink-0'>
                 <PencilIcon />
                 <CollapsibleContent>
                   <SidebarLabel>create note</SidebarLabel>
@@ -435,12 +539,12 @@ function CollapsibleSidebar({
               side='right'
               asChild
             >
-            <SidebarItem href='/support' className='shrink-0'>
-              <QuestionMarkCircleIcon />
-              <CollapsibleContent>
-                <SidebarLabel>support</SidebarLabel>
-              </CollapsibleContent>
-            </SidebarItem>
+              <SidebarItem href='/support' className='shrink-0'>
+                <QuestionMarkCircleIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>support</SidebarLabel>
+                </CollapsibleContent>
+              </SidebarItem>
             </ConditionalTooltip>
             <ConditionalTooltip
               label='changelog'
@@ -448,12 +552,12 @@ function CollapsibleSidebar({
               side='right'
               asChild
             >
-            <SidebarItem href='/changelog' className='shrink-0'>
-              <SparklesIcon />
-              <CollapsibleContent>
-                <SidebarLabel>changelog</SidebarLabel>
-              </CollapsibleContent>
-            </SidebarItem>
+              <SidebarItem href='/changelog' className='shrink-0'>
+                <SparklesIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>changelog</SidebarLabel>
+                </CollapsibleContent>
+              </SidebarItem>
             </ConditionalTooltip>
           </SidebarSection>
         </SidebarBody>
@@ -487,7 +591,9 @@ function CollapsibleSidebar({
               </CollapsibleContent>
             </DropdownButton>
             <DropdownMenu className='min-w-64' anchor='top start'>
-              <DropdownItem href={`/workspaces/${workspaceId}/settings/account`}>
+              <DropdownItem
+                href={`/workspaces/${workspaceId}/settings/account`}
+              >
                 <UserIcon />
                 <DropdownLabel>my account</DropdownLabel>
               </DropdownItem>
@@ -496,7 +602,11 @@ function CollapsibleSidebar({
                 <ShieldCheckIcon />
                 <DropdownLabel>privacy policy</DropdownLabel>
               </DropdownItem>
-              <DropdownItem href='https://x.com/intent/post?text=%40gyankarn+about+maek%3A' target='_blank' rel='noreferrer,noopener'>
+              <DropdownItem
+                href='https://x.com/intent/post?text=%40gyankarn+about+maek%3A'
+                target='_blank'
+                rel='noreferrer,noopener'
+              >
                 <LightBulbIcon />
                 <DropdownLabel>share feedback</DropdownLabel>
               </DropdownItem>
