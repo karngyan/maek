@@ -88,3 +88,37 @@ export const updateUser = async ({
     updateType,
   })
 }
+
+export const updateWorkspace = async ({
+  wid,
+  name,
+  description,
+}: {
+  wid: number,
+  name: string
+  description: string,
+}): Promise<void> => {
+  await authApiClient.put<void>(`/v1/auth/workspaces/${wid}`, {
+    name,
+    description,
+  })
+}
+
+interface AddWorkspaceResponse {
+  workspace: Workspace
+}
+
+export const addWorkspaceForUser = async ({
+  name, 
+  description,
+}: {
+  name: string
+  description: string,
+}): Promise<AddWorkspaceResponse> => {
+  const response = await authApiClient.post<AddWorkspaceResponse>('/v1/auth/workspaces', {
+    name,
+    description,
+  })
+
+  return response.data
+}

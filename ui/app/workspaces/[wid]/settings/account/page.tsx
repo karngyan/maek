@@ -54,7 +54,7 @@ export default function AccountSettingsPage() {
   }
 
   return (
-    <div className='max-w-lg mx-auto py-16'>
+    <div className='max-w-lg mx-auto py-16 px-4'>
       <FieldGroup>
         <Field>
           <Label>email</Label>
