@@ -8,9 +8,12 @@ import { maekDarkTheme } from '@/components/editor/theme'
 import { useState } from 'react'
 import { isDomEmpty } from '@/libs/utils/note'
 import QuickCreatePanel from '../quick-create/panel'
+import { useYDoc, useYjsProvider } from '@/libs/ysweet/react';
+import { User } from '@/queries/services/auth'
+import uniqolor from 'uniqolor';
 
 export type BlockNoteEditorProps = {
-  content?: Block[]
+  user?: User
   onChangeDom?: (content: Block[], mdContent: string) => unknown
   initialFocusOption?: {
     id: string
@@ -19,15 +22,18 @@ export type BlockNoteEditorProps = {
 }
 
 export default function BlockNoteEditor({
-  content,
+  user,
   onChangeDom,
   initialFocusOption,
 }: BlockNoteEditorProps) {
   const [intialFocussed, setInitialFocussed] = useState(false)
   const [showQuickCreate, setShowQuickCreate] = useState(false)
 
+  const yDocProvider = useYjsProvider()
+  const yDoc = useYDoc()
+  const { color } = uniqolor(user?.email ?? 'anonymous')
+
   const editor = useCreateBlockNote({
-    initialContent: content,
     animations: true,
     _tiptapOptions: {
       autofocus: 'end',
@@ -39,13 +45,17 @@ export default function BlockNoteEditor({
         default: '',
       },
     },
-    trailingBlock: true,
+    trailingBlock: false,
+    collaboration: {
+      provider: yDocProvider,
+      fragment: yDoc.getXmlFragment('blocknote'),
+      user: { name: user?.name ?? 'anonymous', color },
+    }
   })
 
   const onChange = async () => {
     const dom = editor.document
     setShowQuickCreate(isDomEmpty(dom))
-
     const mdContent = await editor.blocksToMarkdownLossy(dom)
     onChangeDom?.(dom, mdContent)
   }

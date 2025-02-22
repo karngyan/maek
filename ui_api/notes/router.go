@@ -10,6 +10,7 @@ import (
 func Configure(e *echo.Echo, l *zap.Logger) {
 	e.GET("/v1/workspaces/:workspace_id/notes", web.WrapAuthenticated(list, l))
 	e.DELETE("/v1/workspaces/:workspace_id/notes", web.WrapAuthenticated(trashBatch, l))
+	e.POST("/v1/workspaces/:workspace_id/notes/collab-auth", web.WrapAuthenticated(getCollaborationToken, l))
 	e.PUT("/v1/workspaces/:workspace_id/notes/:note_uuid", web.WrapAuthenticatedWithCurrentWorkspace(upsert, l))
 	e.GET("/v1/workspaces/:workspace_id/notes/:note_uuid", web.WrapAuthenticated(get, l))
 	e.DELETE("/v1/workspaces/:workspace_id/notes/:note_uuid", web.WrapAuthenticated(trash, l))

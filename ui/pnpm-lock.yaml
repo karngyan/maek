@@ -32,6 +32,12 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.11.2
         version: 3.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@y-sweet/client':
+        specifier: ^0.8.2
+        version: 0.8.2(yjs@13.6.20)
+      '@y-sweet/sdk':
+        specifier: ^0.8.2
+        version: 0.8.2
       avvvatars-react:
         specifier: ^0.4.2
         version: 0.4.2(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -65,12 +71,24 @@ importers:
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
+      uniqolor:
+        specifier: ^1.1.1
+        version: 1.1.1
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.0(react@18.3.1)
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+      y-prosemirror:
+        specifier: ^1.2.15
+        version: 1.2.15(prosemirror-model@1.23.0)(prosemirror-state@1.4.3)(prosemirror-view@1.34.3)(y-protocols@1.0.6(yjs@13.6.20))(yjs@13.6.20)
+      y-protocols:
+        specifier: ^1.0.6
+        version: 1.0.6(yjs@13.6.20)
+      yjs:
+        specifier: ^13.6.20
+        version: 13.6.20
     devDependencies:
       '@headlessui/react':
         specifier: ^2.1.10
@@ -1006,6 +1024,14 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
+  '@y-sweet/client@0.8.2':
+    resolution: {integrity: sha512-yJ0dqC5VeyZF6KJs4aSRGUFphslSxHtNtrK1xIHAC9f4xFDUJX7pX5rY1htaraeMCELpFKnx5i0UFovqnaW6sg==}
+    peerDependencies:
+      yjs: ^13.0.0
+
+  '@y-sweet/sdk@0.8.2':
+    resolution: {integrity: sha512-PQdbxMNu/ZwL+Z2JKO/6lftEdSUDZuRs7Rq8H6AjYHA4rdADPBfFtzLT9fjAcSCwBuqXSVO/G15bjrfbuViHpg==}
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -1898,8 +1924,8 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
-  lib0@0.2.98:
-    resolution: {integrity: sha512-XteTiNO0qEXqqweWx+b21p/fBnNHUA1NwAtJNJek1oPrewEZs2uiT4gWivHKr9GqCjDPAhchz0UQO8NwU3bBNA==}
+  lib0@0.2.99:
+    resolution: {integrity: sha512-vwztYuUf1uf/1zQxfzRfO5yzfNKhTtgOByCruuiQQxWQXnPb8Itaube5ylofcV0oM0aKal9Mv+S1s1Ky0UYP1w==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -2768,6 +2794,9 @@ packages:
   unified@10.1.2:
     resolution: {integrity: sha512-pUSWAi/RAnVy1Pif2kAoeWNBa3JVrx0MId2LASj8G+7AiHWoKZNTomq6LG326T68U7/e263X6fTdcXIy7XnF7Q==}
 
+  uniqolor@1.1.1:
+    resolution: {integrity: sha512-HUwezlXCwm5bzsEXW7AP7ybezH13uWENRgYT+3dOdhJPvpYucSqvIGckMiLn+Uy2j0NVf3fPp43uZ4aun3t4Ww==}
+
   unist-util-find-after@4.0.1:
     resolution: {integrity: sha512-QO/PuPMm2ERxC6vFXEPtmAutOopy5PknD+Oq64gGwxKtk4xwo9Z97t9Av1obPmGU0IyTa6EKYUfTrK2QJS3Ozw==}
 
@@ -2917,6 +2946,16 @@ packages:
 
   y-prosemirror@1.2.12:
     resolution: {integrity: sha512-UMnUIR5ppVn30n2kzeeBQEaesWGe4fsbnlch1HnNa3/snJMoOn7M7dieuS+o1OQwKs1dqx2eT3gFfGF2aOaQdw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      prosemirror-model: ^1.7.1
+      prosemirror-state: ^1.2.3
+      prosemirror-view: ^1.9.10
+      y-protocols: ^1.0.1
+      yjs: ^13.5.38
+
+  y-prosemirror@1.2.15:
+    resolution: {integrity: sha512-XDdrytq2M5bIy3qusQvfRclLu2eWZYPA+BbGWAb9FFWEhOB5FCrnzez2vsA+gvAd0FJTAcr89mjJ5g45r0j7TQ==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
       prosemirror-model: ^1.7.1
@@ -3835,6 +3874,16 @@ snapshots:
       eslint-visitor-keys: 3.4.3
 
   '@ungap/structured-clone@1.2.0': {}
+
+  '@y-sweet/client@0.8.2(yjs@13.6.20)':
+    dependencies:
+      '@y-sweet/sdk': 0.8.2
+      y-protocols: 1.0.6(yjs@13.6.20)
+      yjs: 13.6.20
+
+  '@y-sweet/sdk@0.8.2':
+    dependencies:
+      '@types/node': 20.16.11
 
   acorn-jsx@5.3.2(acorn@8.12.1):
     dependencies:
@@ -4986,7 +5035,7 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  lib0@0.2.98:
+  lib0@0.2.99:
     dependencies:
       isomorphic.js: 0.2.5
 
@@ -6102,6 +6151,8 @@ snapshots:
       trough: 2.2.0
       vfile: 5.3.7
 
+  uniqolor@1.1.1: {}
+
   unist-util-find-after@4.0.1:
     dependencies:
       '@types/unist': 2.0.11
@@ -6278,7 +6329,16 @@ snapshots:
 
   y-prosemirror@1.2.12(prosemirror-model@1.23.0)(prosemirror-state@1.4.3)(prosemirror-view@1.34.3)(y-protocols@1.0.6(yjs@13.6.20))(yjs@13.6.20):
     dependencies:
-      lib0: 0.2.98
+      lib0: 0.2.99
+      prosemirror-model: 1.23.0
+      prosemirror-state: 1.4.3
+      prosemirror-view: 1.34.3
+      y-protocols: 1.0.6(yjs@13.6.20)
+      yjs: 13.6.20
+
+  y-prosemirror@1.2.15(prosemirror-model@1.23.0)(prosemirror-state@1.4.3)(prosemirror-view@1.34.3)(y-protocols@1.0.6(yjs@13.6.20))(yjs@13.6.20):
+    dependencies:
+      lib0: 0.2.99
       prosemirror-model: 1.23.0
       prosemirror-state: 1.4.3
       prosemirror-view: 1.34.3
@@ -6287,12 +6347,12 @@ snapshots:
 
   y-protocols@1.0.6(yjs@13.6.20):
     dependencies:
-      lib0: 0.2.98
+      lib0: 0.2.99
       yjs: 13.6.20
 
   yjs@13.6.20:
     dependencies:
-      lib0: 0.2.98
+      lib0: 0.2.99
 
   yocto-queue@0.1.0: {}
 

@@ -45,6 +45,10 @@ import { OrganizeNote } from './organize-note'
 import { Spinner } from '../ui/spinner'
 import { Badge } from '../ui/badge'
 import { useFetchCollection } from '@/queries/hooks/collections'
+import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
+import { useConnectionStatus, useHasLocalChanges, YDocProvider } from '@/libs/ysweet/react'
+import * as Y from 'yjs'
+import { blocksToYDoc } from '@/libs/utils/blocknote'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -77,6 +81,7 @@ export const EditorWrapper = ({
     useState(false)
   const exitHrefPath = exitHref ?? `/workspaces/${workspaceId}/notes`
   const [currentDom, setCurrentDom] = useState<Block[]>([])
+  const { data: authInfo, isPending: isAuthPending } = useAuthInfo()
 
   const { mutate: upsertNote } = useUpsertNote()
   const { mutate: deleteNote } = useDeleteNote({
@@ -111,7 +116,11 @@ export const EditorWrapper = ({
     }
 
     return collections
-  }, [collectionsForNoteResponse, collectionFromSearchParamResponse, collectionIdStr])
+  }, [
+    collectionsForNoteResponse,
+    collectionFromSearchParamResponse,
+    collectionIdStr,
+  ])
 
   const ts = useMemo(() => {
     if (!note) return { updated: '', created: '' }
@@ -121,6 +130,16 @@ export const EditorWrapper = ({
       created: formatTimestamp(note.created),
     }
   }, [note])
+
+  const initialContentUpdate = useMemo(() => {
+    const isNew = note?.isNew
+    if (!isNew) return undefined
+
+    const initialContent = note?.content?.dom
+    const doc = blocksToYDoc(initialContent ?? [])
+    const state = Y.encodeStateAsUpdateV2(doc)
+    return state
+  }, [note?.isNew, note?.content?.dom])
 
   const debouncedUpsert = useDebounceCallback(
     (dom: Block[], mdContent: string) => {
@@ -201,7 +220,7 @@ export const EditorWrapper = ({
     return <NotFound embed={true} statusCode={404} />
   }
 
-  if (!note) {
+  if (!note || isAuthPending) {
     return (
       <div className='h-screen flex items-center justify-center'>
         <Spinner className='dark:text-zinc-800 h-12' />
@@ -210,100 +229,124 @@ export const EditorWrapper = ({
   }
 
   return (
-    <div className='relative shrink-0 w-full grow-0 min-h-full'>
-      <div className='sticky top-0 border-b border-dashed border-zinc-800 z-50 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-3'>
-        <div className='flex items-center overflow-hidden space-x-1'>
-          <Button plain className='h-8' href={exitHrefPath}>
-            <ArrowLeftIcon className='h-4' />
-          </Button>
-          <button className='flex items-center space-x-2'>
-            <div className='p-2 bg-white/10 rounded-lg shrink-0'>
-              <DocumentTextIcon className='h-4 text-zinc-400' />
-            </div>
-            <Text className='text-sm text-zinc-200 truncate'>
-              {title.trim() !== '' ? title : 'untitled note'}
-            </Text>
-          </button>
-        </div>
-        <div className='ml-2 inline-flex space-x-1 items-center justify-center'>
-          <div className='hidden sm:flex'>
-            <OrganizeNote wid={workspaceId} note={note} />
-          </div>
-          <Button plain onClick={onFavoriteClick} className='h-8'>
-            {note?.favorite ? (
-              <StarIconSolid className='h-6' />
-            ) : (
-              <StarIcon className='h-6' />
-            )}
-          </Button>
-          <Dropdown>
-            <DropdownButton plain className='h-8'>
-              <EllipsisHorizontalIcon className='h-6' />
-            </DropdownButton>
-            <DropdownMenu anchor='bottom end'>
-              <DropdownItem onClick={onCopyMaekLinkClick}>
-                <LinkIcon />
-                copy maek link
-              </DropdownItem>
-              <DropdownItem onClick={onDeleteClick}>
-                <TrashIcon />
-                delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-      </div>
-      {isPending ? (
-        <div className='space-y-4 w-full p-8'>
-          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-2/12'></div>
-          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-4/12'></div>
-          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-8/12'></div>
-          <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-12/12'></div>
-        </div>
-      ) : (
-        <>
-          <div className='pl-[3.3rem] pt-6'>
-            <Text className='text-xs'>{`${ts.created} -- ${ts.updated}`}</Text>
-            {collectionsForNote.length > 0 && (
-              <div className='hidden sm:flex flex-row space-x-2'>
-                {collectionsForNote.slice(0, 4).map((collection) => (
-                  <Badge key={collection.id} className='text-xs' color='zinc'>
-                    {collection.name !== '' ? collection.name : 'untitled collection'}
-                  </Badge>
-                ))}
-                {collectionsForNote.length > 4 && (
-                  <Badge className='text-xs' color='zinc'>
-                    +{collectionsForNote.length - 4}
-                  </Badge>
-                )}
+    <YDocProvider
+      docId={noteUuid}
+      // TODO: turn this into an async function
+      authEndpoint={`/v1/workspaces/${workspaceId}/notes/collab-auth`}
+      offlineSupport={true}
+      showDebuggerLink={false}
+      initialContentsUpdate={initialContentUpdate}
+    >
+      <div className='relative shrink-0 w-full grow-0 min-h-full'>
+        <div className='sticky top-0 border-b border-dashed border-zinc-800 z-50 backdrop-blur-xs bg-zinc-900/60 flex flex-row justify-between p-3'>
+          <div className='flex items-center overflow-hidden space-x-1'>
+            <Button plain className='h-8' href={exitHrefPath}>
+              <ArrowLeftIcon className='h-4' />
+            </Button>
+            <button className='flex items-center space-x-2'>
+              <div className='p-2 bg-white/10 rounded-lg shrink-0'>
+                <DocumentTextIcon className='h-4 text-zinc-400' />
               </div>
-            )}
+              <Text className='text-sm text-zinc-200 truncate'>
+                {title.trim() !== '' ? title : 'untitled note'}
+              </Text>
+            </button>
           </div>
-          <BlockNoteEditor
-            content={note?.content?.dom}
-            onChangeDom={handleOnChangeDom}
-            initialFocusOption={initialFocusOption}
-          />
-        </>
-      )}
-      <Alert
-        open={isDeleteConfirmAlertOpen}
-        onClose={setIsDeleteConfirmAlertOpen}
-      >
-        <AlertTitle>are you sure you want to delete this note?</AlertTitle>
-        <AlertDescription>
-          the note will be moved to trash and will be there for 30 days. you can
-          restore it within that period.
-        </AlertDescription>
-        <AlertActions>
-          <Button plain onClick={() => setIsDeleteConfirmAlertOpen(false)}>
-            cancel
-          </Button>
-          <Button color='red' onClick={onDeleteConfirm}>
-            delete
-          </Button>
-        </AlertActions>
-      </Alert>
-    </div>
+          <div className='ml-2 inline-flex space-x-1 items-center justify-center'>
+            <CollabStatus />
+            <div className='hidden sm:flex'>
+              <OrganizeNote wid={workspaceId} note={note} />
+            </div>
+            <Button plain onClick={onFavoriteClick} className='h-8'>
+              {note?.favorite ? (
+                <StarIconSolid className='h-6' />
+              ) : (
+                <StarIcon className='h-6' />
+              )}
+            </Button>
+            <Dropdown>
+              <DropdownButton plain className='h-8'>
+                <EllipsisHorizontalIcon className='h-6' />
+              </DropdownButton>
+              <DropdownMenu anchor='bottom end'>
+                <DropdownItem onClick={onCopyMaekLinkClick}>
+                  <LinkIcon />
+                  copy maek link
+                </DropdownItem>
+                <DropdownItem onClick={onDeleteClick}>
+                  <TrashIcon />
+                  delete
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </div>
+        {isPending ? (
+          <div className='space-y-4 w-full p-8'>
+            <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-2/12'></div>
+            <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-4/12'></div>
+            <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-8/12'></div>
+            <div className='h-6 animate-pulse bg-zinc-800 rounded-lg w-12/12'></div>
+          </div>
+        ) : (
+          <>
+            <div className='pl-[3.3rem] pt-6'>
+              <Text className='text-xs'>{`${ts.created} -- ${ts.updated}`}</Text>
+              {collectionsForNote.length > 0 && (
+                <div className='hidden sm:flex flex-row space-x-2'>
+                  {collectionsForNote.slice(0, 4).map((collection) => (
+                    <Badge key={collection.id} className='text-xs' color='zinc'>
+                      {collection.name !== ''
+                        ? collection.name
+                        : 'untitled collection'}
+                    </Badge>
+                  ))}
+                  {collectionsForNote.length > 4 && (
+                    <Badge className='text-xs' color='zinc'>
+                      +{collectionsForNote.length - 4}
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <BlockNoteEditor
+              user={authInfo?.user}
+              onChangeDom={handleOnChangeDom}
+              initialFocusOption={initialFocusOption}
+            />
+          </>
+        )}
+        <Alert
+          open={isDeleteConfirmAlertOpen}
+          onClose={setIsDeleteConfirmAlertOpen}
+        >
+          <AlertTitle>are you sure you want to delete this note?</AlertTitle>
+          <AlertDescription>
+            the note will be moved to trash and will be there for 30 days. you
+            can restore it within that period.
+          </AlertDescription>
+          <AlertActions>
+            <Button plain onClick={() => setIsDeleteConfirmAlertOpen(false)}>
+              cancel
+            </Button>
+            <Button color='red' onClick={onDeleteConfirm}>
+              delete
+            </Button>
+          </AlertActions>
+        </Alert>
+      </div>
+    </YDocProvider>
+  )
+}
+
+const CollabStatus = () => {
+  const hasLocalChanges = useHasLocalChanges()
+  const collabConnectionStatus = useConnectionStatus()
+
+  return (
+    <Text>
+      {hasLocalChanges ? 'syncing' : 'synced'} - {collabConnectionStatus}
+    </Text>
   )
 }

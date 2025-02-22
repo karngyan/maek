@@ -1,6 +1,7 @@
 services:
   postgres:
     image: pgvector/pgvector:0.8.0-pg17
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -17,6 +18,7 @@ services:
 
   postgres-test:
     image: pgvector/pgvector:0.8.0-pg17
+    restart: unless-stopped
     ports:
       - "5433:5432"
     environment:
@@ -28,6 +30,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  y-sweet:
+    image: ghcr.io/jamsocket/y-sweet:sha-db9709a
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./tmp/ysweet_data:/data
+    command: >
+      y-sweet serve /data --host 0.0.0.0 --url-prefix=http://localhost:8081/
 
 volumes:
   pg_data:
