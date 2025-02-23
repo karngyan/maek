@@ -289,3 +289,7 @@ export const isDomEmpty = (dom: Block[]) => {
 
   return false
 }
+
+export const collabDocID = (uuid: string, wid: number) => {
+  return `${wid}-${uuid}`
+}

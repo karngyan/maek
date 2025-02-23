@@ -2,6 +2,7 @@ package notes
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -32,7 +33,11 @@ func getCollaborationInfo(ctx web.Context) error {
 		}
 	}
 
-	clt, err := ysweet.GenerateReadWriteClientInfo(nuuid, ctx.Session.UserID, ctx.Session.Age())
+	// uuids unique for each workspace
+	// TODO: Remove unique constraint from the database on uuid
+	// TODO: Also update FindNoteInfo / CheckNoteExists by UUID workflow, so its okay to have multiple notes with the same UUID but different workspaces.
+	docID := fmt.Sprintf("%d-%s", ctx.WorkspaceID, nuuid)
+	clt, err := ysweet.GenerateReadWriteClientInfo(docID, ctx.Session.UserID, ctx.Session.Age())
 	if err != nil {
 		return ctx.InternalError(err)
 	}

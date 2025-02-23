@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/alert'
 import { useDeleteNote } from '@/queries/hooks/notes'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { getHasMeta, getNoteTitle } from '@/libs/utils/note'
+import { collabDocID, getHasMeta, getNoteTitle } from '@/libs/utils/note'
 import NotFound from '@/app/not-found'
 import { formatTimestamp } from '@/libs/utils/time'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -54,10 +54,7 @@ import {
 import * as Y from 'yjs'
 import { blocksToYDoc } from '@/libs/utils/blocknote'
 import { motion } from 'motion/react'
-import {
-  STATUS_CONNECTED,
-  STATUS_ERROR,
-} from '@y-sweet/client'
+import { STATUS_CONNECTED, STATUS_ERROR } from '@y-sweet/client'
 import { cn } from '@/libs/utils'
 import { SimpleTooltipContent, Tooltip, TooltipTrigger } from '../ui/tooltip'
 import { fetchCollabInfo } from '@/queries/services/note'
@@ -142,6 +139,10 @@ export const EditorWrapper = ({
       created: formatTimestamp(note.created),
     }
   }, [note])
+
+  const docID = useMemo(() => {
+    return collabDocID(noteUuid, workspaceId)
+  }, [noteUuid, workspaceId])
 
   const initialContentUpdate = useMemo(() => {
     const isNew = note?.isNew
@@ -242,7 +243,7 @@ export const EditorWrapper = ({
 
   return (
     <YDocProvider
-      docId={noteUuid}
+      docId={docID}
       authEndpoint={() => fetchCollabInfo(workspaceId, noteUuid)}
       offlineSupport={true}
       showDebuggerLink={false}
@@ -414,7 +415,13 @@ const CollabStatus = () => {
           </div>
         </div>
       </TooltipTrigger>
-      <SimpleTooltipContent label={(hasLocalChanges ? 'unsaved changes' : 'synced') + ' - ' + collabConnectionStatus} />
+      <SimpleTooltipContent
+        label={
+          (hasLocalChanges ? 'unsaved changes' : 'synced') +
+          ' - ' +
+          collabConnectionStatus
+        }
+      />
     </Tooltip>
   )
 }
