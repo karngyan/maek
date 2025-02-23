@@ -3,6 +3,7 @@ package embedder
 import (
 	"context"
 	"fmt"
+	"github.com/bluele/go-timecop"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/karngyan/maek/ai"
 	"github.com/karngyan/maek/db"
@@ -24,6 +25,8 @@ func AddEmbeddingJobs(ctx context.Context, q *db.Queries, nid int64, wid int64, 
 		NoteID:      int32(nid),
 		WorkspaceID: int32(wid),
 		Content:     string(content),
+		Created:     timecop.Now().Unix(),
+		Updated:     timecop.Now().Unix(),
 	})
 	if err != nil {
 		return err
@@ -34,7 +37,6 @@ func AddEmbeddingJobs(ctx context.Context, q *db.Queries, nid int64, wid int64, 
 func ProcessEmbeddingJobs() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-
 	return db.Tx(ctx, func(txCtx context.Context, q *db.Queries) error {
 		jobs, err := q.GetEmbeddingJobsByStatus(txCtx, pgtype.Int4{
 			Int32: int32(EmbeddingJobStatusPending),
@@ -71,6 +73,7 @@ func ProcessEmbeddingJobs() error {
 					EmbeddingVector: pgvector.NewVector(vector),
 				})
 				if insertErr != nil {
+					fmt.Println("error while inserting embedding ", err)
 					return insertErr
 				}
 				updateErr := q.UpdateEmbeddingJobStatus(txCtx, db.UpdateEmbeddingJobStatusParams{

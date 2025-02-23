@@ -129,8 +129,8 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace_favorite
 CREATE TABLE IF NOT EXISTS collection_notes
 (
     id            BIGSERIAL PRIMARY KEY,
-    collection_id BIGINT NOT NULL,      -- Foreign key to collection table
-    note_id       BIGINT NOT NULL,      -- Foreign key to note table
+    collection_id BIGINT NOT NULL,       -- Foreign key to collection table
+    note_id       BIGINT NOT NULL,       -- Foreign key to note table
     trashed       BOOLEAN DEFAULT FALSE, -- Trash flag
 
     CONSTRAINT unique_collection_note_pair UNIQUE (collection_id, note_id)
@@ -149,8 +149,8 @@ CREATE TABLE embedding_job
     id           BIGSERIAL PRIMARY KEY,
     note_id      INT    NOT NULL,
     workspace_id INT    NOT NULL,
-    content        TEXT         NOT NULL,
-    status       INT             DEFAULT 0,
+    content      TEXT   NOT NULL,
+    status       INT             DEFAULT 1,
     attempts     INT             DEFAULT 0, -- Track retry attempts
     created      BIGINT NOT NULL DEFAULT 0,
     updated      BIGINT NOT NULL DEFAULT 0
@@ -163,14 +163,14 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE embedding
 (
-    id           BIGSERIAL PRIMARY KEY,
-    note_id      INT    NOT NULL,
-    workspace_id INT    NOT NULL,
-    chunk        TEXT ,
-    chunk_id     INT GENERATED ALWAYS AS IDENTITY,
-    embedding_vector    VECTOR(1536),
-    created      BIGINT NOT NULL DEFAULT 0,
-    updated      BIGINT NOT NULL DEFAULT 0
+    id               BIGSERIAL PRIMARY KEY,
+    note_id          INT    NOT NULL,
+    workspace_id     INT    NOT NULL,
+    chunk            TEXT,
+    chunk_id         INT GENERATED ALWAYS AS IDENTITY,
+    embedding_vector VECTOR(3072),
+    created          BIGINT NOT NULL DEFAULT 0,
+    updated          BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_embedding_job_status

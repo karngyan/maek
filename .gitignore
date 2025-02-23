@@ -6,3 +6,6 @@ main
 .DS_Store
 *.local.*
 tmp
+scripts
+input.txt
+ollama/

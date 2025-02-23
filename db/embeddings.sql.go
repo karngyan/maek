@@ -55,8 +55,8 @@ func (q *Queries) GetEmbeddingJobsByStatus(ctx context.Context, status pgtype.In
 }
 
 const insertEmbeddingJobs = `-- name: InsertEmbeddingJobs :one
-INSERT INTO embedding_job (note_id, workspace_id, content)
-VALUES ($1, $2, $3)
+INSERT INTO embedding_job (note_id, workspace_id, content, created, updated)
+VALUES ($1, $2, $3, $4, $5)
     RETURNING id
 `
 
@@ -64,10 +64,18 @@ type InsertEmbeddingJobsParams struct {
 	NoteID      int32
 	WorkspaceID int32
 	Content     string
+	Created     int64
+	Updated     int64
 }
 
 func (q *Queries) InsertEmbeddingJobs(ctx context.Context, arg InsertEmbeddingJobsParams) (int64, error) {
-	row := q.db.QueryRow(ctx, insertEmbeddingJobs, arg.NoteID, arg.WorkspaceID, arg.Content)
+	row := q.db.QueryRow(ctx, insertEmbeddingJobs,
+		arg.NoteID,
+		arg.WorkspaceID,
+		arg.Content,
+		arg.Created,
+		arg.Updated,
+	)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
