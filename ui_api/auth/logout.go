@@ -25,5 +25,11 @@ func logout(ctx web.Context) error {
 		SameSite: http.SameSiteStrictMode,
 	})
 
+	ctx.SetCookie(&http.Cookie{
+		Name:   "last_visited_ws_id",
+		Value:  "",
+		MaxAge: -1,
+	})
+
 	return ctx.NoContent(http.StatusOK)
 }

@@ -1,5 +1,6 @@
 import { authApiClient } from '@/queries/services/base'
 import { Block } from '@blocknote/core'
+import { Collection } from './collection'
 
 interface NoteContent {
   dom: Block[]
@@ -32,13 +33,17 @@ export interface Note {
   isNew?: boolean // client side only
 }
 
-export interface NoteResponse {
+interface NoteResponse {
   note: Note
 }
 
-export interface ListNotesResponse {
+interface ListNotesResponse {
   notes: Note[]
   nextCursor: string
+}
+
+interface CollectionsForNoteResponse {
+  collections: Collection[]
 }
 
 export const upsertNote = async (note: Note): Promise<NoteResponse> => {
@@ -110,3 +115,57 @@ export const fetchAllNotes = async ({
   )
   return response.data
 }
+
+export const fetchCollectionsForNote = async ({
+  workspaceId,
+  noteUuid,
+}: {
+  workspaceId: number
+  noteUuid: string
+}): Promise<CollectionsForNoteResponse> => {
+  const response = await authApiClient.get<CollectionsForNoteResponse>(
+    `/v1/workspaces/${workspaceId}/notes/${noteUuid}/collections`
+  )
+  return response.data
+}
+
+export const addCollectionsToNote = async ({
+  wid,
+  noteUuid,
+  cids = [],
+}: {
+  wid: number
+  noteUuid: string
+  cids: number[]
+}): Promise<CollectionsForNoteResponse> => {
+  const response = await authApiClient.post<CollectionsForNoteResponse>(
+    `/v1/workspaces/${wid}/notes/${noteUuid}/collections`,
+    {
+      collectionIds: cids,
+    }
+  )
+
+  return response.data
+}
+
+export const removeCollectionsFromNote = async ({
+  wid,
+  noteUuid,
+  cids = [],
+}: {
+  wid: number
+  noteUuid: string
+  cids: number[]
+}): Promise<CollectionsForNoteResponse> => {
+  const response = await authApiClient.delete<CollectionsForNoteResponse>(
+    `/v1/workspaces/${wid}/notes/${noteUuid}/collections`,
+    {
+      data: {
+        collectionIds: cids,
+      },
+    }
+  )
+
+  return response.data
+}
+

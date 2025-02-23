@@ -59,4 +59,16 @@ WHERE session.token = $1 AND session.expires > $2;
 DELETE FROM session
 WHERE token = $1;
 
+-- name: UpdateUserName :exec
+UPDATE "user"
+SET name = $1
+WHERE id = $2;
+
+-- name: UpdateWorkspaceNameDescription :exec
+UPDATE workspace
+SET 
+  name = $1,
+  description = $2
+WHERE id = $3;
+
 

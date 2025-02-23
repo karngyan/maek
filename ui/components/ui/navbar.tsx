@@ -1,8 +1,8 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
-import { LayoutGroup, motion } from 'framer-motion'
+import { cn } from '@/libs/utils'
+import { LayoutGroup, motion } from 'motion/react'
 import React, { forwardRef, useId } from 'react'
 import { TouchTarget } from './button'
 import { Link } from './link'
@@ -14,7 +14,7 @@ export function Navbar({
   return (
     <nav
       {...props}
-      className={clsx(className, 'flex flex-1 items-center gap-4 py-2.5')}
+      className={cn(className, 'flex flex-1 items-center gap-4 py-2.5')}
     />
   )
 }
@@ -27,7 +27,7 @@ export function NavbarDivider({
     <div
       aria-hidden='true'
       {...props}
-      className={clsx(className, 'h-6 w-px bg-zinc-950/10 dark:bg-white/10')}
+      className={cn(className, 'h-6 w-px bg-zinc-950/10 dark:bg-white/10')}
     />
   )
 }
@@ -40,7 +40,7 @@ export function NavbarSection({
 
   return (
     <LayoutGroup id={id}>
-      <div {...props} className={clsx(className, 'flex items-center gap-3')} />
+      <div {...props} className={cn(className, 'flex items-center gap-3')} />
     </LayoutGroup>
   )
 }
@@ -53,7 +53,7 @@ export function NavbarSpacer({
     <div
       aria-hidden='true'
       {...props}
-      className={clsx(className, '-ml-4 flex-1')}
+      className={cn(className, '-ml-4 flex-1')}
     />
   )
 }
@@ -70,27 +70,27 @@ export const NavbarItem = forwardRef(function NavbarItem(
   ),
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
 ) {
-  const classes = clsx(
+  const classes = cn(
     // Base
     'relative flex min-w-0 items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-950 sm:text-sm/5',
     // Leading icon/icon-only
-    'data-[slot=icon]:*:size-6 data-[slot=icon]:*:shrink-0 data-[slot=icon]:*:fill-zinc-500 sm:data-[slot=icon]:*:size-5',
+    '*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500 sm:*:data-[slot=icon]:size-5',
     // Trailing icon (down chevron or similar)
-    'data-[slot=icon]:last:[&:not(:nth-child(2))]:*:ml-auto data-[slot=icon]:last:[&:not(:nth-child(2))]:*:size-5 sm:data-[slot=icon]:last:[&:not(:nth-child(2))]:*:size-4',
+    '*:not-nth-2:last:data-[slot=icon]:ml-auto *:not-nth-2:last:data-[slot=icon]:size-5 sm:*:not-nth-2:last:data-[slot=icon]:size-4',
     // Avatar
-    'data-[slot=avatar]:*:-m-0.5 data-[slot=avatar]:*:size-7 data-[slot=avatar]:*:[--avatar-radius:theme(borderRadius.DEFAULT)] data-[slot=avatar]:*:[--ring-opacity:10%] sm:data-[slot=avatar]:*:size-6',
+    '*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 *:data-[slot=avatar]:[--avatar-radius:var(--radius)] *:data-[slot=avatar]:[--ring-opacity:10%] sm:*:data-[slot=avatar]:size-6',
     // Hover
-    'data-[hover]:bg-zinc-950/5 data-[slot=icon]:*:data-[hover]:fill-zinc-950',
+    'data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950',
     // Active
-    'data-[active]:bg-zinc-950/5 data-[slot=icon]:*:data-[active]:fill-zinc-950',
+    'data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950',
     // Dark mode
-    'dark:text-white dark:data-[slot=icon]:*:fill-zinc-400',
-    'dark:data-[hover]:bg-white/5 dark:data-[slot=icon]:*:data-[hover]:fill-white',
-    'dark:data-[active]:bg-white/5 dark:data-[slot=icon]:*:data-[active]:fill-white'
+    'dark:text-white dark:*:data-[slot=icon]:fill-zinc-400',
+    'dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-white',
+    'dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-white'
   )
 
   return (
-    <span className={clsx(className, 'relative')}>
+    <span className={cn(className, 'relative')}>
       {current && (
         <motion.span
           layoutId='current-indicator'
@@ -109,7 +109,7 @@ export const NavbarItem = forwardRef(function NavbarItem(
       ) : (
         <Headless.Button
           {...props}
-          className={clsx('cursor-default', classes)}
+          className={cn('cursor-default', classes)}
           data-current={current ? 'true' : undefined}
           ref={ref}
         >
@@ -124,5 +124,5 @@ export function NavbarLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={clsx(className, 'truncate')} />
+  return <span {...props} className={cn(className, 'truncate')} />
 }

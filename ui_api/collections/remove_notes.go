@@ -34,7 +34,7 @@ func removeNotes(ctx web.Context) error {
 	}
 
 	rctx := ctx.Request().Context()
-	err := collections.RemoveNotesToCollection(rctx, wid, cid, req.NoteIDs)
+	err := collections.RemoveNotesFromCollection(rctx, wid, cid, req.NoteIDs)
 	if err != nil {
 		return ctx.InternalError(err)
 	}

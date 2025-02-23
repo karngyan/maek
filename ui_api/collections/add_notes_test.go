@@ -23,7 +23,7 @@ func TestAddNotes(t *testing.T) {
 
 	cs := testutil.NewClientStateWithUser(t)
 
-	c, err := collections.CreateCollection(ctx, cs.Workspace.ID, cs.User.ID)
+	c, err := collections.CreateCollection(ctx, cs.Workspace.ID, cs.User.ID, "")
 	assert.NoError(t, err)
 
 	cbytes, err := json.Marshal(map[string]any{

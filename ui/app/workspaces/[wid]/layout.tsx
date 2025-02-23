@@ -17,17 +17,16 @@ import {
 import {
   Sidebar,
   SidebarBody,
+  SidebarDivider,
   SidebarFooter,
   SidebarHeader,
-  SidebarHeading,
   SidebarItem,
   SidebarLabel,
   SidebarSection,
   SidebarSpacer,
-} from '@/components/ui/sidebar'
+} from '@/components/sidebar'
 import {
   ArrowRightStartOnRectangleIcon,
-  BackwardIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   Cog8ToothIcon,
@@ -39,22 +38,54 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
   UserIcon,
+  MagnifyingGlassIcon,
+  InboxIcon,
+  PencilIcon,
+  ChatBubbleBottomCenterTextIcon,
 } from '@heroicons/react/16/solid'
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Avvvatars from 'avvvatars-react'
 import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { workspaceAvatarValue } from '@/libs/utils/auth'
-import { Workspace } from '@/queries/services/auth'
+import { User, Workspace } from '@/queries/services/auth'
 import { Link } from '@/components/ui/link'
 import { useLogout } from '@/queries/hooks/auth/use-logout'
 import { usePathname, useRouter } from 'next/navigation'
 import axios from 'axios'
-import { SidebarLayout } from '@/components/ui/sidebar-layout'
+import { SidebarLayout } from '@/components/sidebar/layout'
+import LogoMaek from '@/components/logo/maek'
+import SidebarIcon from '@/components/ui/icons/sidebar'
+import { useLocalStorage } from 'usehooks-ts'
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
+import {
+  SimpleTooltipContent,
+  Tooltip,
+  TooltipTrigger,
+  ConditionalTooltip,
+} from '@/components/ui/tooltip'
+import { v4 as uuidv4 } from 'uuid'
+import { useQueryClient } from '@tanstack/react-query'
+import { notesKeys } from '@/queries/hooks/notes'
+import { defaultNewNote } from '@/libs/utils/note'
+import {
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, Label } from '@/components/ui/fieldset'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-
+import { Textarea } from '@/components/ui/textarea'
+import { useAddWorkspace } from '@/queries/hooks/auth/use-add-workspace'
+import { toast } from 'sonner'
 
 function WorkspaceDropdownMenu({
   workspaces,
@@ -63,31 +94,127 @@ function WorkspaceDropdownMenu({
   workspaces: Workspace[]
   currentWorkspaceId: number
 }) {
+  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false)
+  const [workspaceName, setWorkspaceName] = useState('')
+  const [workspaceDescription, setWorkspaceDescription] = useState('')
+  const [isWorkspaceCreatePending, setIsWorkspaceCreatePending] =
+    useState(false)
+  const router = useRouter()
+
+  const { mutate: addWorkspace } = useAddWorkspace()
+
+  const openNewWorkspaceModal = () => {
+    setIsWorkspaceModalOpen(true)
+  }
+
+  const onWorkspaceNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkspaceName(e.target.value)
+  }
+
+  const onWorkspaceDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setWorkspaceDescription(e.target.value)
+  }
+
+  const createWorkspace = () => {
+    setIsWorkspaceCreatePending(true)
+
+    addWorkspace(
+      { name: workspaceName.trim(), description: workspaceDescription.trim() },
+      {
+        onSuccess: ({ workspace }) => {
+          setIsWorkspaceModalOpen(false)
+          setWorkspaceName('')
+          setWorkspaceDescription('')
+          toast.success('workspace created')
+          router.push(`/workspaces/${workspace.id}/notes`)
+        },
+        onError: (err) => {
+          toast.error('failed to create workspace', {
+            description: err.toString()
+          })
+        },
+        onSettled: () => {
+          setIsWorkspaceCreatePending(false)
+        },
+      }
+    )
+  }
+
   return (
-    <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
-      <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings`}>
-        <Cog8ToothIcon />
-        <DropdownLabel>settings</DropdownLabel>
-      </DropdownItem>
-      <DropdownDivider />
-      {workspaces.map((workspace) => {
-        return (
-          <DropdownItem key={workspace.id} href={`/workspaces/${workspace.id}`}>
-            <Avvvatars
-              style='shape'
-              size={16}
-              value={workspaceAvatarValue(workspace)}
+    <>
+      <DropdownMenu className='min-w-80 lg:min-w-64' anchor='bottom start'>
+        <DropdownItem href={`/workspaces/${currentWorkspaceId}/settings/ws`}>
+          <Cog8ToothIcon />
+          <DropdownLabel>settings</DropdownLabel>
+        </DropdownItem>
+        <DropdownDivider />
+        {workspaces.map((workspace) => {
+          return (
+            <DropdownItem
+              key={workspace.id}
+              href={`/workspaces/${workspace.id}`}
+              className='shrink-0'
+            >
+              <Avvvatars
+                style='shape'
+                size={16}
+                value={workspaceAvatarValue(workspace)}
+              />
+              <DropdownLabel>{workspace.name}</DropdownLabel>
+            </DropdownItem>
+          )
+        })}
+        <DropdownDivider />
+        <DropdownItem onClick={openNewWorkspaceModal}>
+          <PlusIcon />
+          <DropdownLabel>new workspace&hellip;</DropdownLabel>
+        </DropdownItem>
+      </DropdownMenu>
+
+      <Dialog
+        open={isWorkspaceModalOpen}
+        onClose={() => setIsWorkspaceModalOpen(false)}
+      >
+        <DialogTitle>create a new workspace</DialogTitle>
+        <DialogDescription>
+          each workspace is an independent space for notes and collections with
+          its own AI context, ensuring no data sharing between workspaces
+        </DialogDescription>
+        <DialogBody>
+          <Field>
+            <Label className='sr-only'>name</Label>
+            <Input
+              value={workspaceName}
+              onChange={onWorkspaceNameChange}
+              name='workspace_name'
+              placeholder='workspace name'
             />
-            <DropdownLabel>{workspace.name}</DropdownLabel>
-          </DropdownItem>
-        )
-      })}
-      <DropdownDivider />
-      <DropdownItem href='/create-workspace'>
-        <PlusIcon />
-        <DropdownLabel>new workspace&hellip;</DropdownLabel>
-      </DropdownItem>
-    </DropdownMenu>
+          </Field>
+          <Field>
+            <Label className='sr-only'>description</Label>
+            <Textarea
+              value={workspaceDescription}
+              onChange={onWorkspaceDescriptionChange}
+              name='workspace_description'
+              placeholder='workspace description'
+            />
+          </Field>
+        </DialogBody>
+        <DialogActions>
+          <Button plain onClick={() => setIsWorkspaceModalOpen(false)}>
+            cancel
+          </Button>
+          <Button
+            disabled={isWorkspaceCreatePending}
+            onClick={createWorkspace}
+          >
+            create
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
@@ -98,9 +225,12 @@ export default function WorkspacesHomeLayout({
   params: { wid: string }
   children: React.ReactNode
 }) {
-  const router = useRouter()
-  const pathname = usePathname()
   const workspaceId = +params.wid
+  const [isSidebarOpen, setIsSidebarOpen] = useLocalStorage<boolean>(
+    'maek:sidebar-open',
+    false
+  )
+
   const navItems = useMemo(
     () => [
       {
@@ -118,6 +248,7 @@ export default function WorkspacesHomeLayout({
   )
   const { isPending, data, error } = useAuthInfo()
   const { mutate: logout } = useLogout()
+  const router = useRouter()
 
   if (isPending) {
     return (
@@ -181,7 +312,7 @@ export default function WorkspacesHomeLayout({
               <InboxIcon />
             </NavbarItem>
             <Dropdown>
-              <DropdownButton as={NavbarItem}>
+              <DropdownButton as={NavbarItem} className='shrink-0'>
                 <Avvvatars
                   style='character'
                   size={20}
@@ -189,13 +320,11 @@ export default function WorkspacesHomeLayout({
                 />
               </DropdownButton>
               <DropdownMenu className='min-w-64' anchor='bottom end'>
-                <DropdownItem href='/profile'>
+                <DropdownItem
+                  href={`/workspaces/${workspaceId}/settings/account`}
+                >
                   <UserIcon />
-                  <DropdownLabel>my profile</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/settings'>
-                  <Cog8ToothIcon />
-                  <DropdownLabel>settings</DropdownLabel>
+                  <DropdownLabel>my account</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
                 <DropdownItem href='/privacy'>
@@ -221,119 +350,275 @@ export default function WorkspacesHomeLayout({
         </Navbar>
       }
       sidebar={
-        <Sidebar>
-          <SidebarHeader>
-            <Dropdown>
+        <CollapsibleSidebar
+          user={user}
+          navItems={navItems}
+          workspace={workspace}
+          workspaces={workspaces}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
+      }
+      isSidebarOpen={isSidebarOpen}
+    >
+      {children}
+    </SidebarLayout>
+  )
+}
+
+function CollapsibleSidebar({
+  navItems,
+  workspace,
+  workspaces,
+  user,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {
+  navItems: { label: string; href: string; icon: React.ReactNode }[]
+  workspace: Workspace
+  workspaces: Workspace[]
+  user: User
+  isSidebarOpen: boolean
+  setIsSidebarOpen: (isOpen: boolean) => unknown
+}) {
+  const pathname = usePathname()
+  const workspaceId = workspace.id
+  const router = useRouter()
+  const { mutate: logout } = useLogout()
+  const qc = useQueryClient()
+
+  const logoutUser = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        router.replace('/')
+      },
+    })
+  }
+
+  const createNote = () => {
+    const noteUuid = uuidv4()
+
+    qc.setQueryData(notesKeys.one(workspace.id, noteUuid), {
+      note: defaultNewNote(noteUuid, workspace.id, '', user, [
+        {
+          children: [],
+          content: [],
+          id: uuidv4(),
+          props: {
+            backgroundColor: 'default',
+            textAlignment: 'left',
+            textColor: 'default',
+          },
+          type: 'paragraph',
+        },
+      ]),
+    })
+
+    router.push(`/workspaces/${workspace.id}/notes/${noteUuid}`)
+  }
+
+  return (
+    <Collapsible asChild open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+      <Sidebar>
+        <SidebarHeader>
+          <div className='flex flex-row justify-between items-center'>
+            <CollapsibleContent>
+              <LogoMaek className='pl-2 h-6 w-auto' />
+            </CollapsibleContent>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CollapsibleTrigger asChild>
+                  <SidebarItem className='group shrink-0'>
+                    <SidebarIcon className='text-zinc-400 group-hover:text-zinc-300 size-4' />
+                  </SidebarItem>
+                </CollapsibleTrigger>
+              </TooltipTrigger>
+              <SimpleTooltipContent label='toggle sidebar' side='right' />
+            </Tooltip>
+          </div>
+          <SidebarDivider noMargin className='my-2' />
+          <Dropdown>
+            <ConditionalTooltip
+              label='switch workspace'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
               <DropdownButton as={SidebarItem} className='mb-2'>
-                <Avvvatars
-                  size={20}
-                  value={workspaceAvatarValue(workspace)}
-                  style='shape'
-                />
-                <SidebarLabel>{workspace.name}</SidebarLabel>
-                <ChevronDownIcon />
+                <span className='shrink-0'>
+                  <Avvvatars
+                    size={16}
+                    value={workspaceAvatarValue(workspace)}
+                    style='shape'
+                  />
+                </span>
+                <CollapsibleContent asChild>
+                  <span className='flex w-full flex-row items-center justify-between ml-0.5 gap-2'>
+                    <SidebarLabel>{workspace.name}</SidebarLabel>
+                    <ChevronDownIcon className='h-4' />
+                  </span>
+                </CollapsibleContent>
               </DropdownButton>
-              <WorkspaceDropdownMenu
-                workspaces={workspaces}
-                currentWorkspaceId={workspaceId}
-              />
-            </Dropdown>
-            <SidebarSection className='max-lg:hidden'>
-              <SidebarItem href='/search'>
-                <MagnifyingGlassIcon />
-                <SidebarLabel>search</SidebarLabel>
+            </ConditionalTooltip>
+            <WorkspaceDropdownMenu
+              workspaces={workspaces}
+              currentWorkspaceId={workspaceId}
+            />
+          </Dropdown>
+          <SidebarDivider noMargin className='mb-2' />
+          <SidebarSection className='max-lg:hidden'>
+            <ConditionalTooltip
+              label='create note'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem onClick={() => createNote()} className='shrink-0'>
+                <PencilIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>create note</SidebarLabel>
+                </CollapsibleContent>
               </SidebarItem>
-              <SidebarItem href='/inbox'>
-                <InboxIcon />
-                <SidebarLabel>inbox</SidebarLabel>
+            </ConditionalTooltip>
+            <ConditionalTooltip
+              label='chat'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem
+                href={`/workspaces/${workspace.id}/chat`}
+                className='shrink-0'
+                current={pathname === `/workspaces/${workspace.id}/chat`}
+              >
+                <ChatBubbleBottomCenterTextIcon />
+                <CollapsibleContent>
+                  <SidebarLabel>chat</SidebarLabel>
+                </CollapsibleContent>
               </SidebarItem>
-            </SidebarSection>
-          </SidebarHeader>
-          <SidebarBody>
-            <SidebarSection>
-              {navItems.map(({ label, href, icon }) => (
+            </ConditionalTooltip>
+          </SidebarSection>
+        </SidebarHeader>
+        <SidebarBody>
+          <SidebarSection>
+            {navItems.map(({ label, href, icon }) => (
+              <ConditionalTooltip
+                key={label}
+                label={label}
+                disabled={isSidebarOpen}
+                side='right'
+                asChild
+              >
                 <SidebarItem
                   current={pathname === href}
-                  key={label}
                   href={href}
+                  className='shrink-0'
                 >
                   {icon}
-                  <SidebarLabel>{label}</SidebarLabel>
+                  <CollapsibleContent>
+                    <SidebarLabel>{label}</SidebarLabel>
+                  </CollapsibleContent>
                 </SidebarItem>
-              ))}
-            </SidebarSection>
-            <SidebarSection className='max-lg:hidden'>
-              <SidebarHeading>favorites</SidebarHeading>
-              <SidebarItem href='/events/1'>
-                Bear Hug: Live in Concert
-              </SidebarItem>
-              <SidebarItem href='/events/2'>Viking People</SidebarItem>
-              <SidebarItem href='/events/3'>Six Fingers — DJ Set</SidebarItem>
-              <SidebarItem href='/events/4'>We All Look The Same</SidebarItem>
-            </SidebarSection>
-            <SidebarSpacer />
-            <SidebarSection>
-              <SidebarItem href='/support'>
+              </ConditionalTooltip>
+            ))}
+          </SidebarSection>
+          {/* <SidebarSection className='max-lg:hidden'>
+        <SidebarHeading>favorites</SidebarHeading>
+        <SidebarItem href='/events/1'>
+          Bear Hug: Live in Concert
+        </SidebarItem>
+        <SidebarItem href='/events/2'>Viking People</SidebarItem>
+        <SidebarItem href='/events/3'>Six Fingers — DJ Set</SidebarItem>
+        <SidebarItem href='/events/4'>We All Look The Same</SidebarItem>
+      </SidebarSection> */}
+          <SidebarSpacer />
+          <SidebarSection>
+            <ConditionalTooltip
+              label='support'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem href='/support' className='shrink-0'>
                 <QuestionMarkCircleIcon />
-                <SidebarLabel>support</SidebarLabel>
+                <CollapsibleContent>
+                  <SidebarLabel>support</SidebarLabel>
+                </CollapsibleContent>
               </SidebarItem>
-              <SidebarItem href='/changelog'>
+            </ConditionalTooltip>
+            <ConditionalTooltip
+              label='changelog'
+              disabled={isSidebarOpen}
+              side='right'
+              asChild
+            >
+              <SidebarItem href='/changelog' className='shrink-0'>
                 <SparklesIcon />
-                <SidebarLabel>changelog</SidebarLabel>
+                <CollapsibleContent>
+                  <SidebarLabel>changelog</SidebarLabel>
+                </CollapsibleContent>
               </SidebarItem>
-            </SidebarSection>
-          </SidebarBody>
-          <SidebarFooter className='max-lg:hidden'>
-            <Dropdown>
-              <DropdownButton as={SidebarItem}>
-                <span className='flex min-w-0 items-center gap-3'>
+            </ConditionalTooltip>
+          </SidebarSection>
+        </SidebarBody>
+        <SidebarFooter className='max-lg:hidden'>
+          <Dropdown>
+            <DropdownButton as={SidebarItem}>
+              <span className='w-10/12 flex flex-row items-center gap-3'>
+                <span className='shrink-0'>
                   <Avvvatars
                     style='character'
                     size={30}
                     radius={5}
                     value={user.name.length > 0 ? user.name : user.email}
                   />
-                  <span className='min-w-0'>
-                    <span className='block truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
+                </span>
+                <CollapsibleContent asChild>
+                  <span className='w-9/12 flex flex-col'>
+                    <span className='truncate text-sm/5 font-medium text-zinc-950 dark:text-white'>
                       {user.name.length > 0 ? user.name : 'add your name'}
                     </span>
-                    <span className='block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400'>
+                    <span className='truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400'>
                       {user.email}
                     </span>
                   </span>
+                </CollapsibleContent>
+              </span>
+              <CollapsibleContent asChild>
+                <span className='grow flex items-center justify-end shrink-0'>
+                  <ChevronUpIcon className='h-4' />
                 </span>
-                <ChevronUpIcon />
-              </DropdownButton>
-              <DropdownMenu className='min-w-64' anchor='top start'>
-                <DropdownItem href='/my-profile'>
-                  <UserIcon />
-                  <DropdownLabel>my profile</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/settings'>
-                  <Cog8ToothIcon />
-                  <DropdownLabel>settings</DropdownLabel>
-                </DropdownItem>
-                <DropdownDivider />
-                <DropdownItem href='/privacy-policy'>
-                  <ShieldCheckIcon />
-                  <DropdownLabel>privacy policy</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href='/share-feedback'>
-                  <LightBulbIcon />
-                  <DropdownLabel>share feedback</DropdownLabel>
-                </DropdownItem>
-                <DropdownDivider />
-                <DropdownItem href='/logout'>
-                  <ArrowRightStartOnRectangleIcon />
-                  <DropdownLabel>sign out</DropdownLabel>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </SidebarFooter>
-        </Sidebar>
-      }
-    >
-      {children}
-    </SidebarLayout>
+              </CollapsibleContent>
+            </DropdownButton>
+            <DropdownMenu className='min-w-64' anchor='top start'>
+              <DropdownItem
+                href={`/workspaces/${workspaceId}/settings/account`}
+              >
+                <UserIcon />
+                <DropdownLabel>my account</DropdownLabel>
+              </DropdownItem>
+              <DropdownDivider />
+              <DropdownItem href='/privacy-policy'>
+                <ShieldCheckIcon />
+                <DropdownLabel>privacy policy</DropdownLabel>
+              </DropdownItem>
+              <DropdownItem
+                href='https://x.com/intent/post?text=%40gyankarn+about+maek%3A'
+                target='_blank'
+                rel='noreferrer,noopener'
+              >
+                <LightBulbIcon />
+                <DropdownLabel>share feedback</DropdownLabel>
+              </DropdownItem>
+              <DropdownDivider />
+              <DropdownItem onClick={logoutUser}>
+                <ArrowRightStartOnRectangleIcon />
+                <DropdownLabel>sign out</DropdownLabel>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </SidebarFooter>
+      </Sidebar>
+    </Collapsible>
   )
 }

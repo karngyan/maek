@@ -51,7 +51,7 @@ export default function BlockNoteEditor({
   }
 
   return (
-    <>
+    <div className=''>
       <BlockNoteView
         onChange={onChange}
         onSelectionChange={() => {
@@ -86,6 +86,6 @@ export default function BlockNoteEditor({
           }}
         />
       )}
-    </>
+    </div>
   )
 }

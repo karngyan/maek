@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 import { IconLink } from '@/components/icon-link'
 import React, { useId } from 'react'
-import { StarField } from '@/components/star-field'
 
 export default function HomePage() {
   return (
@@ -19,7 +18,7 @@ export default function HomePage() {
           <div className='flex lg:flex-1'>
             <Link href='/' className='-m-1.5 p-1.5'>
               <span className='sr-only'>maek</span>
-              <LogoMaek className='h-6 w-auto' type='full' />
+              <LogoMaek className='h-10 w-auto' />
             </Link>
           </div>
           <div className='flex flex-1 justify-end items-center space-x-4'>
@@ -41,9 +40,6 @@ export default function HomePage() {
               and enhance your workflow with intelligent, minimalistic design.
               Elevate your productivity and focus on what matters.
             </p>
-          </div>
-          <div className='hidden lg:block'>
-            <StarField />
           </div>
         </div>
       </div>

@@ -17,10 +17,10 @@ func TestGet(t *testing.T) {
 	cs := testutil.NewClientStateWithUser(t)
 	cs2 := testutil.NewClientStateWithUserEmail(t, "john@maek.ai")
 
-	n, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID)
+	n, err := collections.CreateCollection(context.Background(), cs.Workspace.ID, cs.User.ID, "")
 	assert.Nil(t, err)
 
-	n2, err := collections.CreateCollection(context.Background(), cs2.Workspace.ID, cs2.User.ID)
+	n2, err := collections.CreateCollection(context.Background(), cs2.Workspace.ID, cs2.User.ID, "")
 
 	assert.Nil(t, err)
 

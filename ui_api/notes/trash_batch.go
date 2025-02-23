@@ -13,7 +13,7 @@ import (
 func trashBatch(ctx web.Context) error {
 
 	noteUuids := make([]string, 0)
-	echo.QueryParamsBinder(ctx).Strings("note_uuids", &noteUuids)
+	echo.QueryParamsBinder(ctx).Strings("note_uuids[]", &noteUuids)
 
 	if len(noteUuids) == 0 {
 		return ctx.JSON(http.StatusBadRequest, map[string]any{

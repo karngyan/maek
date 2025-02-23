@@ -11,18 +11,21 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addNotesToCollection = `-- name: AddNotesToCollection :exec
-INSERT INTO collection_notes (collection_id, note_id)
-SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[])
+const addNotesToCollections = `-- name: AddNotesToCollections :exec
+INSERT INTO collection_notes (collection_id, note_id, trashed)
+SELECT UNNEST($1::BIGINT[]), UNNEST($2::BIGINT[]), FALSE
+ON CONFLICT (collection_id, note_id)
+DO UPDATE
+SET trashed = FALSE
 `
 
-type AddNotesToCollectionParams struct {
+type AddNotesToCollectionsParams struct {
 	CollectionIds []int64
 	NoteIds       []int64
 }
 
-func (q *Queries) AddNotesToCollection(ctx context.Context, arg AddNotesToCollectionParams) error {
-	_, err := q.db.Exec(ctx, addNotesToCollection, arg.CollectionIds, arg.NoteIds)
+func (q *Queries) AddNotesToCollections(ctx context.Context, arg AddNotesToCollectionsParams) error {
+	_, err := q.db.Exec(ctx, addNotesToCollections, arg.CollectionIds, arg.NoteIds)
 	return err
 }
 
@@ -55,7 +58,7 @@ func (q *Queries) DeleteCollection(ctx context.Context, arg DeleteCollectionPara
 }
 
 const getCollectionByIDAndWorkspace = `-- name: GetCollectionByIDAndWorkspace :one
-SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
+SELECT id, name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE id = $1
   AND workspace_id = $2
@@ -75,6 +78,7 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 		&i.Description,
 		&i.Created,
 		&i.Updated,
+		&i.Favorite,
 		&i.Trashed,
 		&i.Deleted,
 		&i.WorkspaceID,
@@ -84,9 +88,64 @@ func (q *Queries) GetCollectionByIDAndWorkspace(ctx context.Context, arg GetColl
 	return i, err
 }
 
+const getCollectionsByNoteUUIDAndWorkspace = `-- name: GetCollectionsByNoteUUIDAndWorkspace :many
+
+SELECT c.id, c.name, c.description, c.created, c.updated, c.favorite, c.trashed, c.deleted,
+       c.workspace_id, c.created_by_id, c.updated_by_id
+FROM collection c
+JOIN collection_notes cn ON c.id = cn.collection_id
+JOIN note n ON cn.note_id = n.id
+WHERE n.uuid = $1
+  AND cn.trashed = FALSE
+  AND c.workspace_id = $2
+  AND c.deleted = FALSE
+  AND c.trashed = FALSE
+  AND n.deleted = FALSE
+  AND n.trashed = FALSE
+ORDER BY c.updated DESC
+`
+
+type GetCollectionsByNoteUUIDAndWorkspaceParams struct {
+	UUID        string
+	WorkspaceID int64
+}
+
+// Avoid updating already trashed entries
+func (q *Queries) GetCollectionsByNoteUUIDAndWorkspace(ctx context.Context, arg GetCollectionsByNoteUUIDAndWorkspaceParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, getCollectionsByNoteUUIDAndWorkspace, arg.UUID, arg.WorkspaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Created,
+			&i.Updated,
+			&i.Favorite,
+			&i.Trashed,
+			&i.Deleted,
+			&i.WorkspaceID,
+			&i.CreatedByID,
+			&i.UpdatedByID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertCollection = `-- name: InsertCollection :one
-INSERT INTO collection (name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+INSERT INTO collection (name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id
 `
 
@@ -95,6 +154,7 @@ type InsertCollectionParams struct {
 	Description string
 	Created     int64
 	Updated     int64
+	Favorite    bool
 	Trashed     bool
 	Deleted     bool
 	WorkspaceID int64
@@ -108,6 +168,7 @@ func (q *Queries) InsertCollection(ctx context.Context, arg InsertCollectionPara
 		arg.Description,
 		arg.Created,
 		arg.Updated,
+		arg.Favorite,
 		arg.Trashed,
 		arg.Deleted,
 		arg.WorkspaceID,
@@ -120,7 +181,7 @@ func (q *Queries) InsertCollection(ctx context.Context, arg InsertCollectionPara
 }
 
 const listCollections = `-- name: ListCollections :many
-SELECT id, name, description, created, updated, trashed, deleted,
+SELECT id, name, description, created, updated, favorite, trashed, deleted,
        workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE workspace_id = $1
@@ -198,6 +259,7 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 			&i.Description,
 			&i.Created,
 			&i.Updated,
+			&i.Favorite,
 			&i.Trashed,
 			&i.Deleted,
 			&i.WorkspaceID,
@@ -214,11 +276,32 @@ func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams
 	return items, nil
 }
 
+const removeCollectionsFromNote = `-- name: RemoveCollectionsFromNote :exec
+
+UPDATE collection_notes
+SET trashed = TRUE
+WHERE note_id = $1
+  AND collection_id = ANY($2)
+  AND trashed = FALSE
+`
+
+type RemoveCollectionsFromNoteParams struct {
+	NoteID        int64
+	CollectionIds []int64
+}
+
+// Avoid updating already trashed entries
+func (q *Queries) RemoveCollectionsFromNote(ctx context.Context, arg RemoveCollectionsFromNoteParams) error {
+	_, err := q.db.Exec(ctx, removeCollectionsFromNote, arg.NoteID, arg.CollectionIds)
+	return err
+}
+
 const removeNotesFromCollection = `-- name: RemoveNotesFromCollection :exec
 UPDATE collection_notes
 SET trashed = TRUE
 WHERE collection_id = $1
   AND note_id = ANY($2)
+  AND trashed = FALSE
 `
 
 type RemoveNotesFromCollectionParams struct {
@@ -287,17 +370,19 @@ const updateCollection = `-- name: UpdateCollection :one
 UPDATE collection
 SET name          = $1,
     description   = $2,
-    updated_by_id = $3,
-    updated       = $4
-WHERE id = $5
-  AND workspace_id = $6
-RETURNING id, name, description, created, updated, trashed, deleted,
+    favorite      = $3,
+    updated_by_id = $4,
+    updated       = $5
+WHERE id = $6
+  AND workspace_id = $7
+RETURNING id, name, description, created, updated, favorite, trashed, deleted,
           workspace_id, created_by_id, updated_by_id
 `
 
 type UpdateCollectionParams struct {
 	Name        string
 	Description string
+	Favorite    bool
 	UpdatedByID int64
 	Updated     int64
 	ID          int64
@@ -308,6 +393,7 @@ func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionPara
 	row := q.db.QueryRow(ctx, updateCollection,
 		arg.Name,
 		arg.Description,
+		arg.Favorite,
 		arg.UpdatedByID,
 		arg.Updated,
 		arg.ID,
@@ -320,6 +406,7 @@ func (q *Queries) UpdateCollection(ctx context.Context, arg UpdateCollectionPara
 		&i.Description,
 		&i.Created,
 		&i.Updated,
+		&i.Favorite,
 		&i.Trashed,
 		&i.Deleted,
 		&i.WorkspaceID,

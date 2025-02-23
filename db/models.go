@@ -15,6 +15,7 @@ type Collection struct {
 	Description string
 	Created     int64
 	Updated     int64
+	Favorite    bool
 	Trashed     bool
 	Deleted     bool
 	WorkspaceID int64

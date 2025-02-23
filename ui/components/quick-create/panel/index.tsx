@@ -8,6 +8,7 @@ import {
   QuickCreateOption,
   useQuickCreateOptions,
 } from '@/queries/hooks/use-quick-create-options'
+import { motion } from 'motion/react'
 
 type QuickCreatePanelProps = {
   onQuickCreate: (
@@ -69,7 +70,13 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
   }
 
   return (
-    <div className='animate-in slide-in-from-bottom no-scrollbar absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'>
+    <motion.div
+      initial={{ y: '100%', opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: '100%', opacity: 0 }}
+      transition={{ type: 'spring', bounce: 0, duration: 0.15 }}
+      className='no-scrollbar absolute inset-x-0 bottom-0 overflow-scroll flex items-center space-x-2 py-2 pl-3 pr-2'
+    >
       <span className='text-sm text-zinc-500 shrink-0'>quick create:</span>
       {options.map((option) => {
         if (option == null) return null
@@ -84,7 +91,7 @@ const QuickCreatePanel = ({ onQuickCreate }: QuickCreatePanelProps) => {
           </QuickButton>
         )
       })}
-    </div>
+    </motion.div>
   )
 }
 
@@ -100,7 +107,7 @@ const QuickButton = ({
     <button
       type='button'
       onClick={() => onClick?.()}
-      className='inline-flex shrink-0 text-xs justify-center items-center space-x-1.5 rounded-full bg-zinc-900 px-2.5 py-1 font-semibold text-zinc-500 shadow-sm ring-1 ring-inset ring-zinc-800 hover:shadow hover:bg-zinc-950'
+      className='inline-flex shrink-0 text-xs justify-center items-center space-x-1.5 rounded-full bg-zinc-900 px-2.5 py-1 font-semibold text-zinc-500 shadow-xs ring-1 ring-inset ring-zinc-800 hover:shadow-sm hover:bg-zinc-950'
     >
       {icon}
       <span>{children}</span>

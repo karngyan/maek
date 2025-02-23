@@ -14,6 +14,7 @@ import (
 type UpdateCollectionRequest struct {
 	ID          int64
 	Name        string
+	Favorite    bool
 	Description string
 	WorkspaceID int64
 	UpdatedByID int64
@@ -37,6 +38,7 @@ func UpdateCollection(ctx context.Context, req *UpdateCollectionRequest) (*Colle
 
 	dbCollection, err := db.Q.UpdateCollection(ctx, db.UpdateCollectionParams{
 		Name:        req.Name,
+		Favorite:    req.Favorite,
 		Description: req.Description,
 		UpdatedByID: req.UpdatedByID,
 		Updated:     timecop.Now().Unix(),

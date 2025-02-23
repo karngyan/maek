@@ -9,7 +9,7 @@ import {
   DropdownItem,
   DropdownMenu,
 } from '@/components/ui/dropdown'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
+import { ChevronDownIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import dayjs from 'dayjs'
 import NotesListSection from './section'
 import { NoteMetaProvider } from '@/libs/providers/note-meta'
@@ -151,8 +151,11 @@ const NotesList = () => {
 
   return (
     <NoteMetaProvider>
-      <div className='flex flex-row justify-between items-center'>
-        <h2 className='text-xl text-zinc-300 font-medium'>all notes</h2>
+      <div className='flex flex-row justify-between items-center static'>
+        <div className='flex flex-row items-center space-x-2'>
+          <DocumentTextIcon className='h-6 text-zinc-300' />
+          <h2 className='text-xl text-zinc-300 font-medium'>notes</h2>
+        </div>
         <Dropdown>
           <DropdownButton plain>
             {SortOptions.find((option) => option.value === sortKey)?.label}

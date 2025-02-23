@@ -29,10 +29,11 @@ const collectionKeys = {
   allByWorkspace: (wid: number) => [...collectionKeys.all, { wid }],
 }
 
-export const useFetchCollection = (wid: number, id: number) => {
+export const useFetchCollection = (wid: number, id: number, enabled = true) => {
   return useQuery({
     queryFn: () => fetchCollection(wid, id),
     queryKey: collectionKeys.oneWithNotes(wid, id),
+    enabled,
   })
 }
 

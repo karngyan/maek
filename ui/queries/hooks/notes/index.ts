@@ -11,6 +11,9 @@ import {
   Note,
   deleteNote,
   deleteNoteMulti,
+  fetchCollectionsForNote,
+  addCollectionsToNote,
+  removeCollectionsFromNote,
 } from '@/queries/services/note'
 import { toast } from 'sonner'
 
@@ -23,6 +26,10 @@ export const notesKeys = {
   allByWorkspace: (workspaceId: number) => [
     ...notesKeys.all,
     { wid: workspaceId },
+  ],
+  collectionsForNote: (workspaceId: number, noteUuid: string) => [
+    ...notesKeys.one(workspaceId, noteUuid),
+    'collections',
   ],
 }
 
@@ -47,6 +54,48 @@ export const useFetchAllNotes = (workspaceId: number, sort: string) => {
       }
 
       return lastPage.nextCursor
+    },
+  })
+}
+
+export const useFetchCollectionsForNote = (
+  workspaceId: number,
+  noteUuid: string,
+  enabled = true,
+) => {
+  return useQuery({
+    queryFn: () => fetchCollectionsForNote({ workspaceId, noteUuid }),
+    queryKey: notesKeys.collectionsForNote(workspaceId, noteUuid),
+    refetchOnWindowFocus: true,
+    staleTime: 10 * 1000,
+    enabled,
+  })
+}
+
+export const useAddCollectionsToNote = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: addCollectionsToNote,
+    onSuccess: ({ collections }, { wid, noteUuid }) => {
+      qc.setQueryData(
+        notesKeys.collectionsForNote(wid, noteUuid),
+        { collections }
+      )
+    },
+  })
+}
+
+export const useRemoveCollectionsFromNote = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: removeCollectionsFromNote,
+    onSuccess: ({ collections }, { wid, noteUuid }) => {
+      qc.setQueryData(
+        notesKeys.collectionsForNote(wid, noteUuid),
+        { collections }
+      )
     },
   })
 }

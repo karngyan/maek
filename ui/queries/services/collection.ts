@@ -8,6 +8,7 @@ export interface Collection {
   description: string
   created: number
   updated: number
+  favorite: boolean
   createdById: number
   updatedById: number
   trashed: boolean
@@ -30,11 +31,18 @@ interface ListCollectionsResponse {
   nextCursor: string
 }
 
-export const createCollection = async (
+export const createCollection = async ({
+  wid,
+  name,
+}: {
   wid: number
-): Promise<CollectionResponse> => {
+  name: string
+}): Promise<CollectionResponse> => {
   const response = await authApiClient.post<CollectionResponse>(
-    `/v1/workspaces/${wid}/collections`
+    `/v1/workspaces/${wid}/collections`,
+    {
+      name,
+    }
   )
 
   return response.data
@@ -56,17 +64,20 @@ export const updateCollection = async ({
   wid,
   name,
   description,
+  favorite,
 }: {
   cid: number
   wid: number
   name: string
   description: string
+  favorite: boolean
 }): Promise<CollectionResponse> => {
   const response = await authApiClient.put<CollectionResponse>(
     `/v1/workspaces/${wid}/collections/${cid}`,
     {
       name,
       description,
+      favorite,
     }
   )
 

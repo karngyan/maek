@@ -69,6 +69,26 @@ func FindCollectionByID(ctx context.Context, wid int64, id int64) (*Collection, 
 	return CollectionFromDB(dbCollection), nil
 }
 
+func FindCollectionsForNoteUUID(ctx context.Context, wid int64, nuuid string) ([]*Collection, error) {
+	dbCollections, err := db.Q.GetCollectionsByNoteUUIDAndWorkspace(ctx, db.GetCollectionsByNoteUUIDAndWorkspaceParams{
+		UUID:        nuuid,
+		WorkspaceID: wid,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []*Collection{}, nil
+		}
+		return nil, err
+	}
+
+	collections := make([]*Collection, 0, len(dbCollections))
+	for _, dbCollection := range dbCollections {
+		collections = append(collections, CollectionFromDB(dbCollection))
+	}
+
+	return collections, nil
+}
+
 type Bundle struct {
 	Collections []*Collection
 	Authors     []*auth.User

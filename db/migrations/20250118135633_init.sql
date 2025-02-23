@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS collection
     description   TEXT         NOT NULL,               -- Collection description
     created       BIGINT       NOT NULL DEFAULT 0,     -- Creation timestamp
     updated       BIGINT       NOT NULL DEFAULT 0,     -- Last updated timestamp
+    favorite      BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     trashed       BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
     deleted       BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     workspace_id  BIGINT       NOT NULL,               -- Foreign key to workspace table
@@ -118,18 +119,28 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace
 CREATE INDEX IF NOT EXISTS idx_collection_workspace_deleted
     ON collection (workspace_id, deleted);
 
+CREATE INDEX IF NOT EXISTS idx_collection_workspace_trashed
+    ON collection (workspace_id, trashed);
+
+CREATE INDEX IF NOT EXISTS idx_collection_workspace_favorite
+    ON collection (workspace_id, favorite);
+
 -- collection_notes table
 CREATE TABLE IF NOT EXISTS collection_notes
 (
     id            BIGSERIAL PRIMARY KEY,
     collection_id BIGINT NOT NULL,      -- Foreign key to collection table
     note_id       BIGINT NOT NULL,      -- Foreign key to note table
-    trashed       BOOLEAN DEFAULT FALSE -- Trash flag
+    trashed       BOOLEAN DEFAULT FALSE, -- Trash flag
+
+    CONSTRAINT unique_collection_note_pair UNIQUE (collection_id, note_id)
 );
 
+-- Create an index for collection_id
 CREATE INDEX IF NOT EXISTS idx_collection_notes_collection
     ON collection_notes (collection_id);
 
+-- Create an index for note_id
 CREATE INDEX IF NOT EXISTS idx_collection_notes_note
     ON collection_notes (note_id);
 
@@ -164,6 +175,11 @@ CREATE TABLE embedding
 
 CREATE INDEX IF NOT EXISTS idx_embedding_job_status
     ON embedding_job (status);
+
+-- Optional: Create a partial index to optimize queries that filter by trashed
+CREATE INDEX IF NOT EXISTS idx_collection_notes_not_trashed
+    ON collection_notes (collection_id, note_id)
+    WHERE trashed = FALSE;
 -- +goose StatementEnd
 
 -- +goose Down

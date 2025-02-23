@@ -30,6 +30,7 @@ func update(ctx web.Context) error {
 	var req struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
+		Favorite    bool   `json:"favorite"`
 	}
 
 	if err := ctx.Bind(&req); err != nil {
@@ -44,6 +45,7 @@ func update(ctx web.Context) error {
 		Name:        req.Name,
 		Description: req.Description,
 		WorkspaceID: wid,
+		Favorite:    req.Favorite,
 		UpdatedByID: ctx.Session.UserID,
 	})
 	if err != nil {
