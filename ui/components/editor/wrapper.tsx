@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { BlockNoteEditorProps } from '@/components/editor/blocknote'
 import { Block } from '@blocknote/core'
@@ -46,9 +46,22 @@ import { Spinner } from '../ui/spinner'
 import { Badge } from '../ui/badge'
 import { useFetchCollection } from '@/queries/hooks/collections'
 import { useAuthInfo } from '@/queries/hooks/auth/use-auth-info'
-import { useConnectionStatus, useHasLocalChanges, YDocProvider } from '@/libs/ysweet/react'
+import {
+  useConnectionStatus,
+  useHasLocalChanges,
+  YDocProvider,
+} from '@/libs/ysweet/react'
 import * as Y from 'yjs'
 import { blocksToYDoc } from '@/libs/utils/blocknote'
+import { motion } from 'motion/react'
+import {
+  STATUS_CONNECTED,
+  STATUS_CONNECTING,
+  STATUS_ERROR,
+  STATUS_OFFLINE,
+} from '@y-sweet/client'
+import { cn } from '@/libs/utils'
+import { SimpleTooltipContent, Tooltip, TooltipTrigger } from '../ui/tooltip'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -253,7 +266,9 @@ export const EditorWrapper = ({
             </button>
           </div>
           <div className='ml-2 inline-flex space-x-1 items-center justify-center'>
-            <CollabStatus />
+            <div className='mr-2'>
+              <CollabStatus />
+            </div>
             <div className='hidden sm:flex'>
               <OrganizeNote wid={workspaceId} note={note} />
             </div>
@@ -344,9 +359,64 @@ const CollabStatus = () => {
   const hasLocalChanges = useHasLocalChanges()
   const collabConnectionStatus = useConnectionStatus()
 
+  const [delayedHasLocalChanges, setDelayedHasLocalChanges] =
+    useState(hasLocalChanges)
+
+  useEffect(() => {
+    if (hasLocalChanges && delayedHasLocalChanges === false) {
+      setDelayedHasLocalChanges(true)
+    } else if (!hasLocalChanges) {
+      const timeout = setTimeout(() => {
+        setDelayedHasLocalChanges(false)
+      }, 1000) // Keep animation for at least 1 second
+
+      return () => clearTimeout(timeout)
+    }
+  }, [hasLocalChanges, delayedHasLocalChanges])
+
   return (
-    <Text>
-      {hasLocalChanges ? 'syncing' : 'synced'} - {collabConnectionStatus}
-    </Text>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className='flex items-center justify-center rounded-full bg-zinc-950'>
+          <div className='relative w-4 h-4 flex items-center justify-center'>
+            {delayedHasLocalChanges ? (
+              <motion.div
+                className='absolute border-zinc-600 h-full w-full rounded-full border'
+                style={{
+                  maskImage:
+                    'conic-gradient(white 0deg 120deg, transparent 120deg)',
+                  WebkitMaskImage:
+                    'conic-gradient(white 0deg 120deg, transparent 120deg)',
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+              />
+            ) : (
+              <div className='absolute h-full w-full border-zinc-600 border rounded-full'></div>
+            )}
+
+            <div
+              className={cn(
+                'w-1.5 h-1.5 rounded-full bg-radial-[at_25%_25%] shadow-xl',
+                {
+                  'from-teal-400 to-teal-700':
+                    collabConnectionStatus === STATUS_CONNECTED,
+                },
+                {
+                  'from-red-400 to-red-700':
+                    collabConnectionStatus === STATUS_ERROR,
+                },
+                {
+                  'from-yellow-400 to-yellow-700':
+                    collabConnectionStatus !== STATUS_CONNECTED &&
+                    collabConnectionStatus !== STATUS_ERROR,
+                }
+              )}
+            ></div>
+          </div>
+        </div>
+      </TooltipTrigger>
+      <SimpleTooltipContent label={(hasLocalChanges ? 'unsaved changes' : 'synced') + ' - ' + collabConnectionStatus} />
+    </Tooltip>
   )
 }
