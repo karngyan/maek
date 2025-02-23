@@ -1,8 +1,10 @@
 package notes
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/gob"
 	"errors"
 	"fmt"
 
@@ -216,4 +218,53 @@ func FindNotesForCollection(ctx context.Context, wid, cid int64) ([]*Note, error
 	}
 
 	return notes, nil
+}
+
+func FindNoteInfo(ctx context.Context, nuuid string) (*NoteInfo, error) {
+	var ni NoteInfo
+	if v, err := noteUUIDCache.Get(nuuid); err == nil {
+		if err := ni.UnmarshalGOB(v); err == nil {
+			return &ni, nil
+		}
+
+		// If there is an error, we will fetch the note info from the database
+	}
+
+	dbNi, err := db.Q.CheckNoteExists(ctx, nuuid)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNoteNotFound
+		}
+		return nil, err
+	}
+
+	ni = NoteInfo{CheckNoteExistsRow: dbNi}
+	nib, err := ni.MarshalGOB()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := noteUUIDCache.Set(nuuid, nib); err != nil {
+		return nil, err
+	}
+
+	return &ni, nil
+}
+
+type NoteInfo struct {
+	db.CheckNoteExistsRow
+}
+
+func (n *NoteInfo) MarshalGOB() ([]byte, error) {
+	var buf bytes.Buffer
+	err := gob.NewEncoder(&buf).Encode(n)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func (n *NoteInfo) UnmarshalGOB(data []byte) error {
+	return gob.NewDecoder(bytes.NewReader(data)).Decode(n)
 }

@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jackc/pgx/v5"
-
 	"github.com/karngyan/maek/db"
 )
 
@@ -75,12 +73,9 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 	}
 
 	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) error {
-		id, err := q.CheckNoteExists(ctx, db.CheckNoteExistsParams{
-			UUID:        nuuid,
-			WorkspaceID: req.WorkspaceID,
-		})
+		ni, err := FindNoteInfo(ctx, nuuid)
 		if err != nil {
-			if !errors.Is(err, pgx.ErrNoRows) {
+			if !errors.Is(err, ErrNoteNotFound) {
 				return err
 			}
 
@@ -112,7 +107,12 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			return err
 		}
 
-		note.ID = id
+		// note exists in the db, lets make sure it's for the same workspace
+		if ni.WorkspaceID != req.WorkspaceID {
+			return ErrNoteNotFound
+		}
+
+		note.ID = ni.ID
 		// exists; time to do an update
 		return q.UpdateNote(ctx, db.UpdateNoteParams{
 			UUID:           nuuid,

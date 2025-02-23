@@ -10,22 +10,21 @@ import (
 )
 
 const checkNoteExists = `-- name: CheckNoteExists :one
-SELECT id
+SELECT id, workspace_id
 FROM note
 WHERE uuid = $1
-  AND workspace_id = $2
 `
 
-type CheckNoteExistsParams struct {
-	UUID        string
+type CheckNoteExistsRow struct {
+	ID          int64
 	WorkspaceID int64
 }
 
-func (q *Queries) CheckNoteExists(ctx context.Context, arg CheckNoteExistsParams) (int64, error) {
-	row := q.db.QueryRow(ctx, checkNoteExists, arg.UUID, arg.WorkspaceID)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+func (q *Queries) CheckNoteExists(ctx context.Context, uuid string) (CheckNoteExistsRow, error) {
+	row := q.db.QueryRow(ctx, checkNoteExists, uuid)
+	var i CheckNoteExistsRow
+	err := row.Scan(&i.ID, &i.WorkspaceID)
+	return i, err
 }
 
 const getInitialNotesCreatedAsc = `-- name: GetInitialNotesCreatedAsc :many

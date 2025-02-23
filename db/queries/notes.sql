@@ -60,10 +60,9 @@ WHERE cn.collection_id = $1
 ORDER BY n.updated DESC;
 
 -- name: CheckNoteExists :one
-SELECT id
+SELECT id, workspace_id
 FROM note
-WHERE uuid = $1
-  AND workspace_id = $2;
+WHERE uuid = $1;
 
 -- name: UpdateNote :exec
 UPDATE note
