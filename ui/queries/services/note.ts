@@ -169,3 +169,10 @@ export const removeCollectionsFromNote = async ({
   return response.data
 }
 
+export const fetchCollabInfo = async (wid: number, nuuid: string) => {
+  const path = `/v1/workspaces/${wid}/notes/${nuuid}/collab-info`
+  const response = await authApiClient.get(path)
+
+  return response.data
+}
+

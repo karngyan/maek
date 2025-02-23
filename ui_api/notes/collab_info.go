@@ -4,25 +4,21 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/karngyan/maek/domains/notes"
+	"github.com/labstack/echo/v4"
 
+	"github.com/karngyan/maek/domains/notes"
 	"github.com/karngyan/maek/ui_api/web"
 	"github.com/karngyan/maek/ysweet"
 )
 
-func getCollaborationToken(ctx web.Context) error {
-	var req struct {
-		DocID string `json:"docId"`
-	}
+func getCollaborationInfo(ctx web.Context) error {
+	var nuuid string
 
-	if err := ctx.Bind(&req); err != nil {
-		return ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
-			"error": err.Error(),
-		})
-	}
+	echo.PathParamsBinder(ctx).
+		String("note_uuid", &nuuid)
 
 	rctx := ctx.Request().Context()
-	ni, err := notes.FindNoteInfo(rctx, req.DocID)
+	ni, err := notes.FindNoteInfo(rctx, nuuid)
 	if err != nil {
 		if errors.Is(err, notes.ErrNoteNotFound) {
 			// it's okay we'll create a new note
@@ -36,7 +32,7 @@ func getCollaborationToken(ctx web.Context) error {
 		}
 	}
 
-	clt, err := ysweet.GenerateReadWriteClientInfo(req.DocID, ctx.Session.UserID, ctx.Session.Age())
+	clt, err := ysweet.GenerateReadWriteClientInfo(nuuid, ctx.Session.UserID, ctx.Session.Age())
 	if err != nil {
 		return ctx.InternalError(err)
 	}

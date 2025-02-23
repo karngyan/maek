@@ -56,12 +56,11 @@ import { blocksToYDoc } from '@/libs/utils/blocknote'
 import { motion } from 'motion/react'
 import {
   STATUS_CONNECTED,
-  STATUS_CONNECTING,
   STATUS_ERROR,
-  STATUS_OFFLINE,
 } from '@y-sweet/client'
 import { cn } from '@/libs/utils'
 import { SimpleTooltipContent, Tooltip, TooltipTrigger } from '../ui/tooltip'
+import { fetchCollabInfo } from '@/queries/services/note'
 
 type EditorWrapperProps = {
   workspaceId: number
@@ -244,8 +243,7 @@ export const EditorWrapper = ({
   return (
     <YDocProvider
       docId={noteUuid}
-      // TODO: turn this into an async function
-      authEndpoint={`/v1/workspaces/${workspaceId}/notes/collab-auth`}
+      authEndpoint={() => fetchCollabInfo(workspaceId, noteUuid)}
       offlineSupport={true}
       showDebuggerLink={false}
       initialContentsUpdate={initialContentUpdate}
