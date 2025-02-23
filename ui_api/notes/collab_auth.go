@@ -1,18 +1,15 @@
 package notes
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/karngyan/maek/libs/ysweet"
-
 	"github.com/karngyan/maek/ui_api/web"
+	"github.com/karngyan/maek/ysweet"
 )
 
 func getCollaborationToken(ctx web.Context) error {
 	var req struct {
-		DocID          string `json:"docId"`
-		InitialContent string `json:"initialContent"`
+		DocID string `json:"docId"`
 	}
 
 	if err := ctx.Bind(&req); err != nil {
@@ -21,22 +18,7 @@ func getCollaborationToken(ctx web.Context) error {
 		})
 	}
 
-	manager, err := ysweet.NewDocumentManager("ys://localhost:8081")
-	if err != nil {
-		return ctx.InternalError(err)
-	}
-
-	userID := fmt.Sprintf("%d", ctx.Session.UserID)
-	ath := ysweet.FullAuthorization
-	validity := int(ctx.Session.Age().Seconds())
-
-	clt, err := manager.GetOrCreateDocAndToken(&req.DocID, &ysweet.AuthDocRequest{
-		Authorization:   &ath,
-		UserID:          &userID,
-		ValidForSeconds: &validity,
-		InitialContent:  &req.InitialContent,
-	})
-
+	clt, err := ysweet.GenerateReadWriteClientInfo(req.DocID, ctx.Session.UserID, ctx.Session.Age())
 	if err != nil {
 		return ctx.InternalError(err)
 	}

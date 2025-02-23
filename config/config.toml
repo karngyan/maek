@@ -7,3 +7,7 @@ cors_allowed_origins = ["http://localhost:3000"]
 [database]
 dsn = "postgres://maek:passwd@localhost:5432/maek_dev?sslmode=disable&search_path=public"
 dsn_test = "postgres://maek:passwd@localhost:5433/maek_test?sslmode=disable"
+
+[ysweet]
+auth_key = "FriXYnx5Be4Me7jh+w64c0soR+ZIsQxc+7ZpswYF"
+connection_string = "ys://AAAghU5WK-_dgpSz5m5h50rkUXeP7n5bcxdc0fs-n0gwNrY@localhost:8081/"

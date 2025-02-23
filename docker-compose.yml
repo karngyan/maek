@@ -38,7 +38,7 @@ services:
     volumes:
       - ./tmp/ysweet_data:/data
     command: >
-      y-sweet serve /data --host 0.0.0.0 --url-prefix=http://localhost:8081/
+      y-sweet serve /data --host 0.0.0.0 --auth FriXYnx5Be4Me7jh+w64c0soR+ZIsQxc+7ZpswYF --url-prefix=http://localhost:8081/
 
 volumes:
   pg_data:

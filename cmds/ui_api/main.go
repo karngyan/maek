@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/karngyan/maek/ysweet"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
@@ -24,6 +25,7 @@ func main() {
 		fx.Invoke(
 			db.Init,
 			domains.Init,
+			ysweet.Init,
 			ui_api.Run,
 		),
 		fx.WithLogger(func(l *zap.Logger) fxevent.Logger {
