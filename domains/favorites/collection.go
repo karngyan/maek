@@ -1,1 +1,3 @@
 package favorites
+
+type EntityTyp

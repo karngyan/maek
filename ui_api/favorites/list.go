@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/karngyan/maek/domains/collections"
 	"github.com/karngyan/maek/ui_api/models"
 	"github.com/karngyan/maek/ui_api/web"
-	"github.com/labstack/echo/v4"
 )
 
 func list(ctx web.Context) error {
 	var limit string
-
 	echo.QueryParamsBinder(ctx).
 		String("limit", &limit)
 
