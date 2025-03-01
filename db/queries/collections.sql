@@ -1,6 +1,6 @@
 -- name: InsertCollection :one
-INSERT INTO collection (name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO collection (name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id;
 
 -- name: AddNotesToCollections :exec
@@ -25,7 +25,7 @@ WHERE note_id = $1
   AND trashed = FALSE; -- Avoid updating already trashed entries
 
 -- name: GetCollectionsByNoteUUIDAndWorkspace :many
-SELECT c.id, c.name, c.description, c.created, c.updated, c.favorite, c.trashed, c.deleted,
+SELECT c.id, c.name, c.description, c.created, c.updated, c.trashed, c.deleted,
        c.workspace_id, c.created_by_id, c.updated_by_id
 FROM collection c
 JOIN collection_notes cn ON c.id = cn.collection_id
@@ -40,7 +40,7 @@ WHERE n.uuid = $1
 ORDER BY c.updated DESC;
 
 -- name: GetCollectionByIDAndWorkspace :one
-SELECT id, name, description, created, updated, favorite, trashed, deleted, workspace_id, created_by_id, updated_by_id
+SELECT id, name, description, created, updated, trashed, deleted, workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE id = $1
   AND workspace_id = $2;
@@ -49,12 +49,11 @@ WHERE id = $1
 UPDATE collection
 SET name          = $1,
     description   = $2,
-    favorite      = $3,
-    updated_by_id = $4,
-    updated       = $5
-WHERE id = $6
-  AND workspace_id = $7
-RETURNING id, name, description, created, updated, favorite, trashed, deleted,
+    updated_by_id = $3,
+    updated       = $4
+WHERE id = $5
+  AND workspace_id = $6
+RETURNING id, name, description, created, updated, trashed, deleted,
           workspace_id, created_by_id, updated_by_id;
 
 -- name: TrashCollection :exec
@@ -82,7 +81,7 @@ WHERE id = $4
   AND workspace_id = $5;
 
 -- name: ListCollections :many
-SELECT id, name, description, created, updated, favorite, trashed, deleted,
+SELECT id, name, description, created, updated, trashed, deleted,
        workspace_id, created_by_id, updated_by_id
 FROM collection
 WHERE workspace_id = $1

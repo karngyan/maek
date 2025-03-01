@@ -5,7 +5,6 @@
     },
     "created": 1234567890,
     "createdById": 1,
-    "favorite": true,
     "hasAudios": true,
     "hasClosedTasks": true,
     "hasCode": true,

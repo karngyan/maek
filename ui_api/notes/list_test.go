@@ -28,7 +28,6 @@ func TestList(t *testing.T) {
 		_, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 			UUID:        fmt.Sprintf("rand-uuid-%d", i),
 			Content:     cbytes,
-			Favorite:    true,
 			Created:     int64(i),
 			Updated:     int64(2 * i),
 			WorkspaceID: cs.Workspace.ID,

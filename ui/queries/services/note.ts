@@ -11,7 +11,6 @@ export interface Note {
   uuid: string
   content: NoteContent
   mdContent: string // interesting prop, backend never returns it only flow client -> server
-  favorite: boolean
   trashed: boolean
   created: number
   updated: number

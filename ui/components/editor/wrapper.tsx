@@ -217,13 +217,7 @@ export const EditorWrapper = ({
 
   const onFavoriteClick = () => {
     if (!note) return
-
-    const currentFavorite = note.favorite ?? false
-    upsertNote({
-      ...note,
-      favorite: !currentFavorite,
-      updated: dayjs().unix(),
-    })
+    // TODO: Complete favorite
   }
 
   // if the note is not found, show a 404 page
@@ -272,7 +266,8 @@ export const EditorWrapper = ({
               <OrganizeNote wid={workspaceId} note={note} />
             </div>
             <Button plain onClick={onFavoriteClick} className='h-8'>
-              {note?.favorite ? (
+              {/*TODO: Fix the favorite logic */}
+              {note != null ? (
                 <StarIconSolid className='h-6' />
               ) : (
                 <StarIcon className='h-6' />

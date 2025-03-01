@@ -95,7 +95,6 @@ export default function NoteIdPage({
       wid: workspaceId,
       name: name ?? '',
       description: description ?? '',
-      favorite: collection?.favorite ?? false,
     })
   }, 600)
 

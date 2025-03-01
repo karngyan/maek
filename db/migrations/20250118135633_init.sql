@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS note
     uuid             VARCHAR(100) NOT NULL UNIQUE,        -- Unique identifier for the note
     content          JSONB        NOT NULL,               -- Note content
     md_content       TEXT         NOT NULL,               -- Markdown content
-    favorite         BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     deleted          BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     trashed          BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
     has_content      BOOLEAN      NOT NULL DEFAULT FALSE, -- Indicates presence of content
@@ -89,10 +88,6 @@ CREATE INDEX IF NOT EXISTS idx_note_uuid ON note (uuid);
 
 CREATE INDEX IF NOT EXISTS idx_note_workspace_created ON note (workspace_id, created DESC);
 
-CREATE INDEX IF NOT EXISTS idx_note_favorite
-    ON note (workspace_id, created DESC)
-    WHERE favorite = TRUE AND deleted = FALSE AND trashed = FALSE;
-
 CREATE INDEX IF NOT EXISTS idx_note_active
     ON note (workspace_id, created DESC)
     WHERE deleted = FALSE AND trashed = FALSE;
@@ -105,7 +100,6 @@ CREATE TABLE IF NOT EXISTS collection
     description   TEXT         NOT NULL,               -- Collection description
     created       BIGINT       NOT NULL DEFAULT 0,     -- Creation timestamp
     updated       BIGINT       NOT NULL DEFAULT 0,     -- Last updated timestamp
-    favorite      BOOLEAN      NOT NULL DEFAULT FALSE, -- Mark as favorite
     trashed       BOOLEAN      NOT NULL DEFAULT FALSE, -- Trash flag
     deleted       BOOLEAN      NOT NULL DEFAULT FALSE, -- Soft delete flag
     workspace_id  BIGINT       NOT NULL,               -- Foreign key to workspace table
@@ -121,9 +115,6 @@ CREATE INDEX IF NOT EXISTS idx_collection_workspace_deleted
 
 CREATE INDEX IF NOT EXISTS idx_collection_workspace_trashed
     ON collection (workspace_id, trashed);
-
-CREATE INDEX IF NOT EXISTS idx_collection_workspace_favorite
-    ON collection (workspace_id, favorite);
 
 -- collection_notes table
 CREATE TABLE IF NOT EXISTS collection_notes
@@ -148,10 +139,31 @@ CREATE INDEX IF NOT EXISTS idx_collection_notes_note
 CREATE INDEX IF NOT EXISTS idx_collection_notes_not_trashed
     ON collection_notes (collection_id, note_id)
     WHERE trashed = FALSE;
+
+-- favorites table (for both notes and collections)
+CREATE TABLE IF NOT EXISTS favorites
+(
+    id           BIGSERIAL PRIMARY KEY,
+    user_id      BIGINT NOT NULL,
+    entity_type  INT    NOT NULL,
+    entity_id    BIGINT NOT NULL,
+    workspace_id BIGINT NOT NULL,
+    created      BIGINT NOT NULL DEFAULT 0,
+    updated      BIGINT NOT NULL DEFAULT 0,
+    order_idx    INT    NOT NULL DEFAULT 0,
+
+    CONSTRAINT unique_favorites UNIQUE (user_id, entity_type, entity_id)
+);
+
+-- Indexes for faster queries
+CREATE INDEX IF NOT EXISTS idx_favorites_user
+    ON favorites (user_id);
+
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
+DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS collection_notes;
 DROP TABLE IF EXISTS collection;
 DROP TABLE IF EXISTS note;

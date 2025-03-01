@@ -14,7 +14,6 @@ type Collection struct {
 	Description string
 	Created     int64
 	Updated     int64
-	Favorite    bool
 	Trashed     bool
 	Deleted     bool
 	WorkspaceID int64
@@ -29,12 +28,22 @@ type CollectionNote struct {
 	Trashed      pgtype.Bool
 }
 
+type Favorite struct {
+	ID          int64
+	UserID      int64
+	EntityType  int32
+	EntityID    int64
+	WorkspaceID int64
+	Created     int64
+	Updated     int64
+	OrderIdx    int32
+}
+
 type Note struct {
 	ID             int64
 	UUID           string
 	Content        []byte
 	MdContent      string
-	Favorite       bool
 	Deleted        bool
 	Trashed        bool
 	HasContent     bool

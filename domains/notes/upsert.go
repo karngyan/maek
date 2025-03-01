@@ -11,7 +11,6 @@ type UpsertNoteRequest struct {
 	UUID           string
 	Content        []byte
 	MdContent      string
-	Favorite       bool
 	Created        int64
 	Updated        int64
 	HasContent     bool
@@ -52,7 +51,6 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 		UUID:           nuuid,
 		Content:        req.Content,
 		MdContent:      req.MdContent,
-		Favorite:       req.Favorite,
 		Trashed:        false,
 		WorkspaceID:    req.WorkspaceID,
 		Updated:        req.Updated,
@@ -83,7 +81,6 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 				UUID:           nuuid,
 				Content:        note.Content,
 				MdContent:      note.MdContent,
-				Favorite:       note.Favorite,
 				Deleted:        false,
 				Trashed:        false,
 				HasContent:     note.HasContent,
@@ -118,7 +115,6 @@ func UpsertNote(ctx context.Context, req *UpsertNoteRequest) (*Note, error) {
 			UUID:           nuuid,
 			MdContent:      req.MdContent,
 			Content:        req.Content,
-			Favorite:       note.Favorite,
 			HasContent:     note.HasContent,
 			HasImages:      note.HasImages,
 			HasVideos:      note.HasVideos,

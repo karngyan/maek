@@ -7,7 +7,6 @@ type Note struct {
 	UUID           string
 	Content        []byte
 	MdContent      string
-	Favorite       bool
 	Trashed        bool
 	Deleted        bool
 	HasContent     bool
@@ -46,7 +45,6 @@ func noteFromDB(dbNote db.Note) *Note {
 		UUID:           dbNote.UUID,
 		Content:        dbNote.Content,
 		MdContent:      dbNote.MdContent,
-		Favorite:       dbNote.Favorite,
 		Trashed:        dbNote.Trashed,
 		Deleted:        dbNote.Deleted,
 		HasContent:     dbNote.HasContent,

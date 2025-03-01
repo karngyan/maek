@@ -10,7 +10,6 @@ type Collection struct {
 	Description string `json:"description"`
 	Created     int64  `json:"created"`
 	Updated     int64  `json:"updated"`
-	Favorite    bool   `json:"favorite"`
 	Trashed     bool   `json:"trashed"`
 	WorkspaceID int64  `json:"workspaceId"`
 	CreatedByID int64  `json:"createdById"`
@@ -24,7 +23,6 @@ func ModelForCollection(collection *collections.Collection) *Collection {
 		Description: collection.Description,
 		Created:     collection.Created,
 		Updated:     collection.Updated,
-		Favorite:    collection.Favorite,
 		Trashed:     collection.Trashed,
 		WorkspaceID: collection.WorkspaceID,
 		CreatedByID: collection.CreatedByID,

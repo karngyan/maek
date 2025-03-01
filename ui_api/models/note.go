@@ -10,7 +10,6 @@ type Note struct {
 	ID             int64          `json:"id"`
 	UUID           string         `json:"uuid"`
 	Content        map[string]any `json:"content"`
-	Favorite       bool           `json:"favorite"`
 	Trashed        bool           `json:"trashed"`
 	HasContent     bool           `json:"hasContent"`
 	HasImages      bool           `json:"hasImages"`
@@ -40,7 +39,6 @@ func ModelForNote(note *notes.Note) (*Note, error) {
 		ID:             note.ID,
 		UUID:           note.UUID,
 		Content:        content,
-		Favorite:       note.Favorite,
 		Trashed:        note.Trashed,
 		HasContent:     note.HasContent,
 		HasImages:      note.HasImages,

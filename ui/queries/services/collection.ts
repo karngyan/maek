@@ -8,7 +8,6 @@ export interface Collection {
   description: string
   created: number
   updated: number
-  favorite: boolean
   createdById: number
   updatedById: number
   trashed: boolean
@@ -64,20 +63,17 @@ export const updateCollection = async ({
   wid,
   name,
   description,
-  favorite,
 }: {
   cid: number
   wid: number
   name: string
   description: string
-  favorite: boolean
 }): Promise<CollectionResponse> => {
   const response = await authApiClient.put<CollectionResponse>(
     `/v1/workspaces/${wid}/collections/${cid}`,
     {
       name,
       description,
-      favorite,
     }
   )
 

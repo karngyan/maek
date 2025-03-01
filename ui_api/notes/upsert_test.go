@@ -28,7 +28,6 @@ func TestUpsert(t *testing.T) {
 				"content": map[string]any{
 					"dom": "some text",
 				},
-				"favorite":       true,
 				"created":        1234567890,
 				"updated":        1234567890,
 				"hasContent":     true,
@@ -52,9 +51,8 @@ func TestUpsert(t *testing.T) {
 				"content": map[string]any{
 					"dom": "updated stuff",
 				},
-				"favorite": true,
-				"created":  1234567890,
-				"updated":  9999999999,
+				"created": 1234567890,
+				"updated": 9999999999,
 			},
 			expectedStatus: 200,
 		},

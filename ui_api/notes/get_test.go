@@ -28,7 +28,6 @@ func TestGet(t *testing.T) {
 	n, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 		UUID:        "123",
 		Content:     cbytes,
-		Favorite:    true,
 		Created:     timecop.Now().Unix(),
 		Updated:     timecop.Now().Unix(),
 		WorkspaceID: cs.Workspace.ID,
@@ -40,7 +39,6 @@ func TestGet(t *testing.T) {
 	n2, err := notes.UpsertNote(context.Background(), &notes.UpsertNoteRequest{
 		UUID:        "321",
 		Content:     cbytes,
-		Favorite:    true,
 		Created:     timecop.Now().Unix(),
 		Updated:     timecop.Now().Unix(),
 		WorkspaceID: cs2.Workspace.ID,

@@ -16,7 +16,6 @@ export const defaultNewNote = (
     uuid,
     workspaceId: wid,
     trashed: false,
-    favorite: false,
     content: {
       dom: dom ?? [
         {

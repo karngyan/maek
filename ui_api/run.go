@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/karngyan/maek/ui_api/favorites"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
@@ -108,4 +110,5 @@ func ConfigureRoutes(e *echo.Echo, l *zap.Logger) {
 	auth.Configure(e, l)
 	notes.Configure(e, l)
 	collections.Configure(e, l)
+	favorites.Configure(e, l)
 }
