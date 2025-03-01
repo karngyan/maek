@@ -140,8 +140,8 @@ CREATE INDEX IF NOT EXISTS idx_collection_notes_not_trashed
     ON collection_notes (collection_id, note_id)
     WHERE trashed = FALSE;
 
--- favorites table (for both notes and collections)
-CREATE TABLE IF NOT EXISTS favorites
+-- favorite table (for both notes and collections)
+CREATE TABLE IF NOT EXISTS favorite
 (
     id           BIGSERIAL PRIMARY KEY,
     user_id      BIGINT NOT NULL,
@@ -152,18 +152,18 @@ CREATE TABLE IF NOT EXISTS favorites
     updated      BIGINT NOT NULL DEFAULT 0,
     order_idx    INT    NOT NULL DEFAULT 0,
 
-    CONSTRAINT unique_favorites UNIQUE (user_id, entity_type, entity_id)
+    CONSTRAINT unique_favorite UNIQUE (user_id, entity_type, entity_id)
 );
 
 -- Indexes for faster queries
-CREATE INDEX IF NOT EXISTS idx_favorites_user
-    ON favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorite_user
+    ON favorite (user_id);
 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS favorites;
+DROP TABLE IF EXISTS favorite;
 DROP TABLE IF EXISTS collection_notes;
 DROP TABLE IF EXISTS collection;
 DROP TABLE IF EXISTS note;
