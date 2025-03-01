@@ -37,10 +37,6 @@ const NotesListBatchSelectActions = () => {
       setIsDeleteConfirmAlertOpen(false)
       toast(
         `trashed ${selectedNotesLen} note` + (selectedNotesLen > 1 ? 's' : ''),
-        {
-          description:
-            'you can restore them from trash, or delete them permanently',
-        }
       )
 
       // clear note meta for selected notes
@@ -141,8 +137,7 @@ const NotesListBatchSelectActions = () => {
           are you sure you want to delete {selectedNotesLen} note(s)?
         </AlertTitle>
         <AlertDescription>
-          they will be moved to trash and will be there for 30 days. you can
-          restore it within that period.
+          it will be permanently deleted.
         </AlertDescription>
         <AlertActions>
           <Button plain onClick={() => setIsDeleteConfirmAlertOpen(false)}>

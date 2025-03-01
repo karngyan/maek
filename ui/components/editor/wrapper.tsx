@@ -337,8 +337,7 @@ export const EditorWrapper = ({
         >
           <AlertTitle>are you sure you want to delete this note?</AlertTitle>
           <AlertDescription>
-            the note will be moved to trash and will be there for 30 days. you
-            can restore it within that period.
+            it will permanently delete this note.
           </AlertDescription>
           <AlertActions>
             <Button plain onClick={() => setIsDeleteConfirmAlertOpen(false)}>

@@ -71,9 +71,7 @@ export default function NoteIdPage({
   const { mutate: deleteCollection } = useTrashCollection({
     onSuccess: () => {
       setIsTrashConfirmAlertOpen(false)
-      toast('trashed  collection', {
-        description: 'you can restore it from trash, or delete permanently',
-      })
+      toast('trashed  collection')
       router.replace(`/workspaces/${workspaceId}/collections`)
     },
   })
@@ -229,8 +227,7 @@ export default function NoteIdPage({
           ?
         </AlertTitle>
         <AlertDescription>
-          it will be moved to trash and will be there for 30 days. you can
-          restore it within that period.
+          the notes in the collection will not be deleted
         </AlertDescription>
         <AlertActions>
           <Button plain onClick={() => setIsTrashConfirmAlertOpen(false)}>

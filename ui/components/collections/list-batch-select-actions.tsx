@@ -23,11 +23,7 @@ const CollectionsListBatchSelectActions = () => {
       setIsTrashConfirmAlertOpen(false)
       toast(
         `trashed ${selectedCollectionsLen} collection` +
-          (selectedCollectionsLen > 1 ? 's' : ''),
-        {
-          description:
-            'you can restore them from trash, or delete them permanently',
-        }
+          (selectedCollectionsLen > 1 ? 's' : '')
       )
 
       // clear collection meta for selected collections
@@ -112,8 +108,7 @@ const CollectionsListBatchSelectActions = () => {
           collection(s)?
         </AlertTitle>
         <AlertDescription>
-          they will be moved to trash and will be there for 30 days. you can
-          restore it within that period.
+          notes will not be deleted.
         </AlertDescription>
         <AlertActions>
           <Button plain onClick={() => setIsTrashConfirmAlertOpen(false)}>

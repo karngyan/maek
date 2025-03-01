@@ -276,12 +276,7 @@ function Row({ collection }: RowProps) {
           <Strong className='underline underline-offset-2'>{name}</Strong>?
         </AlertTitle>
         <AlertDescription>
-          the collection will be moved to trash and will be there for 30 days.
-          you can restore it within that period.
-        </AlertDescription>
-        <Divider className='mt-4' soft />
-        <AlertDescription>
-          💡 the notes in the collection will not be deleted.
+        💡 the notes in the collection will not be deleted.
         </AlertDescription>
         <AlertActions>
           <Button plain onClick={() => setIsTrashConfirmAlertOpen(false)}>
