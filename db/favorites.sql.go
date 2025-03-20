@@ -7,9 +7,11 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createFavorite = `-- name: CreateFavorite :exec
+const createFavorite = `-- name: CreateFavorite :one
 INSERT INTO favorite (user_id, entity_type, entity_id, workspace_id, created, updated, order_idx)
 SELECT $1, $2, $3, $4, $5, $6, $7
 FROM (
@@ -22,6 +24,7 @@ FROM (
     WHERE $2 = 2 AND c.id = $3 AND c.workspace_id = $4
 ) AS validation
 ON CONFLICT (user_id, entity_type, entity_id) DO NOTHING
+RETURNING id, user_id, entity_type, entity_id, workspace_id, created, updated, order_idx
 `
 
 type CreateFavoriteParams struct {
@@ -34,8 +37,8 @@ type CreateFavoriteParams struct {
 	OrderIdx    int32
 }
 
-func (q *Queries) CreateFavorite(ctx context.Context, arg CreateFavoriteParams) error {
-	_, err := q.db.Exec(ctx, createFavorite,
+func (q *Queries) CreateFavorite(ctx context.Context, arg CreateFavoriteParams) (Favorite, error) {
+	row := q.db.QueryRow(ctx, createFavorite,
 		arg.UserID,
 		arg.EntityType,
 		arg.EntityID,
@@ -44,7 +47,18 @@ func (q *Queries) CreateFavorite(ctx context.Context, arg CreateFavoriteParams) 
 		arg.Updated,
 		arg.OrderIdx,
 	)
-	return err
+	var i Favorite
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.EntityType,
+		&i.EntityID,
+		&i.WorkspaceID,
+		&i.Created,
+		&i.Updated,
+		&i.OrderIdx,
+	)
+	return i, err
 }
 
 const deleteAllFavoritesByUser = `-- name: DeleteAllFavoritesByUser :exec
@@ -73,7 +87,7 @@ func (q *Queries) DeleteFavorite(ctx context.Context, arg DeleteFavoriteParams) 
 }
 
 const getFavoritesByUser = `-- name: GetFavoritesByUser :many
-SELECT f.id, f.entity_type, f.entity_id, f.workspace_id, f.created, f.updated, f.order_idx
+SELECT f.id, f.user_id, f.entity_type, f.entity_id, f.workspace_id, f.created, f.updated, f.order_idx
 FROM favorite f
 LEFT JOIN note n ON f.entity_type = 1 AND f.entity_id = n.id
 LEFT JOIN collection c ON f.entity_type = 2 AND f.entity_id = c.id
@@ -83,30 +97,27 @@ AND (
     OR
     (f.entity_type = 2 AND c.deleted = FALSE AND c.trashed = FALSE)
 )
-ORDER BY f.order_idx ASC
+ORDER BY f.order_idx DESC
+LIMIT $2
 `
 
-type GetFavoritesByUserRow struct {
-	ID          int64
-	EntityType  int32
-	EntityID    int64
-	WorkspaceID int64
-	Created     int64
-	Updated     int64
-	OrderIdx    int32
+type GetFavoritesByUserParams struct {
+	UserID int64
+	Limit  int64
 }
 
-func (q *Queries) GetFavoritesByUser(ctx context.Context, userID int64) ([]GetFavoritesByUserRow, error) {
-	rows, err := q.db.Query(ctx, getFavoritesByUser, userID)
+func (q *Queries) GetFavoritesByUser(ctx context.Context, arg GetFavoritesByUserParams) ([]Favorite, error) {
+	rows, err := q.db.Query(ctx, getFavoritesByUser, arg.UserID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetFavoritesByUserRow
+	var items []Favorite
 	for rows.Next() {
-		var i GetFavoritesByUserRow
+		var i Favorite
 		if err := rows.Scan(
 			&i.ID,
+			&i.UserID,
 			&i.EntityType,
 			&i.EntityID,
 			&i.WorkspaceID,
@@ -122,6 +133,17 @@ func (q *Queries) GetFavoritesByUser(ctx context.Context, userID int64) ([]GetFa
 		return nil, err
 	}
 	return items, nil
+}
+
+const getMaxOrderIndexFavorite = `-- name: GetMaxOrderIndexFavorite :one
+SELECT COALESCE(MAX(order_idx), 0) FROM favorite WHERE user_id = $1
+`
+
+func (q *Queries) GetMaxOrderIndexFavorite(ctx context.Context, userID int64) (pgtype.Int4, error) {
+	row := q.db.QueryRow(ctx, getMaxOrderIndexFavorite, userID)
+	var coalesce pgtype.Int4
+	err := row.Scan(&coalesce)
+	return coalesce, err
 }
 
 const updateFavoriteOrder = `-- name: UpdateFavoriteOrder :exec

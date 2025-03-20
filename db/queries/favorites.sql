@@ -1,5 +1,5 @@
 -- name: GetFavoritesByUser :many
-SELECT f.id, f.entity_type, f.entity_id, f.workspace_id, f.created, f.updated, f.order_idx
+SELECT f.id, f.user_id, f.entity_type, f.entity_id, f.workspace_id, f.created, f.updated, f.order_idx
 FROM favorite f
 LEFT JOIN note n ON f.entity_type = 1 AND f.entity_id = n.id
 LEFT JOIN collection c ON f.entity_type = 2 AND f.entity_id = c.id
@@ -9,12 +9,16 @@ AND (
     OR
     (f.entity_type = 2 AND c.deleted = FALSE AND c.trashed = FALSE)
 )
-ORDER BY f.order_idx ASC;
+ORDER BY f.order_idx DESC
+LIMIT $2;
 
 -- name: UpdateFavoriteOrder :exec
 UPDATE favorite
 SET order_idx = $1
 WHERE id = $2 AND user_id = $3;
+
+-- name: GetMaxOrderIndexFavorite :one
+SELECT COALESCE(MAX(order_idx), 0) FROM favorite WHERE user_id = $1;
 
 -- name: DeleteFavorite :exec
 DELETE FROM favorite
@@ -24,7 +28,7 @@ WHERE id = $1 AND user_id = $2;
 DELETE FROM favorite
 WHERE user_id = $1;
 
--- name: CreateFavorite :exec
+-- name: CreateFavorite :one
 INSERT INTO favorite (user_id, entity_type, entity_id, workspace_id, created, updated, order_idx)
 SELECT $1, $2, $3, $4, $5, $6, $7
 FROM (
@@ -36,4 +40,5 @@ FROM (
     FROM collection c
     WHERE $2 = 2 AND c.id = $3 AND c.workspace_id = $4
 ) AS validation
-ON CONFLICT (user_id, entity_type, entity_id) DO NOTHING;
+ON CONFLICT (user_id, entity_type, entity_id) DO NOTHING
+RETURNING id, user_id, entity_type, entity_id, workspace_id, created, updated, order_idx;

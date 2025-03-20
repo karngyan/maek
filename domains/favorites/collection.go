@@ -1,3 +1,0 @@
-package favorites
-
-type EntityTyp

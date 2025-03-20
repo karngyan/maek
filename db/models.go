@@ -43,6 +43,7 @@ type Note struct {
 	ID             int64
 	UUID           string
 	Content        []byte
+	Name           string
 	MdContent      string
 	Deleted        bool
 	Trashed        bool

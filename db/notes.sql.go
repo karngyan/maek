@@ -65,15 +65,40 @@ type GetInitialNotesCreatedAscParams struct {
 	Limit       int64
 }
 
-func (q *Queries) GetInitialNotesCreatedAsc(ctx context.Context, arg GetInitialNotesCreatedAscParams) ([]Note, error) {
+type GetInitialNotesCreatedAscRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetInitialNotesCreatedAsc(ctx context.Context, arg GetInitialNotesCreatedAscParams) ([]GetInitialNotesCreatedAscRow, error) {
 	rows, err := q.db.Query(ctx, getInitialNotesCreatedAsc, arg.WorkspaceID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetInitialNotesCreatedAscRow
 	for rows.Next() {
-		var i Note
+		var i GetInitialNotesCreatedAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -146,15 +171,40 @@ type GetInitialNotesCreatedDescParams struct {
 	Limit       int64
 }
 
-func (q *Queries) GetInitialNotesCreatedDesc(ctx context.Context, arg GetInitialNotesCreatedDescParams) ([]Note, error) {
+type GetInitialNotesCreatedDescRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetInitialNotesCreatedDesc(ctx context.Context, arg GetInitialNotesCreatedDescParams) ([]GetInitialNotesCreatedDescRow, error) {
 	rows, err := q.db.Query(ctx, getInitialNotesCreatedDesc, arg.WorkspaceID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetInitialNotesCreatedDescRow
 	for rows.Next() {
-		var i Note
+		var i GetInitialNotesCreatedDescRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -227,15 +277,40 @@ type GetInitialNotesUpdatedAscParams struct {
 	Limit       int64
 }
 
-func (q *Queries) GetInitialNotesUpdatedAsc(ctx context.Context, arg GetInitialNotesUpdatedAscParams) ([]Note, error) {
+type GetInitialNotesUpdatedAscRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetInitialNotesUpdatedAsc(ctx context.Context, arg GetInitialNotesUpdatedAscParams) ([]GetInitialNotesUpdatedAscRow, error) {
 	rows, err := q.db.Query(ctx, getInitialNotesUpdatedAsc, arg.WorkspaceID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetInitialNotesUpdatedAscRow
 	for rows.Next() {
-		var i Note
+		var i GetInitialNotesUpdatedAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -308,15 +383,40 @@ type GetInitialNotesUpdatedDescParams struct {
 	Limit       int64
 }
 
-func (q *Queries) GetInitialNotesUpdatedDesc(ctx context.Context, arg GetInitialNotesUpdatedDescParams) ([]Note, error) {
+type GetInitialNotesUpdatedDescRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetInitialNotesUpdatedDesc(ctx context.Context, arg GetInitialNotesUpdatedDescParams) ([]GetInitialNotesUpdatedDescRow, error) {
 	rows, err := q.db.Query(ctx, getInitialNotesUpdatedDesc, arg.WorkspaceID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetInitialNotesUpdatedDescRow
 	for rows.Next() {
-		var i Note
+		var i GetInitialNotesUpdatedDescRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -384,9 +484,34 @@ type GetNoteByUUIDAndWorkspaceParams struct {
 	WorkspaceID int64
 }
 
-func (q *Queries) GetNoteByUUIDAndWorkspace(ctx context.Context, arg GetNoteByUUIDAndWorkspaceParams) (Note, error) {
+type GetNoteByUUIDAndWorkspaceRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNoteByUUIDAndWorkspace(ctx context.Context, arg GetNoteByUUIDAndWorkspaceParams) (GetNoteByUUIDAndWorkspaceRow, error) {
 	row := q.db.QueryRow(ctx, getNoteByUUIDAndWorkspace, arg.UUID, arg.WorkspaceID)
-	var i Note
+	var i GetNoteByUUIDAndWorkspaceRow
 	err := row.Scan(
 		&i.ID,
 		&i.UUID,
@@ -452,15 +577,40 @@ type GetNotesByCollectionIDParams struct {
 	WorkspaceID  int64
 }
 
-func (q *Queries) GetNotesByCollectionID(ctx context.Context, arg GetNotesByCollectionIDParams) ([]Note, error) {
+type GetNotesByCollectionIDRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNotesByCollectionID(ctx context.Context, arg GetNotesByCollectionIDParams) ([]GetNotesByCollectionIDRow, error) {
 	rows, err := q.db.Query(ctx, getNotesByCollectionID, arg.CollectionID, arg.WorkspaceID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetNotesByCollectionIDRow
 	for rows.Next() {
-		var i Note
+		var i GetNotesByCollectionIDRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -539,7 +689,32 @@ type GetNotesCreatedAscParams struct {
 	LastNoteID    int64
 }
 
-func (q *Queries) GetNotesCreatedAsc(ctx context.Context, arg GetNotesCreatedAscParams) ([]Note, error) {
+type GetNotesCreatedAscRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNotesCreatedAsc(ctx context.Context, arg GetNotesCreatedAscParams) ([]GetNotesCreatedAscRow, error) {
 	rows, err := q.db.Query(ctx, getNotesCreatedAsc,
 		arg.WorkspaceID,
 		arg.Limit,
@@ -550,9 +725,9 @@ func (q *Queries) GetNotesCreatedAsc(ctx context.Context, arg GetNotesCreatedAsc
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetNotesCreatedAscRow
 	for rows.Next() {
-		var i Note
+		var i GetNotesCreatedAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -631,7 +806,32 @@ type GetNotesCreatedDescParams struct {
 	LastNoteID    int64
 }
 
-func (q *Queries) GetNotesCreatedDesc(ctx context.Context, arg GetNotesCreatedDescParams) ([]Note, error) {
+type GetNotesCreatedDescRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNotesCreatedDesc(ctx context.Context, arg GetNotesCreatedDescParams) ([]GetNotesCreatedDescRow, error) {
 	rows, err := q.db.Query(ctx, getNotesCreatedDesc,
 		arg.WorkspaceID,
 		arg.Limit,
@@ -642,9 +842,9 @@ func (q *Queries) GetNotesCreatedDesc(ctx context.Context, arg GetNotesCreatedDe
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetNotesCreatedDescRow
 	for rows.Next() {
-		var i Note
+		var i GetNotesCreatedDescRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -723,7 +923,32 @@ type GetNotesUpdatedAscParams struct {
 	LastNoteID    int64
 }
 
-func (q *Queries) GetNotesUpdatedAsc(ctx context.Context, arg GetNotesUpdatedAscParams) ([]Note, error) {
+type GetNotesUpdatedAscRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNotesUpdatedAsc(ctx context.Context, arg GetNotesUpdatedAscParams) ([]GetNotesUpdatedAscRow, error) {
 	rows, err := q.db.Query(ctx, getNotesUpdatedAsc,
 		arg.WorkspaceID,
 		arg.Limit,
@@ -734,9 +959,9 @@ func (q *Queries) GetNotesUpdatedAsc(ctx context.Context, arg GetNotesUpdatedAsc
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetNotesUpdatedAscRow
 	for rows.Next() {
-		var i Note
+		var i GetNotesUpdatedAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
@@ -815,7 +1040,32 @@ type GetNotesUpdatedDescParams struct {
 	LastNoteID    int64
 }
 
-func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDescParams) ([]Note, error) {
+type GetNotesUpdatedDescRow struct {
+	ID             int64
+	UUID           string
+	Content        []byte
+	MdContent      string
+	Deleted        bool
+	Trashed        bool
+	HasContent     bool
+	HasImages      bool
+	HasVideos      bool
+	HasOpenTasks   bool
+	HasClosedTasks bool
+	HasCode        bool
+	HasAudios      bool
+	HasLinks       bool
+	HasFiles       bool
+	HasQuotes      bool
+	HasTables      bool
+	WorkspaceID    int64
+	Created        int64
+	Updated        int64
+	CreatedByID    int64
+	UpdatedByID    int64
+}
+
+func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDescParams) ([]GetNotesUpdatedDescRow, error) {
 	rows, err := q.db.Query(ctx, getNotesUpdatedDesc,
 		arg.WorkspaceID,
 		arg.Limit,
@@ -826,9 +1076,9 @@ func (q *Queries) GetNotesUpdatedDesc(ctx context.Context, arg GetNotesUpdatedDe
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Note
+	var items []GetNotesUpdatedDescRow
 	for rows.Next() {
-		var i Note
+		var i GetNotesUpdatedDescRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UUID,
