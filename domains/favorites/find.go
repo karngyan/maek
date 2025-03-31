@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	defaultLimit = 20
-	maxLimit     = 100
+	defaultLimit = 100
+	maxLimit     = 500
 )
 
-func FindAll(ctx context.Context, uid, lim int64) ([]*Favorite, error) {
+func FindAll(ctx context.Context, wid, uid, lim int64) ([]*Favorite, error) {
 	if lim == 0 {
 		lim = defaultLimit
 	}
@@ -20,9 +20,10 @@ func FindAll(ctx context.Context, uid, lim int64) ([]*Favorite, error) {
 		lim = maxLimit
 	}
 
-	dbFavorites, err := db.Q.GetFavoritesByUser(ctx, db.GetFavoritesByUserParams{
-		UserID: uid,
-		Limit:  lim,
+	dbFavorites, err := db.Q.GetFavoritesForUser(ctx, db.GetFavoritesForUserParams{
+		UserID:      uid,
+		WorkspaceID: wid,
+		Limit:       lim,
 	})
 	if err != nil {
 		return nil, err

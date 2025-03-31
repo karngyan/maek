@@ -1,44 +1,54 @@
--- name: GetFavoritesByUser :many
-SELECT f.id, f.user_id, f.entity_type, f.entity_id, f.workspace_id, f.created, f.updated, f.order_idx
-FROM favorite f
-LEFT JOIN note n ON f.entity_type = 1 AND f.entity_id = n.id
-LEFT JOIN collection c ON f.entity_type = 2 AND f.entity_id = c.id
-WHERE f.user_id = $1
-AND (
-    (f.entity_type = 1 AND n.deleted = FALSE AND n.trashed = FALSE)
-    OR
-    (f.entity_type = 2 AND c.deleted = FALSE AND c.trashed = FALSE)
-)
-ORDER BY f.order_idx DESC
-LIMIT $2;
+-- name: GetFavoritesForUser :many
+SELECT id,
+       user_id,
+       entity_type,
+       entity_id,
+       workspace_id,
+       created,
+       updated,
+       order_idx
+FROM favorite
+WHERE user_id = $1
+  AND workspace_id = $2
+ORDER BY order_idx ASC
+LIMIT $3;
+
+-- name: InsertFavorite :one
+INSERT INTO favorite (user_id, entity_type, entity_id, workspace_id, created, updated, order_idx)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, user_id, entity_type, entity_id, workspace_id, created, updated, order_idx;
+
+-- name: DeleteFavorite :exec
+DELETE
+FROM favorite
+WHERE id = $1
+  AND user_id = $2
+  AND workspace_id = $3;
 
 -- name: UpdateFavoriteOrder :exec
 UPDATE favorite
-SET order_idx = $1
-WHERE id = $2 AND user_id = $3;
+SET order_idx = $1,
+    updated   = $2
+WHERE id = $3;
 
--- name: GetMaxOrderIndexFavorite :one
-SELECT COALESCE(MAX(order_idx), 0) FROM favorite WHERE user_id = $1;
+-- name: GetMaxOrderIndexForUser :one
+SELECT COALESCE(MAX(order_idx), 0) AS max_idx
+FROM favorite
+WHERE user_id = $1
+  AND workspace_id = $2;
 
--- name: DeleteFavorite :exec
-DELETE FROM favorite
-WHERE id = $1 AND user_id = $2;
+-- name: ReindexFavoritesForUser :exec
+UPDATE favorite
+SET order_idx = new_idx.new_order
+FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY order_idx ASC) * @gap::BIGINT AS new_order
+      FROM favorite
+      WHERE user_id = @user_id::BIGINT
+        AND workspace_id = @workspace_id::BIGINT) AS new_idx
+WHERE favorite.id = new_idx.id;
 
--- name: DeleteAllFavoritesByUser :exec
-DELETE FROM favorite
-WHERE user_id = $1;
-
--- name: CreateFavorite :one
-INSERT INTO favorite (user_id, entity_type, entity_id, workspace_id, created, updated, order_idx)
-SELECT $1, $2, $3, $4, $5, $6, $7
-FROM (
-    SELECT 1
-    FROM note n
-    WHERE $2 = 1 AND n.id = $3 AND n.workspace_id = $4
-    UNION ALL
-    SELECT 1
-    FROM collection c
-    WHERE $2 = 2 AND c.id = $3 AND c.workspace_id = $4
-) AS validation
-ON CONFLICT (user_id, entity_type, entity_id) DO NOTHING
-RETURNING id, user_id, entity_type, entity_id, workspace_id, created, updated, order_idx;
+-- name: DeleteFavoritesByEntityId :exec
+DELETE
+FROM favorite
+WHERE entity_id = $1
+  AND workspace_id = $2
+  AND user_id = $3;

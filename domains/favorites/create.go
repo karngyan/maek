@@ -7,22 +7,27 @@ import (
 	"github.com/karngyan/maek/db"
 )
 
+const defaultOrderGap = 500
+
 func Create(ctx context.Context, etype EntityType, eid, uid, wid int64, order int32) (*Favorite, error) {
 	now := timecop.Now().Unix()
 	var dbFavorite db.Favorite
 
 	err := db.Tx(ctx, func(ctx context.Context, q *db.Queries) error {
-		maxOrder, err := q.GetMaxOrderIndexFavorite(ctx, uid)
+		maxOrder, err := q.GetMaxOrderIndexForUser(ctx, db.GetMaxOrderIndexForUserParams{
+			UserID:      uid,
+			WorkspaceID: wid,
+		})
 		if err != nil {
 			return err
 		}
 
 		orderVal := order
 		if maxOrder.Valid && maxOrder.Int32 > orderVal {
-			orderVal = maxOrder.Int32
+			orderVal = maxOrder.Int32 + defaultOrderGap
 		}
 
-		dbFavorite, err = q.CreateFavorite(ctx, db.CreateFavoriteParams{
+		dbFavorite, err = q.InsertFavorite(ctx, db.InsertFavoriteParams{
 			UserID:      uid,
 			EntityType:  int32(etype),
 			EntityID:    eid,
